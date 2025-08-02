@@ -500,6 +500,67 @@ a:hover {
   }
 }
 
+/* === VIDEO PLAYER STYLES === */
+/* Add bottom padding when video player is visible */
+body.video-player-active {
+  padding-bottom: 360px; /* Space for expanded player */
+}
+
+body.video-player-active.player-collapsed {
+  padding-bottom: 80px; /* Space for collapsed player header */
+}
+
+/* Mobile-specific player height adjustments */
+@media (max-width: 768px) {
+  body.video-player-active {
+    padding-bottom: 520px; /* Even more space for mobile */
+  }
+}
+
+#video-player-section {
+  transition: all 0.3s ease-in-out;
+  max-height: 50vh;
+}
+
+/* Increase player height on mobile for better lyrics viewing */
+@media (max-width: 768px) {
+  #video-player-section {
+    max-height: 70vh; /* Even taller on mobile */
+  }
+}
+
+/* Lyrics content styling in player */
+.lyrics-container .lyrics-verse {
+  margin-bottom: 1rem;
+}
+
+.lyrics-container .lyrics-verse:last-child {
+  margin-bottom: 0;
+}
+
+/* Mobile responsive player content height */
+.video-player-content {
+  height: 300px;
+}
+
+/* Desktop layout - equal width for video and lyrics */
+@media (min-width: 769px) {
+  .video-player-content .grid {
+    grid-template-columns: 1fr 1fr; /* Equal width columns on desktop */
+  }
+}
+
+@media (max-width: 768px) {
+  .video-player-content {
+    height: 440px; /* Even taller content area on mobile */
+  }
+  
+  /* Stack video and lyrics vertically on mobile for better lyrics viewing */
+  .video-player-content .grid {
+    grid-template-rows: 200px 1fr; /* Video takes 200px, lyrics get remaining space (240px) */
+  }
+}
+
 /* === PRINT STYLES === */
 @media print {
   .nav-tab,
