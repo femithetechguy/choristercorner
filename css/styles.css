@@ -591,3 +591,31 @@ body.video-player-active.player-collapsed {
     border: 1px solid #000 !important;
   }
 }
+
+/* === COPY NOTIFICATION STYLES === */
+#copy-notification {
+  transform: translateX(100%);
+  backdrop-filter: blur(8px);
+  animation: slideInFromRight 0.3s ease-out forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Copy link button hover effects */
+.btn:hover .bi-link-45deg {
+  transform: rotate(45deg);
+  transition: transform 0.2s ease;
+}
+
+.btn .bi-link-45deg {
+  transition: transform 0.2s ease;
+}

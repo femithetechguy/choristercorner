@@ -1,134 +1,133 @@
 [
-    {
-        "serial_number": 1,
-        "title": "Omemma  | Chandler Moore | Live In Los Angeles (Official Music Video)",
-        "channel": "TRIBL",
-        "duration": "11 minutes 27 seconds",
-        "url": "https://www.youtube.com/watch?v=85B_DpmMunk",
-        "lyrics": [
-            "Verse 1:\n[First verse lyrics will go here]\n[Multiple lines of the verse]",
-            "Chorus:\n[Chorus lyrics will go here]\n[Repeated section of the song]",
-            "Verse 2:\n[Second verse lyrics will go here]\n[Additional verse content]"
-        ]
-    },
-    {
-        "serial_number": 2,
-        "title": "Bidemi Olaoba and Mercy Chinwo - Give Me Chance (Official Audio)",
-        "channel": "Bidemi Olaoba",
-        "duration": "4 minutes 17 seconds",
-        "url": "https://www.youtube.com/watch?v=ahiy9DgSyoI",
-        "lyrics": [
-            "Opening:\n[Opening section placeholder]\n[Intro lyrics content]",
-            "Main Section:\n[Main lyrics placeholder]\n[Primary song content]",
-            "Closing:\n[Closing section placeholder]\n[Final lyrics content]"
-        ]
-    },
-    {
-        "serial_number": 3,
-        "title": "Yadah - How Can I Forget? (Official Audio)",
-        "channel": "Yadah",
-        "duration": "3 minutes 19 seconds",
-        "url": "https://www.youtube.com/watch?v=-a6PCxczh4k",
-        "lyrics": [
-            "First Part:\n[Beginning lyrics placeholder]\n[Song introduction]",
-            "Middle Part:\n[Middle section placeholder]\n[Core message content]",
-            "Final Part:\n[Ending lyrics placeholder]\n[Song conclusion]"
-        ]
-    },
-    {
-        "serial_number": 4,
-        "title": "Dancing Around Medley",
-        "channel": "Nathaniel Bassey - Topic",
-        "duration": "11 minutes 44 seconds",
-        "url": "https://www.youtube.com/watch?v=4_trroYl8d4",
-        "lyrics": []
-    },
-    {
-        "serial_number": 5,
-        "title": "Onos - Thank You For Being Jehovah (Official Audio)",
-        "channel": "OnosVEVO",
-        "duration": "3 minutes 43 seconds",
-        "url": "https://www.youtube.com/watch?v=J_cPDUfPsrA",
-        "lyrics": []
-    },
-    {
-        "serial_number": 6,
-        "title": "We will be many ft Lawrence Oyor, Moses Akoh || Sounds Of Salem",
-        "channel": "Prophet Joel Ogebe",
-        "duration": "3 minutes 15 seconds",
-        "url": "https://www.youtube.com/watch?v=POHXsztJpMM",
-        "lyrics": []
-    },
-    {
-        "serial_number": 7,
-        "title": "What A Mighty God We Serve",
-        "channel": "Hezekiah Walker - Topic",
-        "duration": "10 minutes 15 seconds",
-        "url": "https://www.youtube.com/watch?v=Oa0OVROu7x0",
-        "lyrics": []
-    },
-    {
-        "serial_number": 8,
-        "title": "High Praise",
-        "channel": "Tosin Bee - Topic",
-        "duration": "27 minutes 51 seconds",
-        "url": "https://www.youtube.com/watch?v=jucF0lme2P4",
-        "lyrics": []
-    },
-    {
-        "serial_number": 9,
-        "title": "Oil On My Head (Official Video) - EBEN",
-        "channel": "OfficialEben",
-        "duration": "2 minutes 36 seconds",
-        "url": "https://www.youtube.com/watch?v=p6L4aQ38lH0",
-        "lyrics": [
-            "Verse 1:\nLord, I just wanna thank you (ooh eeh)\nHow could I ever repay you\nJesus, you've taken the pains away from me\nAnd you have given me victory, eh\nEverywhere I go blessings follow (follow, follow, follow)\nEverything I do, favour follow am o\nKings are coming to my rising\nI'm going higher by the grace of God",
-            "Chorus:\nOil on my head (oil on my head)\nOil on my head (oil on my head)\nIncrease in my hands (increase in my hands)\nIncrease in my hands (increase in my hands)\nSpeed on my feet (speed on my feet)\nSpeed on my feet (speed on my feet)\nEverywhere I go (everywhere I go)\nEverywhere I go (everywhere I go)",
-            "Bridge:\nThis is my season of favour, yes\nThis is my season of increase\nMy life is upward and forward\nI can never go down, no, no no no no\nEverywhere I enter, goodness and mercy dey enter\nEverywhere I go now, goodness and mercy dey follow\nKings are coming to my rising\nI'm going higher by the grace of God",
-            "Outro:\nI carry favour for head\nI carry favour for head\nAka nchawa, nchawa, nchawa\nAka nchawa, nchawa"
-        ]
-    },
-    {
-        "serial_number": 10,
-        "title": "Jubilee Worship - Atmosphere Shift  (feat. Phil Thompson)",
-        "channel": "Jubilee Worship",
-        "duration": "5 minutes 27 seconds",
-        "url": "https://www.youtube.com/watch?v=q6OLbE_FBhQ",
-        "lyrics": [
-            "Verse 1:\nThere is only one name\nThere is only one name\nWith power to save\nWith power to save",
-            "Chorus:\nAnd our God is champion\nHe reigns forevermore\nForevermore",
-            "Bridge:\nAnd every knee will bow down\nEvery knee will bow down\nEvery tongue will confess\nThat Jesus Christ You are Lord",
-            "Build:\nFather we worship You\nFather we praise Your name, Your worthy\nOur God, we lift You up\nFather we exalt You in this place\nFather we magnify Your name",
-            "Hook:\nAtmosphere shift now\nChains be broken, breakout\nHoly Spirit come now\nHeaven open, heaven open"
-        ]
-    }
-    ,
-    {
-        "serial_number": 11,
-        "title": "Firm Foundation (He Won't) [feat. Chandler Moore & Cody Carnes] | Maverick City Music | TRIBL",
-        "channel": "TRIBL",
-        "duration": "8 minutes 40 seconds",
-        "url": "https://www.youtube.com/watch?v=uOP4s8fOEm0",
-        "lyrics": [
-            "Verse 1:\nChrist is my firm foundation\nThe rock on which I stand\nWhen everything around me is shaken\nI've never been more glad\nThat I put my faith in Jesus\n'Cause He's never let me down\nHe's faithful through generations\nSo why would He fail now",
-            "Chorus:\nHe won't, He won't",
-            "Verse 2:\nI've still got joy in chaos\nI've got peace that makes no sense\nI won't be going under\nI'm not held by my own strength\n'Cause I've built my life on Jesus\nHe's never let me down\nHe's faithful in every season\nSo why would He fail now",
-            "Bridge:\nRain came and wind blew\nBut my house was built on You\nI'm safe with You\nI'm going to make it through",
-            "Outro:\nYeah, I'm going to make it through\n'Cause I'm standing strong on You\nYeah, I'm going to make it through\n'Cause my house is built on You"
-        ]
-    },
-    {
-        "serial_number": 12,
-        "title": "Neon Adejo-Eze Ebube II/Grace found me (LIVE)",
-        "channel": "Neon ADEJO",
-        "duration": "7 minutes 10 seconds",
-        "url": "https://www.youtube.com/watch?v=-pNWoWl9taA",
-        "lyrics": [
-            "Verse 1:\nMore than my mouth can testify\nMore than my mind can comprehend\nSee I′ve seen the wonders of your grace\nI'm so sure that this is not the end",
-            "Chorus:\nEze ebube\nSee how far you′ve brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise",
-            "Verse 2:\nMy heart is full of gratitude\nTo you and no one else but you\nLord I′m here only by your grace\nThank you Jesus for not giving up on me\nOh oh oh oh oh",
-            "Bridge:\nGrace found me\nGrace saved me\nGrace made me\nWho I am\nGrace redeemed me\nGrace sustains me\nGrace made me\nWho I am",
-            "Outro:\nNow can you use this moment\nTo begin to rattle in the spirit\nZi ka ba la ba ya de de de de\nZi ka ba la ba la de de de de\nI′m everything by your grace God\nEverything I have I got by your grace\nI'm nothing without you oh oh oh\nI′m nothing with you lord\nI'm nothing with you lord"
-        ]
-    }
+  {
+    "serial_number": 1,
+    "title": "Omemma  | Chandler Moore | Live In Los Angeles (Official Music Video)",
+    "channel": "TRIBL",
+    "duration": "11 minutes 27 seconds",
+    "url": "https://www.youtube.com/watch?v=85B_DpmMunk",
+    "lyrics": [
+      "Verse 1:\n[First verse lyrics will go here]\n[Multiple lines of the verse]",
+      "Chorus:\n[Chorus lyrics will go here]\n[Repeated section of the song]",
+      "Verse 2:\n[Second verse lyrics will go here]\n[Additional verse content]"
+    ]
+  },
+  {
+    "serial_number": 2,
+    "title": "Bidemi Olaoba and Mercy Chinwo - Give Me Chance (Official Audio)",
+    "channel": "Bidemi Olaoba",
+    "duration": "4 minutes 17 seconds",
+    "url": "https://www.youtube.com/watch?v=ahiy9DgSyoI",
+    "lyrics": [
+      "Opening:\n[Opening section placeholder]\n[Intro lyrics content]",
+      "Main Section:\n[Main lyrics placeholder]\n[Primary song content]",
+      "Closing:\n[Closing section placeholder]\n[Final lyrics content]"
+    ]
+  },
+  {
+    "serial_number": 3,
+    "title": "Yadah - How Can I Forget? (Official Audio)",
+    "channel": "Yadah",
+    "duration": "3 minutes 19 seconds",
+    "url": "https://www.youtube.com/watch?v=-a6PCxczh4k",
+    "lyrics": [
+      "First Part:\n[Beginning lyrics placeholder]\n[Song introduction]",
+      "Middle Part:\n[Middle section placeholder]\n[Core message content]",
+      "Final Part:\n[Ending lyrics placeholder]\n[Song conclusion]"
+    ]
+  },
+  {
+    "serial_number": 4,
+    "title": "Dancing Around Medley",
+    "channel": "Nathaniel Bassey - Topic",
+    "duration": "11 minutes 44 seconds",
+    "url": "https://www.youtube.com/watch?v=4_trroYl8d4",
+    "lyrics": []
+  },
+  {
+    "serial_number": 5,
+    "title": "Onos - Thank You For Being Jehovah (Official Audio)",
+    "channel": "OnosVEVO",
+    "duration": "3 minutes 43 seconds",
+    "url": "https://www.youtube.com/watch?v=J_cPDUfPsrA",
+    "lyrics": []
+  },
+  {
+    "serial_number": 6,
+    "title": "We will be many ft Lawrence Oyor, Moses Akoh || Sounds Of Salem",
+    "channel": "Prophet Joel Ogebe",
+    "duration": "3 minutes 15 seconds",
+    "url": "https://www.youtube.com/watch?v=POHXsztJpMM",
+    "lyrics": []
+  },
+  {
+    "serial_number": 7,
+    "title": "What A Mighty God We Serve",
+    "channel": "Hezekiah Walker - Topic",
+    "duration": "10 minutes 15 seconds",
+    "url": "https://www.youtube.com/watch?v=Oa0OVROu7x0",
+    "lyrics": []
+  },
+  {
+    "serial_number": 8,
+    "title": "High Praise",
+    "channel": "Tosin Bee - Topic",
+    "duration": "27 minutes 51 seconds",
+    "url": "https://www.youtube.com/watch?v=jucF0lme2P4",
+    "lyrics": []
+  },
+  {
+    "serial_number": 9,
+    "title": "Oil On My Head (Official Video) - EBEN",
+    "channel": "OfficialEben",
+    "duration": "2 minutes 36 seconds",
+    "url": "https://www.youtube.com/watch?v=p6L4aQ38lH0",
+    "lyrics": [
+      "Verse 1:\nLord, I just wanna thank you (ooh eeh)\nHow could I ever repay you\nJesus, you've taken the pains away from me\nAnd you have given me victory, eh\nEverywhere I go blessings follow (follow, follow, follow)\nEverything I do, favour follow am o\nKings are coming to my rising\nI'm going higher by the grace of God",
+      "Chorus:\nOil on my head (oil on my head)\nOil on my head (oil on my head)\nIncrease in my hands (increase in my hands)\nIncrease in my hands (increase in my hands)\nSpeed on my feet (speed on my feet)\nSpeed on my feet (speed on my feet)\nEverywhere I go (everywhere I go)\nEverywhere I go (everywhere I go)",
+      "Bridge:\nThis is my season of favour, yes\nThis is my season of increase\nMy life is upward and forward\nI can never go down, no, no no no no\nEverywhere I enter, goodness and mercy dey enter\nEverywhere I go now, goodness and mercy dey follow\nKings are coming to my rising\nI'm going higher by the grace of God",
+      "Outro:\nI carry favour for head\nI carry favour for head\nAka nchawa, nchawa, nchawa\nAka nchawa, nchawa"
+    ]
+  },
+  {
+    "serial_number": 10,
+    "title": "Jubilee Worship - Atmosphere Shift  (feat. Phil Thompson)",
+    "channel": "Jubilee Worship",
+    "duration": "5 minutes 27 seconds",
+    "url": "https://www.youtube.com/watch?v=q6OLbE_FBhQ",
+    "lyrics": [
+      "Verse 1:\nThere is only one name\nThere is only one name\nWith power to save\nWith power to save",
+      "Chorus:\nAnd our God is champion\nHe reigns forevermore\nForevermore",
+      "Bridge:\nAnd every knee will bow down\nEvery knee will bow down\nEvery tongue will confess\nThat Jesus Christ You are Lord",
+      "Build:\nFather we worship You\nFather we praise Your name, Your worthy\nOur God, we lift You up\nFather we exalt You in this place\nFather we magnify Your name",
+      "Hook:\nAtmosphere shift now\nChains be broken, breakout\nHoly Spirit come now\nHeaven open, heaven open"
+    ]
+  },
+  {
+    "serial_number": 11,
+    "title": "Firm Foundation (He Won't) [feat. Chandler Moore & Cody Carnes] | Maverick City Music | TRIBL",
+    "channel": "TRIBL",
+    "duration": "8 minutes 40 seconds",
+    "url": "https://www.youtube.com/watch?v=uOP4s8fOEm0",
+    "lyrics": [
+      "Verse 1:\nChrist is my firm foundation\nThe rock on which I stand\nWhen everything around me is shaken\nI've never been more glad\nThat I put my faith in Jesus\n'Cause He's never let me down\nHe's faithful through generations\nSo why would He fail now",
+      "Chorus:\nHe won't, He won't",
+      "Verse 2:\nI've still got joy in chaos\nI've got peace that makes no sense\nI won't be going under\nI'm not held by my own strength\n'Cause I've built my life on Jesus\nHe's never let me down\nHe's faithful in every season\nSo why would He fail now",
+      "Bridge:\nRain came and wind blew\nBut my house was built on You\nI'm safe with You\nI'm going to make it through",
+      "Outro:\nYeah, I'm going to make it through\n'Cause I'm standing strong on You\nYeah, I'm going to make it through\n'Cause my house is built on You"
+    ]
+  },
+  {
+    "serial_number": 12,
+    "title": "Neon Adejo-Eze Ebube II/Grace found me (LIVE)",
+    "channel": "Neon ADEJO",
+    "duration": "7 minutes 10 seconds",
+    "url": "https://www.youtube.com/watch?v=-pNWoWl9taA",
+    "lyrics": [
+      "Verse 1:\nMore than my mouth can testify\nMore than my mind can comprehend\nSee I′ve seen the wonders of your grace\nI'm so sure that this is not the end",
+      "Chorus:\nEze ebube\nSee how far you′ve brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise",
+      "Verse 2:\nMy heart is full of gratitude\nTo you and no one else but you\nLord I′m here only by your grace\nThank you Jesus for not giving up on me\nOh oh oh oh oh",
+      "Bridge:\nGrace found me\nGrace saved me\nGrace made me\nWho I am\nGrace redeemed me\nGrace sustains me\nGrace made me\nWho I am",
+      "Outro:\nNow can you use this moment\nTo begin to rattle in the spirit\nZi ka ba la ba ya de de de de\nZi ka ba la ba la de de de de\nI′m everything by your grace God\nEverything I have I got by your grace\nI'm nothing without you oh oh oh\nI′m nothing with you lord\nI'm nothing with you lord"
+    ]
+  }
 ]
