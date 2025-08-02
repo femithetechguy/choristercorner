@@ -267,27 +267,37 @@ function initializePlaylistUpdater() {
   const updater = new PlaylistUpdater();
   let processedSongs = [];
 
-  // Wait for DOM elements to be available
-  setTimeout(() => {
-    // Check if required elements exist
-    const processButton = document.getElementById('process-playlist');
-    const previewButton = document.getElementById('preview-results');
-    const downloadButton = document.getElementById('download-files');
-    const githubButton = document.getElementById('github-instructions');
-    
-    if (!processButton) {
-      console.error('Playlist updater elements not found in DOM');
-      return;
-    }
+  // Check if required elements exist
+  const processButton = document.getElementById('process-playlist');
+  const previewButton = document.getElementById('preview-results');
+  const downloadButton = document.getElementById('download-files');
+  const githubButton = document.getElementById('github-instructions');
+  
+  if (!processButton || !previewButton || !downloadButton || !githubButton) {
+    console.error('Playlist updater elements not found in DOM:', {
+      processButton: !!processButton,
+      previewButton: !!previewButton,
+      downloadButton: !!downloadButton,
+      githubButton: !!githubButton
+    });
+    return false;
+  }
 
-    // Method selection
-    const methodRadios = document.querySelectorAll('input[name="updateMethod"]');
-    const manualSection = document.getElementById('manual-input-section');
-    const urlSection = document.getElementById('url-input-section');
+  console.log("[DEBUG] Initializing playlist updater with all elements found");
 
-    methodRadios.forEach(radio => {
-      radio.addEventListener('change', () => {
-        if (radio.value === 'manual') {
+  // Method selection
+  const methodRadios = document.querySelectorAll('input[name="updateMethod"]');
+  const manualSection = document.getElementById('manual-input-section');
+  const urlSection = document.getElementById('url-input-section');
+
+  if (!methodRadios.length || !manualSection || !urlSection) {
+    console.error('Playlist updater method elements not found');
+    return false;
+  }
+
+  methodRadios.forEach(radio => {
+    radio.addEventListener('change', () => {
+      if (radio.value === 'manual') {
           manualSection.style.display = 'block';
           urlSection.style.display = 'none';
         } else {
@@ -525,7 +535,7 @@ How Great Thou Art | Hillsong United | https://youtu.be/XYZ789`}</code></pre>
     document.body.appendChild(modal);
   });
   
-  }, 200); // End setTimeout - wait for DOM elements to be created
+  return true; // Successfully initialized
 }
 
 // Export for use in songs tab

@@ -503,7 +503,7 @@ a:hover {
 /* === VIDEO PLAYER STYLES === */
 /* Add bottom padding when video player is visible */
 body.video-player-active {
-  padding-bottom: 360px; /* Space for expanded player */
+  padding-bottom: 480px; /* Increased space for taller expanded player */
 }
 
 body.video-player-active.player-collapsed {
@@ -519,13 +519,24 @@ body.video-player-active.player-collapsed {
 
 #video-player-section {
   transition: all 0.3s ease-in-out;
-  max-height: 50vh;
+  max-height: 65vh; /* Increased from 50vh for taller desktop view */
 }
 
 /* Increase player height on mobile for better lyrics viewing */
 @media (max-width: 768px) {
   #video-player-section {
     max-height: 70vh; /* Even taller on mobile */
+  }
+  
+  .video-player-content {
+    height: calc(70vh - 80px) !important; /* Mobile-specific height */
+  }
+}
+
+/* Desktop-specific video player styling */
+@media (min-width: 769px) {
+  .video-player-content {
+    height: calc(65vh - 80px) !important; /* Desktop height calculation */
   }
 }
 

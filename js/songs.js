@@ -363,7 +363,7 @@ function renderEmbeddedVideoPlayer() {
   const videoId = extractYouTubeVideoId(song.url);
   
   return `
-    <div id="video-player-section" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40 transform transition-transform duration-300" style="max-height: 50vh;">
+    <div id="video-player-section" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40 transform transition-transform duration-300" style="max-height: 65vh;">
       <!-- Player Header -->
       <div class="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
         <div class="flex items-center space-x-3">
@@ -385,9 +385,9 @@ function renderEmbeddedVideoPlayer() {
 
       <!-- Player Content (collapsible) -->
       ${!songsData.isPlayerCollapsed ? `
-        <div class="video-player-content grid grid-cols-1 lg:grid-cols-2 gap-0">
+        <div class="video-player-content grid grid-cols-1 lg:grid-cols-2 gap-0" style="height: calc(65vh - 80px);">
           <!-- Video Player -->
-          <div class="bg-black flex items-center justify-center">
+          <div class="bg-black flex items-center justify-center h-full">
             ${videoId ? `
               <iframe 
                 id="youtube-player"
@@ -409,7 +409,7 @@ function renderEmbeddedVideoPlayer() {
           </div>
 
           <!-- Lyrics Section -->
-          <div class="p-4 bg-white overflow-y-auto border-l border-gray-200 lg:border-l lg:border-t-0 border-t">
+          <div class="p-4 bg-white overflow-y-auto border-l border-gray-200 lg:border-l lg:border-t-0 border-t h-full">
             <h4 class="font-semibold text-gray-900 flex items-center mb-3">
               <i class="bi bi-file-text mr-2"></i>
               Lyrics
@@ -563,16 +563,32 @@ function togglePlaylistUpdater() {
   
   // Initialize playlist updater when shown
   if (songsData.showPlaylistUpdater && window.PlaylistUpdater) {
-    setTimeout(() => {
-      if (document.getElementById('process-playlist')) {
-        window.PlaylistUpdater.initialize();
+    // Use a more robust initialization with multiple retries
+    let retryCount = 0;
+    const maxRetries = 5;
+    const retryDelay = 250;
+    
+    const tryInitialize = () => {
+      const processButton = document.getElementById('process-playlist');
+      if (processButton) {
+        console.log("[DEBUG] Playlist updater elements found, initializing...");
+        const success = window.PlaylistUpdater.initialize();
+        if (success) {
+          console.log("[DEBUG] Playlist updater successfully initialized");
+        } else {
+          console.error("[DEBUG] Playlist updater initialization failed");
+        }
+      } else if (retryCount < maxRetries) {
+        retryCount++;
+        console.log(`[DEBUG] Playlist updater elements not ready, retry ${retryCount}/${maxRetries}...`);
+        setTimeout(tryInitialize, retryDelay);
       } else {
-        console.warn("Playlist updater elements not yet available, retrying...");
-        setTimeout(() => {
-          window.PlaylistUpdater.initialize();
-        }, 300);
+        console.error("[DEBUG] Failed to initialize playlist updater after maximum retries");
       }
-    }, 200);
+    };
+    
+    // Start the initialization process
+    setTimeout(tryInitialize, 100);
   }
 }
 
