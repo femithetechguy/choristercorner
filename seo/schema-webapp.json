@@ -1,0 +1,58 @@
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "ChoristerCorner",
+  "description": "A comprehensive platform for choristers and worship leaders featuring song libraries, chord charts, practice tools, and worship resources.",
+  "url": "https://choristercorner.com",
+  "applicationCategory": "MusicApplication",
+  "operatingSystem": "Web Browser",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "ChoristerCorner",
+    "url": "https://choristercorner.com"
+  },
+  "keywords": [
+    "worship songs",
+    "church music",
+    "chorister",
+    "worship leader",
+    "christian music",
+    "hymns",
+    "praise songs",
+    "chord charts",
+    "music practice",
+    "church resources",
+    "song lyrics",
+    "worship resources"
+  ],
+  "featureList": [
+    "Song Library with Lyrics",
+    "Chord Charts and Progressions",
+    "Practice Tools for Musicians",
+    "Worship Resources",
+    "YouTube Integration",
+    "Search and Filter Songs",
+    "Mobile-Friendly Interface"
+  ],
+  "screenshot": "https://choristercorner.com/images/screenshot.png",
+  "softwareVersion": "1.0.0",
+  "datePublished": "2025-08-02",
+  "dateModified": "2025-08-02",
+  "inLanguage": "en",
+  "isAccessibleForFree": true,
+  "audience": {
+    "@type": "Audience",
+    "audienceType": [
+      "Choristers",
+      "Worship Leaders",
+      "Church Musicians",
+      "Music Directors",
+      "Christian Musicians"
+    ]
+  }
+}
