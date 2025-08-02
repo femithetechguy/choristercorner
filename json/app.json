@@ -1,0 +1,182 @@
+{
+  "appName": "ChoristerCorner",
+  "description": "A comprehensive platform for choristers and worship leaders",
+  "version": "1.0.0",
+  "pages": [
+    {
+      "name": "Main App",
+      "tabs": [
+        {
+          "name": "Home",
+          "biIcon": "bi-house-door",
+          "jsFile": "js/home.js",
+          "cssFile": "css/home.css",
+          "content": [
+            "Welcome message and app overview",
+            "Featured songs or recent additions",
+            "Quick navigation to popular sections",
+            "Statistics: total songs, newest additions",
+            "Search bar for quick song lookup"
+          ]
+        },
+        {
+          "name": "Songs",
+          "biIcon": "bi-music-note-list",
+          "jsFile": "js/songs.js",
+          "cssFile": "css/songs.css",
+          "content": [
+            "Complete song library with search and filter",
+            "Fields: Title, Artist/Channel, Duration, URL",
+            "Song cards with play button and lyrics preview",
+            "Filters: Duration, Channel, Recently Added",
+            "Sorting: Alphabetical, Duration, Date Added",
+            "Individual song pages with full lyrics display",
+            "Lyrics organized in paragraphs/sections",
+            "YouTube video embedding"
+          ]
+        },
+        {
+          "name": "About",
+          "biIcon": "bi-info-circle",
+          "jsFile": "js/about.js",
+          "cssFile": "css/about.css",
+          "content": [
+            "App mission and vision",
+            "Features overview",
+            "How to use the platform",
+            "Community guidelines",
+            "Version history and updates",
+            "Credits and acknowledgments"
+          ]
+        },
+        {
+          "name": "Contact",
+          "biIcon": "bi-envelope",
+          "jsFile": "js/contact.js",
+          "cssFile": "css/contact.css",
+          "content": [
+            "Contact form for feedback and suggestions",
+            "Fields: Name, Email, Subject, Message",
+            "Social media links",
+            "Support information",
+            "Feature request submission",
+            "Bug reporting form"
+          ]
+        }
+      ]
+    }
+  ],
+  "layout": {
+    "responsive": true,
+    "navbar": "sticky top navigation",
+    "mobileMenu": "hamburger menu with slide-out navigation",
+    "css": ["Tailwind CSS", "Custom CSS per tab"],
+    "icons": "Bootstrap Icons",
+    "theme": {
+      "primary": "Worship/spiritual theme",
+      "colors": "Warm, welcoming color palette",
+      "typography": "Clean, readable fonts"
+    }
+  },
+  "features": {
+    "search": {
+      "global": true,
+      "filters": ["title", "channel", "duration"],
+      "autocomplete": true
+    },
+    "songLibrary": {
+      "dataSource": "json/songs.json",
+      "displayFormats": ["card view", "list view"],
+      "sortOptions": ["alphabetical", "duration", "date added", "channel"]
+    },
+    "lyrics": {
+      "structure": "array of paragraphs",
+      "display": "formatted sections",
+      "expandable": true
+    },
+    "media": {
+      "youtubeIntegration": true,
+      "embedPlayer": true,
+      "externalLinks": true
+    }
+  },
+  "files": [
+    { 
+      "file": "index.html", 
+      "purpose": "Main HTML structure and tab navigation" 
+    },
+    { 
+      "file": "css/style.css", 
+      "purpose": "General styles, layout, common components" 
+    },
+    { 
+      "file": "css/home.css", 
+      "purpose": "Home tab specific styles" 
+    },
+    { 
+      "file": "css/songs.css", 
+      "purpose": "Songs tab specific styles - cards, filters, player" 
+    },
+    { 
+      "file": "css/about.css", 
+      "purpose": "About tab specific styles" 
+    },
+    { 
+      "file": "css/contact.css", 
+      "purpose": "Contact tab specific styles - forms, layout" 
+    },
+    { 
+      "file": "js/app.js", 
+      "purpose": "Core application logic, tab navigation, common functions" 
+    },
+    { 
+      "file": "js/home.js", 
+      "purpose": "Home tab functionality, statistics, featured content" 
+    },
+    { 
+      "file": "js/songs.js", 
+      "purpose": "Song library management, search, filters, player integration" 
+    },
+    { 
+      "file": "js/about.js", 
+      "purpose": "About page interactions and content loading" 
+    },
+    { 
+      "file": "js/contact.js", 
+      "purpose": "Contact form handling, validation, submission" 
+    },
+    { 
+      "file": "json/songs.json", 
+      "purpose": "Song data with lyrics, metadata, and links" 
+    }
+  ],
+  "dependencies": {
+    "css": [
+      "Tailwind CSS (CDN)",
+      "Bootstrap Icons (CDN)"
+    ],
+    "js": [
+      "Vanilla JavaScript (no frameworks)",
+      "Optional: Lightweight utilities for API calls"
+    ]
+  },
+  "dataStructure": {
+    "songs": {
+      "format": "JSON array",
+      "fields": [
+        "serial_number",
+        "title", 
+        "channel", 
+        "duration", 
+        "url", 
+        "lyrics (array of paragraphs)"
+      ]
+    }
+  },
+  "userExperience": {
+    "navigation": "Single-page application with smooth transitions",
+    "responsiveness": "Mobile-first design with tablet and desktop optimization",
+    "accessibility": "ARIA labels, keyboard navigation, screen reader friendly",
+    "performance": "Lazy loading, optimized assets, minimal dependencies"
+  }
+}
