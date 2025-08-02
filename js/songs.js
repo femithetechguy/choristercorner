@@ -38,10 +38,57 @@ async function loadSongsData() {
       songsData.filteredSongs = [...data];
       songsData.isLoaded = true;
       console.log("[DEBUG] Songs data loaded successfully:", data.length, "songs");
+      
+      // Check if we need to show a specific song from URL parameters
+      handleSongUrlParameters();
     }
   } catch (error) {
     console.error("[DEBUG] Failed to load songs data:", error);
     songsData.isLoaded = false;
+  }
+}
+
+// Handle URL parameters for direct song links
+function handleSongUrlParameters() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const songId = urlParams.get('song');
+  
+  if (songId) {
+    console.log("[DEBUG] Direct song link detected:", songId);
+    const song = songsData.allSongs.find(s => s.serial_number === parseInt(songId));
+    
+    if (song) {
+      // Switch to Songs tab if not already there
+      if (typeof window.switchToTab === 'function') {
+        window.switchToTab('Songs');
+      }
+      
+      // Show the song lyrics after a brief delay to ensure UI is ready
+      setTimeout(() => {
+        viewSongLyrics(song.serial_number);
+      }, 500);
+      
+      // Update the page title to include the song
+      updatePageTitle(song);
+    } else {
+      console.warn("[DEBUG] Song not found for ID:", songId);
+    }
+  }
+}
+
+// Update page title for shared song links
+function updatePageTitle(song) {
+  const originalTitle = document.title;
+  if (song && song.title) {
+    document.title = `${song.title} - ${song.channel || 'Unknown Artist'} | ChoristerCorner`;
+    
+    // Restore original title when leaving the song
+    const restoreTitle = () => {
+      document.title = originalTitle;
+    };
+    
+    // Store the restore function for later use
+    window.restorePageTitle = restoreTitle;
   }
 }
 
@@ -228,6 +275,13 @@ function renderSongCard(song) {
             <i class="bi bi-file-text"></i>
           </button>
           <button 
+            onclick="copySongLinkBySerial(${song.serial_number})" 
+            class="btn btn-ghost btn-sm"
+            title="Copy page link"
+          >
+            <i class="bi bi-link-45deg"></i>
+          </button>
+          <button 
             onclick="toggleFavorite(${song.serial_number})" 
             class="btn btn-ghost btn-sm"
             title="Add to favorites"
@@ -278,6 +332,13 @@ function renderSongListItem(song) {
             <i class="bi bi-file-text"></i>
           </button>
           <button 
+            onclick="copySongLinkBySerial(${song.serial_number})" 
+            class="btn btn-ghost btn-sm"
+            title="Copy page link"
+          >
+            <i class="bi bi-link-45deg"></i>
+          </button>
+          <button 
             onclick="toggleFavorite(${song.serial_number})" 
             class="btn btn-ghost btn-sm"
             title="Add to favorites"
@@ -307,6 +368,10 @@ function renderSongLyricsView() {
           <button onclick="playSong('${song.url}')" class="btn btn-primary" ${!song.url ? 'disabled' : ''}>
             <i class="bi bi-play-fill"></i>
             <span>Listen</span>
+          </button>
+          <button onclick="copySongLinkBySerial(${song.serial_number})" class="btn btn-outline">
+            <i class="bi bi-link-45deg"></i>
+            <span>Copy Page Link</span>
           </button>
           <button onclick="toggleFavorite(${song.serial_number})" class="btn btn-outline">
             <i class="bi bi-heart"></i>
@@ -374,6 +439,9 @@ function renderEmbeddedVideoPlayer() {
           </div>
         </div>
         <div class="flex items-center space-x-2">
+          <button onclick="copySongLinkBySerial(${song.serial_number})" class="btn btn-ghost btn-sm" title="Copy page link">
+            <i class="bi bi-link-45deg"></i>
+          </button>
           <button onclick="togglePlayerCollapse()" class="btn btn-ghost btn-sm" title="Toggle player size">
             <i class="bi bi-chevron-${songsData.isPlayerCollapsed ? 'up' : 'down'}"></i>
           </button>
@@ -786,6 +854,179 @@ function updateVideoPlayerDisplay() {
 }
 
 // Song action functions
+
+// Generate custom song page URL
+function generateSongPageUrl(song) {
+  const baseUrl = window.location.origin + window.location.pathname;
+  const songSlug = encodeURIComponent(song.title?.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-') || 'untitled');
+  return `${baseUrl}?song=${song.serial_number}&title=${songSlug}`;
+}
+
+// Copy song link functionality (custom page link, not YouTube)
+function copySongLink(song, showNotification = true) {
+  console.log("[DEBUG] Copying custom song page link:", song.title);
+  
+  if (!song || !song.serial_number) {
+    if (showNotification) {
+      showCopyNotification('Unable to generate link for this song', 'error');
+    }
+    return false;
+  }
+  
+  try {
+    const customUrl = generateSongPageUrl(song);
+    
+    // Use the Clipboard API if available
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(customUrl).then(() => {
+        if (showNotification) {
+          showCopyNotification(`Page link copied: ${song.title}`, 'success');
+        }
+      }).catch(() => {
+        fallbackCopyToClipboard(customUrl, song.title, showNotification);
+      });
+    } else {
+      // Fallback for older browsers or non-secure contexts
+      fallbackCopyToClipboard(customUrl, song.title, showNotification);
+    }
+    return true;
+  } catch (error) {
+    console.error("[DEBUG] Failed to copy song page link:", error);
+    if (showNotification) {
+      showCopyNotification('Failed to copy link', 'error');
+    }
+    return false;
+  }
+}
+
+// Copy YouTube link functionality (separate function)
+function copyYouTubeLink(song, showNotification = true) {
+  console.log("[DEBUG] Copying YouTube link:", song.title);
+  
+  if (!song.url) {
+    if (showNotification) {
+      showCopyNotification('YouTube link not available for this song', 'error');
+    }
+    return false;
+  }
+  
+  try {
+    // Use the Clipboard API if available
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(song.url).then(() => {
+        if (showNotification) {
+          showCopyNotification(`YouTube link copied: ${song.title}`, 'success');
+        }
+      }).catch(() => {
+        fallbackCopyToClipboard(song.url, song.title, showNotification);
+      });
+    } else {
+      // Fallback for older browsers or non-secure contexts
+      fallbackCopyToClipboard(song.url, song.title, showNotification);
+    }
+    return true;
+  } catch (error) {
+    console.error("[DEBUG] Failed to copy YouTube link:", error);
+    if (showNotification) {
+      showCopyNotification('Failed to copy YouTube link', 'error');
+    }
+    return false;
+  }
+}
+
+// Fallback copy method for older browsers
+function fallbackCopyToClipboard(text, songTitle, showNotification) {
+  try {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+    
+    const successful = document.execCommand('copy');
+    document.body.removeChild(textArea);
+    
+    if (successful && showNotification) {
+      showCopyNotification(`Link copied: ${songTitle}`, 'success');
+    } else if (!successful && showNotification) {
+      showCopyNotification('Failed to copy link', 'error');
+    }
+    
+    return successful;
+  } catch (error) {
+    console.error("[DEBUG] Fallback copy failed:", error);
+    if (showNotification) {
+      showCopyNotification('Failed to copy link', 'error');
+    }
+    return false;
+  }
+}
+
+// Show copy notification
+function showCopyNotification(message, type = 'success') {
+  // Remove any existing notifications
+  const existingNotification = document.getElementById('copy-notification');
+  if (existingNotification) {
+    existingNotification.remove();
+  }
+  
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.id = 'copy-notification';
+  notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium transform transition-all duration-300 ${
+    type === 'success' ? 'bg-green-500' : 'bg-red-500'
+  }`;
+  notification.innerHTML = `
+    <div class="flex items-center space-x-2">
+      <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'}"></i>
+      <span>${message}</span>
+    </div>
+  `;
+  
+  // Add to page
+  document.body.appendChild(notification);
+  
+  // Animate in
+  setTimeout(() => {
+    notification.style.transform = 'translateX(0)';
+  }, 10);
+  
+  // Remove after delay
+  setTimeout(() => {
+    notification.style.transform = 'translateX(100%)';
+    setTimeout(() => {
+      if (notification.parentNode) {
+        notification.remove();
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Copy song link by serial number (for onclick handlers)
+function copySongLinkBySerial(serialNumber) {
+  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
+  if (song) {
+    copySongLink(song);
+  } else {
+    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
+    showCopyNotification('Song not found', 'error');
+  }
+}
+
+// Copy YouTube link by serial number (for onclick handlers)
+function copyYouTubeLinkBySerial(serialNumber) {
+  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
+  if (song) {
+    copyYouTubeLink(song);
+  } else {
+    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
+    showCopyNotification('Song not found', 'error');
+  }
+}
+
 function playSong(url) {
   console.log("[DEBUG] Playing song with URL:", url);
   
@@ -826,6 +1067,17 @@ function closeLyricsView() {
   console.log("[DEBUG] Closing lyrics view");
   songsData.showLyrics = false;
   songsData.selectedSong = null;
+  
+  // Restore original page title if it was changed
+  if (typeof window.restorePageTitle === 'function') {
+    window.restorePageTitle();
+  }
+  
+  // Clean up URL parameters
+  const url = new URL(window.location);
+  url.searchParams.delete('song');
+  url.searchParams.delete('title');
+  window.history.replaceState({}, '', url);
   
   // Re-render the tab content
   if (typeof window.renderAppUI === 'function') {
