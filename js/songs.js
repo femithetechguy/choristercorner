@@ -72,18 +72,25 @@ function handleSongUrlParameters() {
       }
       
       // Show the song lyrics with multiple retry attempts for mobile
+      let retryCount = 0;
+      const maxRetries = 50; // Maximum 5 seconds of retries
       const showSong = () => {
-        console.log("[DEBUG] Attempting to show song:", song.title);
+        console.log("[DEBUG] Attempting to show song:", song.title, `(attempt ${retryCount + 1}/${maxRetries})`);
         
         // Check if the app UI is ready
-        if (document.getElementById('app') && typeof viewSongLyrics === 'function') {
+        if ((document.getElementById('app-root') || document.getElementById('app')) && typeof viewSongLyrics === 'function') {
           viewSongLyrics(song.serial_number);
           updatePageTitle(song);
           // Clear the pending song ID since we successfully showed it
           sessionStorage.removeItem('pendingSongId');
-        } else {
+          console.log("[DEBUG] Successfully showed song:", song.title);
+        } else if (retryCount < maxRetries) {
+          retryCount++;
           console.log("[DEBUG] App not ready yet, retrying in 100ms");
           setTimeout(showSong, 100);
+        } else {
+          console.error("[DEBUG] Failed to show song after maximum retries:", song.title);
+          sessionStorage.removeItem('pendingSongId');
         }
       };
       
@@ -111,14 +118,25 @@ function checkPendingSongUrlParameters() {
         window.switchToTab('Songs');
       }
       
-      // Show the song with a longer delay to ensure mobile is ready
-      setTimeout(() => {
-        if (typeof viewSongLyrics === 'function') {
+      // Show the song with retry logic to ensure mobile is ready
+      let retryCount = 0;
+      const maxRetries = 30; // Maximum 3 seconds of retries
+      const showPendingSong = () => {
+        if ((document.getElementById('app-root') || document.getElementById('app')) && typeof viewSongLyrics === 'function') {
           viewSongLyrics(song.serial_number);
           updatePageTitle(song);
           sessionStorage.removeItem('pendingSongId');
+          console.log("[DEBUG] Successfully showed pending song:", song.title);
+        } else if (retryCount < maxRetries) {
+          retryCount++;
+          setTimeout(showPendingSong, 100);
+        } else {
+          console.error("[DEBUG] Failed to show pending song after maximum retries:", song.title);
+          sessionStorage.removeItem('pendingSongId');
         }
-      }, 800);
+      };
+      
+      setTimeout(showPendingSong, 300);
     } else {
       // Clear invalid pending song ID
       sessionStorage.removeItem('pendingSongId');
