@@ -81,7 +81,12 @@
         "channel": "OfficialEben",
         "duration": "2 minutes 36 seconds",
         "url": "https://www.youtube.com/watch?v=p6L4aQ38lH0",
-        "lyrics": []
+        "lyrics": [
+            "Verse 1:\nLord, I just wanna thank you (ooh eeh)\nHow could I ever repay you\nJesus, you've taken the pains away from me\nAnd you have given me victory, eh\nEverywhere I go blessings follow (follow, follow, follow)\nEverything I do, favour follow am o\nKings are coming to my rising\nI'm going higher by the grace of God",
+            "Chorus:\nOil on my head (oil on my head)\nOil on my head (oil on my head)\nIncrease in my hands (increase in my hands)\nIncrease in my hands (increase in my hands)\nSpeed on my feet (speed on my feet)\nSpeed on my feet (speed on my feet)\nEverywhere I go (everywhere I go)\nEverywhere I go (everywhere I go)",
+            "Bridge:\nThis is my season of favour, yes\nThis is my season of increase\nMy life is upward and forward\nI can never go down, no, no no no no\nEverywhere I enter, goodness and mercy dey enter\nEverywhere I go now, goodness and mercy dey follow\nKings are coming to my rising\nI'm going higher by the grace of God",
+            "Outro:\nI carry favour for head\nI carry favour for head\nAka nchawa, nchawa, nchawa\nAka nchawa, nchawa"
+        ]
     },
     {
         "serial_number": 10,
@@ -89,15 +94,28 @@
         "channel": "Jubilee Worship",
         "duration": "5 minutes 27 seconds",
         "url": "https://www.youtube.com/watch?v=q6OLbE_FBhQ",
-        "lyrics": []
-    },
+        "lyrics": [
+            "Verse 1:\nThere is only one name\nThere is only one name\nWith power to save\nWith power to save",
+            "Chorus:\nAnd our God is champion\nHe reigns forevermore\nForevermore",
+            "Bridge:\nAnd every knee will bow down\nEvery knee will bow down\nEvery tongue will confess\nThat Jesus Christ You are Lord",
+            "Build:\nFather we worship You\nFather we praise Your name, Your worthy\nOur God, we lift You up\nFather we exalt You in this place\nFather we magnify Your name",
+            "Hook:\nAtmosphere shift now\nChains be broken, breakout\nHoly Spirit come now\nHeaven open, heaven open"
+        ]
+    }
+    ,
     {
         "serial_number": 11,
         "title": "Firm Foundation (He Won't) [feat. Chandler Moore & Cody Carnes] | Maverick City Music | TRIBL",
         "channel": "TRIBL",
         "duration": "8 minutes 40 seconds",
         "url": "https://www.youtube.com/watch?v=uOP4s8fOEm0",
-        "lyrics": []
+        "lyrics": [
+            "Verse 1:\nChrist is my firm foundation\nThe rock on which I stand\nWhen everything around me is shaken\nI've never been more glad\nThat I put my faith in Jesus\n'Cause He's never let me down\nHe's faithful through generations\nSo why would He fail now",
+            "Chorus:\nHe won't, He won't",
+            "Verse 2:\nI've still got joy in chaos\nI've got peace that makes no sense\nI won't be going under\nI'm not held by my own strength\n'Cause I've built my life on Jesus\nHe's never let me down\nHe's faithful in every season\nSo why would He fail now",
+            "Bridge:\nRain came and wind blew\nBut my house was built on You\nI'm safe with You\nI'm going to make it through",
+            "Outro:\nYeah, I'm going to make it through\n'Cause I'm standing strong on You\nYeah, I'm going to make it through\n'Cause my house is built on You"
+        ]
     },
     {
         "serial_number": 12,
@@ -105,6 +123,12 @@
         "channel": "Neon ADEJO",
         "duration": "7 minutes 10 seconds",
         "url": "https://www.youtube.com/watch?v=-pNWoWl9taA",
-        "lyrics": []
+        "lyrics": [
+            "Verse 1:\nMore than my mouth can testify\nMore than my mind can comprehend\nSee I′ve seen the wonders of your grace\nI'm so sure that this is not the end",
+            "Chorus:\nEze ebube\nSee how far you′ve brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise",
+            "Verse 2:\nMy heart is full of gratitude\nTo you and no one else but you\nLord I′m here only by your grace\nThank you Jesus for not giving up on me\nOh oh oh oh oh",
+            "Bridge:\nGrace found me\nGrace saved me\nGrace made me\nWho I am\nGrace redeemed me\nGrace sustains me\nGrace made me\nWho I am",
+            "Outro:\nNow can you use this moment\nTo begin to rattle in the spirit\nZi ka ba la ba ya de de de de\nZi ka ba la ba la de de de de\nI′m everything by your grace God\nEverything I have I got by your grace\nI'm nothing without you oh oh oh\nI′m nothing with you lord\nI'm nothing with you lord"
+        ]
     }
 ]
