@@ -33,7 +33,8 @@
             "Individual song pages with full lyrics display",
             "Lyrics organized in paragraphs/sections",
             "YouTube video embedding"
-          ]
+          ],
+          "list": "json/songs.json"
         },
         {
           "name": "About",
@@ -101,60 +102,57 @@
     }
   },
   "files": [
-    { 
-      "file": "index.html", 
-      "purpose": "Main HTML structure and tab navigation" 
+    {
+      "file": "index.html",
+      "purpose": "Main HTML structure and tab navigation"
     },
-    { 
-      "file": "css/style.css", 
-      "purpose": "General styles, layout, common components" 
+    {
+      "file": "css/style.css",
+      "purpose": "General styles, layout, common components"
     },
-    { 
-      "file": "css/home.css", 
-      "purpose": "Home tab specific styles" 
+    {
+      "file": "css/home.css",
+      "purpose": "Home tab specific styles"
     },
-    { 
-      "file": "css/songs.css", 
-      "purpose": "Songs tab specific styles - cards, filters, player" 
+    {
+      "file": "css/songs.css",
+      "purpose": "Songs tab specific styles - cards, filters, player"
     },
-    { 
-      "file": "css/about.css", 
-      "purpose": "About tab specific styles" 
+    {
+      "file": "css/about.css",
+      "purpose": "About tab specific styles"
     },
-    { 
-      "file": "css/contact.css", 
-      "purpose": "Contact tab specific styles - forms, layout" 
+    {
+      "file": "css/contact.css",
+      "purpose": "Contact tab specific styles - forms, layout"
     },
-    { 
-      "file": "js/app.js", 
-      "purpose": "Core application logic, tab navigation, common functions" 
+    {
+      "file": "js/app.js",
+      "purpose": "Core application logic, tab navigation, common functions"
     },
-    { 
-      "file": "js/home.js", 
-      "purpose": "Home tab functionality, statistics, featured content" 
+    {
+      "file": "js/home.js",
+      "purpose": "Home tab functionality, statistics, featured content"
     },
-    { 
-      "file": "js/songs.js", 
-      "purpose": "Song library management, search, filters, player integration" 
+    {
+      "file": "js/songs.js",
+      "purpose": "Song library management, search, filters, player integration"
     },
-    { 
-      "file": "js/about.js", 
-      "purpose": "About page interactions and content loading" 
+    {
+      "file": "js/about.js",
+      "purpose": "About page interactions and content loading"
     },
-    { 
-      "file": "js/contact.js", 
-      "purpose": "Contact form handling, validation, submission" 
+    {
+      "file": "js/contact.js",
+      "purpose": "Contact form handling, validation, submission"
     },
-    { 
-      "file": "json/songs.json", 
-      "purpose": "Song data with lyrics, metadata, and links" 
+    {
+      "file": "json/songs.json",
+      "purpose": "Song data with lyrics, metadata, and links"
     }
   ],
   "dependencies": {
-    "css": [
-      "Tailwind CSS (CDN)",
-      "Bootstrap Icons (CDN)"
-    ],
+    "css": ["Tailwind CSS (CDN)", "Bootstrap Icons (CDN)"],
     "js": [
       "Vanilla JavaScript (no frameworks)",
       "Optional: Lightweight utilities for API calls"
@@ -165,10 +163,10 @@
       "format": "JSON array",
       "fields": [
         "serial_number",
-        "title", 
-        "channel", 
-        "duration", 
-        "url", 
+        "title",
+        "channel",
+        "duration",
+        "url",
         "lyrics (array of paragraphs)"
       ]
     }
