@@ -41,6 +41,11 @@ async function loadSongsData() {
       
       // Check if we need to show a specific song from URL parameters
       handleSongUrlParameters();
+      
+      // Also check for pending song parameters (mobile reliability)
+      setTimeout(() => {
+        checkPendingSongUrlParameters();
+      }, 200);
     }
   } catch (error) {
     console.error("[DEBUG] Failed to load songs data:", error);
@@ -58,20 +63,65 @@ function handleSongUrlParameters() {
     const song = songsData.allSongs.find(s => s.serial_number === parseInt(songId));
     
     if (song) {
+      // Store the song ID for later use if app isn't fully loaded yet
+      sessionStorage.setItem('pendingSongId', songId);
+      
       // Switch to Songs tab if not already there
       if (typeof window.switchToTab === 'function') {
         window.switchToTab('Songs');
       }
       
-      // Show the song lyrics after a brief delay to ensure UI is ready
-      setTimeout(() => {
-        viewSongLyrics(song.serial_number);
-      }, 500);
+      // Show the song lyrics with multiple retry attempts for mobile
+      const showSong = () => {
+        console.log("[DEBUG] Attempting to show song:", song.title);
+        
+        // Check if the app UI is ready
+        if (document.getElementById('app') && typeof viewSongLyrics === 'function') {
+          viewSongLyrics(song.serial_number);
+          updatePageTitle(song);
+          // Clear the pending song ID since we successfully showed it
+          sessionStorage.removeItem('pendingSongId');
+        } else {
+          console.log("[DEBUG] App not ready yet, retrying in 100ms");
+          setTimeout(showSong, 100);
+        }
+      };
       
-      // Update the page title to include the song
-      updatePageTitle(song);
+      // Start showing the song with a small delay to ensure everything is loaded
+      setTimeout(showSong, 300);
     } else {
       console.warn("[DEBUG] Song not found for ID:", songId);
+      // Clear any pending song ID if song doesn't exist
+      sessionStorage.removeItem('pendingSongId');
+    }
+  }
+}
+
+// Check for pending song URL parameters (for mobile reliability)
+function checkPendingSongUrlParameters() {
+  const pendingSongId = sessionStorage.getItem('pendingSongId');
+  
+  if (pendingSongId && songsData.allSongs.length > 0) {
+    console.log("[DEBUG] Processing pending song ID:", pendingSongId);
+    const song = songsData.allSongs.find(s => s.serial_number === parseInt(pendingSongId));
+    
+    if (song) {
+      // Ensure we're on the Songs tab
+      if (typeof window.switchToTab === 'function') {
+        window.switchToTab('Songs');
+      }
+      
+      // Show the song with a longer delay to ensure mobile is ready
+      setTimeout(() => {
+        if (typeof viewSongLyrics === 'function') {
+          viewSongLyrics(song.serial_number);
+          updatePageTitle(song);
+          sessionStorage.removeItem('pendingSongId');
+        }
+      }, 800);
+    } else {
+      // Clear invalid pending song ID
+      sessionStorage.removeItem('pendingSongId');
     }
   }
 }
@@ -98,6 +148,11 @@ window.renderSongsTab = function(tab) {
   
   if (!songsData.isLoaded) {
     loadSongsData();
+  } else {
+    // Check for pending song parameters when tab is rendered (mobile reliability)
+    setTimeout(() => {
+      checkPendingSongUrlParameters();
+    }, 100);
   }
   
   if (songsData.showLyrics && songsData.selectedSong) {
@@ -1053,13 +1108,29 @@ function viewSongLyrics(serialNumber) {
     songsData.selectedSong = song;
     songsData.showLyrics = true;
     
+    // Update page title for direct links
+    updatePageTitle(song);
+    
     // Re-render the tab content
     if (typeof window.renderAppUI === 'function') {
       window.renderAppUI();
       if (typeof setupEventListeners === 'function') {
         setupEventListeners();
       }
+    } else {
+      // Fallback: try again after a delay if renderAppUI isn't available
+      console.log("[DEBUG] renderAppUI not available, retrying...");
+      setTimeout(() => {
+        if (typeof window.renderAppUI === 'function') {
+          window.renderAppUI();
+          if (typeof setupEventListeners === 'function') {
+            setupEventListeners();
+          }
+        }
+      }, 200);
     }
+  } else {
+    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
   }
 }
 
@@ -1096,5 +1167,28 @@ function toggleFavorite(serialNumber) {
 
 // Initialize songs data when the module loads
 loadSongsData();
+
+// Add event listeners for better mobile support
+window.addEventListener('load', () => {
+  console.log("[DEBUG] Window loaded, checking for pending song parameters");
+  setTimeout(() => {
+    checkPendingSongUrlParameters();
+  }, 500);
+});
+
+// Handle browser back/forward navigation
+window.addEventListener('popstate', () => {
+  console.log("[DEBUG] Popstate event, checking URL parameters");
+  if (songsData.isLoaded) {
+    handleSongUrlParameters();
+  } else {
+    // If songs aren't loaded yet, store the song ID for later
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    if (songId) {
+      sessionStorage.setItem('pendingSongId', songId);
+    }
+  }
+});
 
 console.log("[DEBUG] Songs tab module initialization complete");
