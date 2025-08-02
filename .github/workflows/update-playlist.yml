@@ -1,0 +1,56 @@
+name: Update Playlist
+
+on:
+  workflow_dispatch:
+    inputs:
+      playlist_url:
+        description: 'YouTube Playlist URL'
+        required: true
+        type: string
+      playlist_data:
+        description: 'Manual Playlist Data (alternative to URL)'
+        required: false
+        type: string
+
+jobs:
+  update-playlist:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm install
+        
+    - name: Update playlist (if URL provided)
+      if: ${{ github.event.inputs.playlist_url != '' }}
+      env:
+        YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+      run: |
+        node scripts/update-playlist.js "${{ github.event.inputs.playlist_url }}"
+        
+    - name: Process manual playlist data (if provided)
+      if: ${{ github.event.inputs.playlist_data != '' }}
+      run: |
+        echo '${{ github.event.inputs.playlist_data }}' > temp_playlist.txt
+        node scripts/process-manual-playlist.js temp_playlist.txt
+        rm temp_playlist.txt
+        
+    - name: Commit and push changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add csv/songs.csv json/songs.json
+        if git diff --staged --quiet; then
+          echo "No changes to commit"
+        else
+          git commit -m "Update song library from playlist"
+          git push
+        fi

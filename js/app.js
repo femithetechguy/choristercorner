@@ -11,7 +11,8 @@ function loadTabModules() {
     'js/home.js',
     'js/songs.js', 
     'js/about.js',
-    'js/contact.js'
+    'js/contact.js',
+    'js/playlist-updater.js'
   ];
   
   modules.forEach(module => {

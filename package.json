@@ -1,0 +1,18 @@
+{
+  "name": "choristercorner",
+  "version": "1.0.0",
+  "description": "A comprehensive platform for choristers and worship leaders",
+  "main": "index.html",
+  "scripts": {
+    "update-playlist": "node scripts/update-playlist.js",
+    "process-manual": "node scripts/process-manual-playlist.js",
+    "serve": "python -m http.server 8000",
+    "serve-node": "npx http-server . -p 8000"
+  },
+  "keywords": ["worship", "music", "chorister", "church", "songs"],
+  "author": "ChoristerCorner Team",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

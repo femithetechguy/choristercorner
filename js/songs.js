@@ -21,7 +21,9 @@ let songsData = {
   isVideoPlayerVisible: false,
   videoPlayerContainer: null,
   // Player collapse state
-  isPlayerCollapsed: false
+  isPlayerCollapsed: false,
+  // Playlist updater state
+  showPlaylistUpdater: false
 };
 
 // Load songs data
@@ -66,7 +68,11 @@ window.renderSongsTab = function(tab) {
           </h1>
           <p class="text-gray-600">Discover and explore our collection of worship songs</p>
         </div>
-        <div class="flex items-center space-x-2 mt-4 md:mt-0">
+        <div class="flex items-center space-x-3 mt-4 md:mt-0">
+          <button onclick="togglePlaylistUpdater()" class="btn btn-outline btn-sm">
+            <i class="bi bi-collection-play mr-1"></i>
+            Add from Playlist
+          </button>
           <span class="text-sm text-gray-500">${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs</span>
         </div>
       </div>
@@ -118,6 +124,24 @@ window.renderSongsTab = function(tab) {
           </div>
         </div>
       </div>
+
+      <!-- Playlist Updater Section -->
+      ${songsData.showPlaylistUpdater ? `
+        <div class="mb-6">
+          <div id="playlist-updater-container">
+            ${window.PlaylistUpdater ? window.PlaylistUpdater.createUI() : `
+              <div class="card">
+                <div class="card-body text-center">
+                  <i class="bi bi-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
+                  <h4 class="font-semibold text-gray-900 mb-2">Playlist Updater Not Available</h4>
+                  <p class="text-gray-600 mb-4">The playlist updater module is not loaded.</p>
+                  <button onclick="togglePlaylistUpdater()" class="btn btn-outline">Close</button>
+                </div>
+              </div>
+            `}
+          </div>
+        </div>
+      ` : ''}
 
       <!-- Songs Grid/List -->
       <div id="songs-container">
@@ -529,6 +553,27 @@ function togglePlayerCollapse() {
   console.log("[DEBUG] Toggling player collapse");
   songsData.isPlayerCollapsed = !songsData.isPlayerCollapsed;
   updateVideoPlayerDisplay();
+}
+
+// Toggle playlist updater
+function togglePlaylistUpdater() {
+  console.log("[DEBUG] Toggling playlist updater");
+  songsData.showPlaylistUpdater = !songsData.showPlaylistUpdater;
+  updateSongsDisplay();
+  
+  // Initialize playlist updater when shown
+  if (songsData.showPlaylistUpdater && window.PlaylistUpdater) {
+    setTimeout(() => {
+      if (document.getElementById('process-playlist')) {
+        window.PlaylistUpdater.initialize();
+      } else {
+        console.warn("Playlist updater elements not yet available, retrying...");
+        setTimeout(() => {
+          window.PlaylistUpdater.initialize();
+        }, 300);
+      }
+    }, 200);
+  }
 }
 
 // Search functionality
