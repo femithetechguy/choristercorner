@@ -128,17 +128,24 @@ function checkPendingSongUrlParameters() {
 
 // Update page title for shared song links
 function updatePageTitle(song) {
-  const originalTitle = document.title;
   if (song && song.title) {
-    document.title = `${song.title} - ${song.channel || 'Unknown Artist'} | ChoristerCorner`;
-    
-    // Restore original title when leaving the song
-    const restoreTitle = () => {
-      document.title = originalTitle;
-    };
-    
-    // Store the restore function for later use
-    window.restorePageTitle = restoreTitle;
+    // Use SEO helper if available
+    if (window.seoHelper) {
+      window.seoHelper.updateSongSEO(song);
+    } else {
+      // Fallback to basic title update
+      const originalTitle = document.title;
+      document.title = `${song.title} - ${song.channel || 'Unknown Artist'} | ChoristerCorner`;
+      
+      // Store the restore function for later use
+      window.restorePageTitle = () => {
+        document.title = originalTitle;
+        // Reset SEO to default if helper is available
+        if (window.seoHelper) {
+          window.seoHelper.resetToDefault();
+        }
+      };
+    }
   }
 }
 
@@ -1142,6 +1149,9 @@ function closeLyricsView() {
   // Restore original page title if it was changed
   if (typeof window.restorePageTitle === 'function') {
     window.restorePageTitle();
+  } else if (window.seoHelper) {
+    // Use SEO helper to reset to default
+    window.seoHelper.resetToDefault();
   }
   
   // Clean up URL parameters

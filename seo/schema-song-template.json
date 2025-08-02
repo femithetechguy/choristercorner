@@ -1,0 +1,55 @@
+{
+  "@context": "https://schema.org",
+  "@type": "MusicComposition",
+  "name": "{{SONG_TITLE}}",
+  "description": "{{SONG_DESCRIPTION}}",
+  "composer": {
+    "@type": "Person",
+    "name": "{{COMPOSER_NAME}}"
+  },
+  "performer": {
+    "@type": "MusicGroup",
+    "name": "{{ARTIST_NAME}}"
+  },
+  "genre": [
+    "Christian Music",
+    "Worship Music",
+    "Contemporary Christian",
+    "Gospel"
+  ],
+  "inLanguage": "en",
+  "lyrics": {
+    "@type": "CreativeWork",
+    "text": "{{LYRICS_TEXT}}"
+  },
+  "recordedAs": {
+    "@type": "MusicRecording",
+    "name": "{{SONG_TITLE}}",
+    "url": "{{YOUTUBE_URL}}",
+    "duration": "{{DURATION}}",
+    "encodingFormat": "video/mp4"
+  },
+  "url": "{{SONG_PAGE_URL}}",
+  "datePublished": "{{PUBLISH_DATE}}",
+  "keywords": [
+    "worship song",
+    "christian music",
+    "{{SONG_TITLE}}",
+    "{{ARTIST_NAME}}",
+    "church music",
+    "praise song"
+  ],
+  "audience": {
+    "@type": "Audience",
+    "audienceType": [
+      "Christian Community",
+      "Worship Teams",
+      "Church Congregations"
+    ]
+  },
+  "isPartOf": {
+    "@type": "WebApplication",
+    "name": "ChoristerCorner",
+    "url": "https://choristercorner.com"
+  }
+}
