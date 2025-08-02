@@ -73,7 +73,7 @@ window.renderSongsTab = function(tab) {
             <i class="bi bi-collection-play mr-1"></i>
             Add from Playlist
           </button>
-          <span class="text-sm text-gray-500">${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs</span>
+          <span id="song-count-display" class="text-sm text-gray-500">${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs</span>
         </div>
       </div>
 
@@ -594,16 +594,22 @@ function togglePlaylistUpdater() {
 
 // Search functionality
 function handleSearch(searchTerm) {
+  console.log("[DEBUG] Handling search:", searchTerm);
   songsData.searchTerm = searchTerm.toLowerCase();
   filterSongs();
-  updateSongsDisplay();
+  
+  // Update only the songs list, preserve video player state
+  updateSongsListOnly();
 }
 
 // Sort functionality
 function handleSort(sortBy) {
+  console.log("[DEBUG] Handling sort:", sortBy);
   songsData.sortBy = sortBy;
   sortSongs();
-  updateSongsDisplay();
+  
+  // Update only the songs list, preserve video player state
+  updateSongsListOnly();
 }
 
 // Filter songs based on search term
@@ -664,21 +670,86 @@ function extractMinutes(duration) {
 
 // Toggle view between grid and list
 function toggleView(view) {
+  console.log("[DEBUG] Toggling view to:", view);
   songsData.currentView = view;
-  updateSongsDisplay();
+  
+  // Update only the songs list, preserve video player state
+  updateSongsListOnly();
 }
 
 // Update songs display
 function updateSongsDisplay() {
   console.log("[DEBUG] Updating songs display");
   
+  updateSongsListOnly();
+  
+  // Update video player if it's visible
+  updateVideoPlayerDisplay();
+}
+
+// Update only the songs list without affecting video player
+function updateSongsListOnly() {
+  console.log("[DEBUG] Updating songs list only");
+  
+  // Preserve search input focus and cursor position
+  const searchInput = document.getElementById('song-search');
+  const wasSearchFocused = searchInput && document.activeElement === searchInput;
+  const cursorPosition = wasSearchFocused ? searchInput.selectionStart : null;
+  
   const container = document.getElementById('songs-container');
   if (container) {
     container.innerHTML = renderSongsContainer();
   }
   
-  // Update video player if it's visible
-  updateVideoPlayerDisplay();
+  // Update the song count display in the header
+  updateSongCountDisplay();
+  
+  // Restore search input focus and cursor position if it was focused
+  if (wasSearchFocused) {
+    setTimeout(() => {
+      const newSearchInput = document.getElementById('song-search');
+      if (newSearchInput) {
+        newSearchInput.focus();
+        if (cursorPosition !== null) {
+          newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
+        }
+      }
+    }, 0);
+  }
+}
+
+// Update song count in the header
+function updateSongCountDisplay() {
+  const countElement = document.getElementById('song-count-display');
+  if (countElement) {
+    countElement.textContent = `${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs`;
+  }
+}
+
+// Update search input placeholder based on video player state
+function updateSearchPlaceholder() {
+  const searchInput = document.getElementById('song-search');
+  const searchContainer = searchInput?.parentElement;
+  
+  if (searchInput && searchContainer) {
+    if (songsData.isVideoPlayerVisible && songsData.currentPlayingSong) {
+      searchInput.placeholder = 'Search while playing (current song preserved)...';
+      // Add a visual indicator that a song is playing
+      if (!searchContainer.querySelector('.playing-indicator')) {
+        const playingIcon = document.createElement('i');
+        playingIcon.className = 'bi bi-play-circle playing-indicator absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 text-sm';
+        playingIcon.title = 'Song currently playing - search won\'t interrupt playback';
+        searchContainer.appendChild(playingIcon);
+      }
+    } else {
+      searchInput.placeholder = 'Search songs, artists, or channels...';
+      // Remove the playing indicator
+      const playingIcon = searchContainer.querySelector('.playing-indicator');
+      if (playingIcon) {
+        playingIcon.remove();
+      }
+    }
+  }
 }
 
 // Update video player display
@@ -709,6 +780,9 @@ function updateVideoPlayerDisplay() {
       existingPlayer.remove();
     }
   }
+  
+  // Update search placeholder to reflect video player state
+  updateSearchPlaceholder();
 }
 
 // Song action functions
