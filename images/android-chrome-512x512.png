@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background circle with enhanced gradient -->
+  <defs>
+    <radialGradient id="grad2" cx="40%" cy="25%" r="80%">
+      <stop offset="0%" style="stop-color:#C084FC;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#A855F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <circle cx="256" cy="256" r="240" fill="url(#grad2)" stroke="#6D28D9" stroke-width="8"/>
+  
+  <!-- Musical composition -->
+  <g fill="white" filter="url(#shadow)">
+    <!-- Main large note -->
+    <ellipse cx="192" cy="352" rx="48" ry="40" transform="rotate(-20 192 352)"/>
+    <rect x="232" y="160" width="24" height="192" rx="12"/>
+    <path d="M256 160 Q320 128 352 192 Q320 220 256 206 Z"/>
+    
+    <!-- Secondary note -->
+    <ellipse cx="128" cy="288" rx="24" ry="20" transform="rotate(-20 128 288)"/>
+    <rect x="148" y="224" width="14" height="64" rx="7"/>
+    <path d="M162 224 Q190 214 202 238 Q190 250 162 244 Z"/>
+    
+    <!-- Third accent note -->
+    <circle cx="352" cy="320" r="24"/>
+    <rect x="340" y="256" width="28" height="64" rx="14"/>
+    
+    <!-- Decorative treble clef -->
+    <path d="M400 240 Q430 210 450 255 Q430 300 400 285 Q420 255 400 240" 
+          stroke="white" stroke-width="8" fill="none"/>
+    <circle cx="415" cy="310" r="12" fill="white"/>
+    
+    <!-- Additional musical notes -->
+    <circle cx="320" cy="180" r="16"/>
+    <rect x="312" y="140" width="16" height="40" rx="8"/>
+    
+    <ellipse cx="80" cy="200" rx="16" ry="12" transform="rotate(-15 80 200)"/>
+    <rect x="93" y="170" width="8" height="30" rx="4"/>
+  </g>
+  
+  <!-- Decorative staff lines -->
+  <g stroke="rgba(255,255,255,0.2)" stroke-width="4" fill="none">
+    <line x1="64" y1="380" x2="448" y2="380"/>
+    <line x1="64" y1="360" x2="448" y2="360"/>
+    <line x1="64" y1="340" x2="448" y2="340"/>
+    <line x1="64" y1="320" x2="448" y2="320"/>
+    <line x1="64" y1="300" x2="448" y2="300"/>
+  </g>
+  
+  <!-- Highlight effect -->
+  <circle cx="176" cy="176" r="40" fill="rgba(255,255,255,0.2)"/>
+  
+  <!-- Subtle texture -->
+  <g fill="rgba(255,255,255,0.1)">
+    <circle cx="400" cy="120" r="8"/>
+    <circle cx="120" cy="120" r="6"/>
+    <circle cx="380" cy="400" r="10"/>
+    <circle cx="100" cy="380" r="7"/>
+  </g>
+</svg>
