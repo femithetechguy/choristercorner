@@ -510,10 +510,24 @@ body.video-player-active.player-collapsed {
   padding-bottom: 80px; /* Space for collapsed player header */
 }
 
+/* === AUDIO PLAYER STYLES === */
+/* Add bottom padding when audio player is visible */
+body.audio-player-active {
+  padding-bottom: 480px; /* Same space as video player */
+}
+
+body.audio-player-active.player-collapsed {
+  padding-bottom: 80px; /* Space for collapsed player header */
+}
+
 /* Mobile-specific player height adjustments */
 @media (max-width: 768px) {
   body.video-player-active {
     padding-bottom: 520px; /* Even more space for mobile */
+  }
+  
+  body.audio-player-active {
+    padding-bottom: 520px; /* Same for audio player */
   }
 }
 

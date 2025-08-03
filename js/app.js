@@ -9,7 +9,8 @@ console.log("[DEBUG] App.js entry point loaded");
 function loadTabModules() {
   const modules = [
     'js/home.js',
-    'js/songs.js', 
+    'js/songs.js',
+    'js/hymns.js',
     'js/about.js',
     'js/contact.js',
     'js/playlist-updater.js'

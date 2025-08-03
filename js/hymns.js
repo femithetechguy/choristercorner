@@ -8,6 +8,7 @@ const hymnsData = {
   isLoaded: false,
   showLyrics: false,
   selectedHymn: null,
+  currentView: 'grid', // 'grid' or 'list'
   searchTerm: '',
   categoryFilter: 'all',
   timePeriodFilter: 'all',
@@ -34,12 +35,31 @@ async function loadHymnsData() {
     const data = await response.json();
     console.log("[DEBUG] Hymns data loaded:", data.length, "hymns");
     
-    hymnsData.allHymns = data;
-    hymnsData.filteredHymns = [...data];
+    // Validate and clean the data
+    const validatedData = data.map((hymn, index) => {
+      // Ensure required fields exist
+      if (!hymn.serial_number) {
+        console.warn("[DEBUG] Hymn missing serial_number, assigning:", index + 1);
+        hymn.serial_number = index + 1;
+      }
+      
+      // Ensure lyrics is an array
+      if (!Array.isArray(hymn.lyrics)) {
+        hymn.lyrics = [];
+      }
+      
+      return hymn;
+    });
+    
+    hymnsData.allHymns = validatedData;
+    hymnsData.filteredHymns = [...validatedData];
     hymnsData.isLoaded = true;
     
     // Update the hymns display
     updateHymnsDisplay();
+    
+    // Populate filter dropdowns
+    populateFilterDropdowns();
     
     // Check for pending hymn URL parameters after data is loaded
     setTimeout(() => {
@@ -91,7 +111,7 @@ function handleHymnUrlParameters() {
   hymnsData.urlParametersProcessed = true; // Mark as processed
   hymnsData.lastProcessedUrl = currentUrl; // Store the processed URL
     
-  const hymn = hymnsData.allHymns.find(h => h.id === parseInt(hymnId) || h.number === parseInt(hymnId));
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === parseInt(hymnId));
   
   if (hymn) {
     // Store the hymn ID for later use if app isn't fully loaded yet
@@ -110,7 +130,7 @@ function handleHymnUrlParameters() {
       
       // Check if the app UI is ready
       if ((document.getElementById('app-root') || document.getElementById('app')) && typeof viewHymnLyrics === 'function') {
-        viewHymnLyrics(hymn.id || hymn.number);
+        viewHymnLyrics(hymn.serial_number);
         updatePageTitle(hymn);
         // Clear the pending hymn ID since we successfully showed it
         sessionStorage.removeItem('pendingHymnId');
@@ -196,15 +216,30 @@ window.renderHymnsTab = function(tab) {
           </p>
         </div>
         <div class="flex flex-col sm:flex-row gap-3 mt-4 md:mt-0">
-          <!-- View Toggle -->
+          <!-- Debug buttons (for troubleshooting) -->
           <div class="btn-group">
-            <button onclick="toggleHymnsView('grid')" class="btn btn-outline btn-sm" id="grid-view-btn">
-              <i class="bi bi-grid-3x3-gap mr-1"></i>
-              Grid
+            <button onclick="window.forceRefreshHymns()" class="btn btn-ghost btn-sm" title="Force refresh hymns">
+              <i class="bi bi-arrow-clockwise mr-1"></i>
+              Refresh
             </button>
-            <button onclick="toggleHymnsView('list')" class="btn btn-outline btn-sm" id="list-view-btn">
-              <i class="bi bi-list-ul mr-1"></i>
-              List
+            <button onclick="window.debugHymns()" class="btn btn-ghost btn-sm" title="Debug hymns state">
+              <i class="bi bi-bug mr-1"></i>
+              Debug
+            </button>
+          </div>
+          <!-- View Toggle -->
+          <div class="flex rounded-md border border-gray-300">
+            <button 
+              onclick="toggleHymnsView('grid')" 
+              class="flex-1 py-2 px-3 text-sm ${hymnsData.currentView === 'grid' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-50'} rounded-l-md border-r border-gray-300"
+            >
+              <i class="bi bi-grid"></i> Grid
+            </button>
+            <button 
+              onclick="toggleHymnsView('list')" 
+              class="flex-1 py-2 px-3 text-sm ${hymnsData.currentView === 'list' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-50'} rounded-r-md"
+            >
+              <i class="bi bi-list"></i> List
             </button>
           </div>
         </div>
@@ -287,3 +322,1087 @@ window.renderHymnsTab = function(tab) {
 // - Audio player functions
 // - View hymn lyrics function
 // - Update functions
+
+// Render hymns container based on current view
+function renderHymnsContainer() {
+  if (!hymnsData.filteredHymns.length) {
+    return `
+      <div class="card">
+        <div class="card-body text-center py-12">
+          <i class="bi bi-book text-6xl text-gray-400 mb-4"></i>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">No hymns found</h3>
+          <p class="text-gray-600">Try adjusting your search or filters</p>
+        </div>
+      </div>
+    `;
+  }
+
+  try {
+    if (hymnsData.currentView === 'grid') {
+      return `
+        <div class="hymns-grid">
+          ${hymnsData.filteredHymns.map(hymn => renderHymnCard(hymn)).join('')}
+        </div>
+      `;
+    } else {
+      return `
+        <div class="card">
+          <div class="card-body p-0">
+            <div class="divide-y divide-gray-200">
+              ${hymnsData.filteredHymns.map(hymn => renderHymnListItem(hymn)).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error("[ERROR] Failed to render hymns container:", error);
+    return `
+      <div class="card">
+        <div class="card-body text-center py-12">
+          <i class="bi bi-exclamation-triangle text-6xl text-red-400 mb-4"></i>
+          <h3 class="text-xl font-semibold text-gray-900 mb-2">Rendering Error</h3>
+          <p class="text-gray-600 mb-4">There was an error displaying the hymns.</p>
+          <button onclick="updateHymnsDisplay()" class="btn btn-primary">
+            <i class="bi bi-arrow-clockwise mr-2"></i>
+            Try Again
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Render individual hymn card
+function renderHymnCard(hymn) {
+  try {
+    // Ensure we have required fields
+    const safeHymn = {
+      serial_number: hymn.serial_number || 0,
+      title: hymn.title || 'Untitled',
+      author: hymn.author || 'Unknown Author',
+      year: hymn.year || null,
+      meter: hymn.meter || '',
+      category: hymn.category || '',
+      channel: hymn.channel || 'Unknown Artist',
+      duration: hymn.duration || 'N/A',
+      url: hymn.url || '',
+      lyrics: hymn.lyrics || []
+    };
+
+    // Safe string escaping function
+    const escapeString = (str) => {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    };
+
+    return `
+      <div class="hymn-card">
+        <div class="hymn-card-header">
+          <div class="hymn-number">#${safeHymn.serial_number}</div>
+          <h3 class="hymn-title">${safeHymn.title}</h3>
+          <p class="hymn-author">by ${safeHymn.author}</p>
+          <p class="hymn-details">
+            <span class="hymn-year">${safeHymn.year || 'Year Unknown'}</span>
+            ${safeHymn.meter ? ` • ${safeHymn.meter}` : ''}
+            ${safeHymn.category ? ` • ${safeHymn.category}` : ''}
+          </p>
+          <p class="hymn-channel">${safeHymn.channel} • ${safeHymn.duration}</p>
+        </div>
+        <div class="hymn-card-body">
+          <div class="hymn-lyrics-preview">
+            ${safeHymn.lyrics.length > 0 ? safeHymn.lyrics[0].substring(0, 100) + '...' : 'Lyrics available when you select this hymn.'}
+          </div>
+        </div>
+        <div class="hymn-card-actions">
+          <button onclick="playHymnEmbedded({
+            serial_number: ${safeHymn.serial_number},
+            title: '${escapeString(safeHymn.title)}',
+            author: '${escapeString(safeHymn.author)}',
+            meter: '${escapeString(safeHymn.meter)}',
+            category: '${escapeString(safeHymn.category)}',
+            year: ${safeHymn.year || 'null'},
+            channel: '${escapeString(safeHymn.channel)}',
+            duration: '${escapeString(safeHymn.duration)}',
+            url: '${escapeString(safeHymn.url)}',
+            lyrics: ${JSON.stringify(safeHymn.lyrics)}
+          })" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''}>
+            <i class="bi bi-play-fill mr-1"></i>
+            Play
+          </button>
+          <button onclick="viewHymnLyrics(${safeHymn.serial_number})" class="btn btn-outline btn-sm">
+            <i class="bi bi-file-text mr-1"></i>
+            Lyrics
+          </button>
+          <button onclick="copyHymnLinkBySerial(${safeHymn.serial_number})" class="btn btn-ghost btn-sm" title="Copy hymn link">
+            <i class="bi bi-link-45deg"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error("[ERROR] Failed to render hymn card:", error, hymn);
+    return `
+      <div class="hymn-card">
+        <div class="hymn-card-header">
+          <div class="hymn-number">#${hymn.serial_number || '?'}</div>
+          <h3 class="hymn-title">Error loading hymn</h3>
+          <p class="hymn-author">Data error</p>
+        </div>
+        <div class="hymn-card-body">
+          <div class="hymn-lyrics-preview text-red-500">
+            Unable to load hymn data. Please refresh the page.
+          </div>
+        </div>
+        <div class="hymn-card-actions">
+          <button class="btn btn-outline btn-sm" disabled>
+            <i class="bi bi-exclamation-triangle mr-1"></i>
+            Error
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Render individual hymn list item (list view)
+function renderHymnListItem(hymn) {
+  try {
+    // Ensure we have required fields
+    const safeHymn = {
+      serial_number: hymn.serial_number || 0,
+      title: hymn.title || 'Untitled',
+      author: hymn.author || 'Unknown Author',
+      year: hymn.year || null,
+      meter: hymn.meter || '',
+      category: hymn.category || '',
+      channel: hymn.channel || 'Unknown Artist',
+      duration: hymn.duration || 'N/A',
+      url: hymn.url || '',
+      lyrics: hymn.lyrics || []
+    };
+
+    // Safe string escaping function
+    const escapeString = (str) => {
+      if (!str) return '';
+      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+    };
+
+    return `
+      <div class="p-4 hover:bg-gray-50 transition-colors">
+        <div class="flex items-center justify-between">
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center space-x-3">
+              <span class="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">#${safeHymn.serial_number}</span>
+              <div class="flex-1 min-w-0">
+                <h3 class="font-semibold text-gray-900 truncate">${safeHymn.title}</h3>
+                <p class="text-sm text-gray-600 flex items-center">
+                  <i class="bi bi-person-circle mr-1"></i>
+                  ${safeHymn.author}
+                  <span class="mx-2">•</span>
+                  <i class="bi bi-calendar mr-1"></i>
+                  ${safeHymn.year || 'Year Unknown'}
+                  ${safeHymn.meter ? ` • ${safeHymn.meter}` : ''}
+                  ${safeHymn.category ? ` • ${safeHymn.category}` : ''}
+                </p>
+                <p class="text-xs text-gray-500">
+                  ${safeHymn.channel} • ${safeHymn.duration}
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="flex items-center space-x-2 ml-4">
+            <button onclick="playHymnEmbedded({
+              serial_number: ${safeHymn.serial_number},
+              title: '${escapeString(safeHymn.title)}',
+              author: '${escapeString(safeHymn.author)}',
+              meter: '${escapeString(safeHymn.meter)}',
+              category: '${escapeString(safeHymn.category)}',
+              year: ${safeHymn.year || 'null'},
+              channel: '${escapeString(safeHymn.channel)}',
+              duration: '${escapeString(safeHymn.duration)}',
+              url: '${escapeString(safeHymn.url)}',
+              lyrics: ${JSON.stringify(safeHymn.lyrics)}
+            })" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''} title="Play hymn">
+              <i class="bi bi-play-fill"></i>
+            </button>
+            <button onclick="viewHymnLyrics(${safeHymn.serial_number})" class="btn btn-outline btn-sm" title="View lyrics">
+              <i class="bi bi-file-text"></i>
+            </button>
+            <button onclick="copyHymnLinkBySerial(${safeHymn.serial_number})" class="btn btn-ghost btn-sm" title="Copy hymn link">
+              <i class="bi bi-link-45deg"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  } catch (error) {
+    console.error("[ERROR] Failed to render hymn list item:", error, hymn);
+    return `
+      <div class="p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex-1">
+            <h3 class="font-semibold text-red-600">Error loading hymn #${hymn.serial_number || '?'}</h3>
+            <p class="text-sm text-gray-500">Unable to render hymn data</p>
+          </div>
+          <button class="btn btn-outline btn-sm" disabled>
+            <i class="bi bi-exclamation-triangle"></i>
+          </button>
+        </div>
+      </div>
+    `;
+  }
+}
+
+// Play hymn in embedded player
+function playHymnEmbedded(hymn) {
+  console.log("[DEBUG] Playing hymn in embedded player:", hymn.title);
+  
+  hymnsData.currentPlayingHymn = hymn;
+  hymnsData.isAudioPlayerVisible = true;
+  
+  // Update the hymns display to show the new player
+  updateHymnsDisplay();
+  
+  // Scroll to show the player (mobile friendly)
+  setTimeout(() => {
+    const playerSection = document.getElementById('audio-player-section');
+    if (playerSection) {
+      playerSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }
+  }, 100);
+}
+
+// Close audio player
+function closeAudioPlayer() {
+  console.log("[DEBUG] Closing audio player");
+  
+  hymnsData.currentPlayingHymn = null;
+  hymnsData.isAudioPlayerVisible = false;
+  
+  // Update display
+  updateHymnsDisplay();
+}
+
+// Extract YouTube video ID from URL
+function extractYouTubeVideoId(url) {
+  console.log("[DEBUG] Extracting video ID from URL:", url);
+  
+  if (!url) return null;
+  
+  // Handle various YouTube URL formats
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/v\/([^&\n?#]+)/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) {
+      console.log("[DEBUG] Extracted video ID:", match[1]);
+      return match[1];
+    }
+  }
+  
+  console.warn("[DEBUG] Could not extract video ID from URL:", url);
+  return null;
+}
+
+// Render embedded audio player (using YouTube iframe)
+function renderEmbeddedAudioPlayer() {
+  if (!hymnsData.isAudioPlayerVisible || !hymnsData.currentPlayingHymn) {
+    return '';
+  }
+
+  const hymn = hymnsData.currentPlayingHymn;
+  console.log("[DEBUG] Rendering embedded audio player for:", hymn.title);
+
+  // Extract YouTube video ID from URL
+  const videoId = extractYouTubeVideoId(hymn.url);
+  
+  return `
+    <div id="audio-player-section" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40 transform transition-transform duration-300" style="max-height: 65vh;">
+      <!-- Player Header -->
+      <div class="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
+        <div class="flex items-center space-x-3">
+          <span class="text-sm font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">#${hymn.serial_number}</span>
+          <div>
+            <h3 class="font-semibold text-gray-900 text-sm line-clamp-1">${hymn.title || 'Untitled'}</h3>
+            <p class="text-xs text-gray-600">${hymn.channel || 'Unknown Artist'}</p>
+          </div>
+        </div>
+        <div class="flex items-center space-x-2">
+          <button onclick="copyHymnLinkBySerial(${hymn.serial_number})" class="btn btn-ghost btn-sm" title="Copy page link">
+            <i class="bi bi-link-45deg"></i>
+          </button>
+          <button onclick="togglePlayerCollapse()" class="btn btn-ghost btn-sm" title="Toggle player size">
+            <i class="bi bi-chevron-${hymnsData.isPlayerCollapsed ? 'up' : 'down'}"></i>
+          </button>
+          <button onclick="closeAudioPlayer()" class="btn btn-ghost btn-sm" title="Close player">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Player Content (collapsible) -->
+      ${!hymnsData.isPlayerCollapsed ? `
+        <div class="audio-player-content grid grid-cols-1 lg:grid-cols-2 gap-0" style="height: calc(65vh - 80px);">
+          <!-- Audio Player -->
+          <div class="bg-black flex items-center justify-center h-full">
+            ${videoId ? `
+              <iframe 
+                id="youtube-player"
+                width="100%" 
+                height="100%" 
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
+                frameborder="0" 
+                allow="autoplay; encrypted-media" 
+                allowfullscreen>
+              </iframe>
+            ` : `
+              <div class="text-center text-white p-8">
+                <i class="bi bi-music-note text-6xl mb-4"></i>
+                <p class="text-lg mb-2">Audio Preview Not Available</p>
+                <p class="text-sm opacity-75">This hymn doesn't have a valid YouTube link</p>
+              </div>
+            `}
+          </div>
+
+          <!-- Lyrics Display -->
+          <div class="bg-white overflow-y-auto p-6">
+            <div class="max-w-none">
+              <div class="mb-4">
+                <h2 class="text-xl font-bold text-gray-900 mb-2">${hymn.title}</h2>
+                <p class="text-gray-700 mb-1 font-medium">by ${hymn.author || 'Unknown Author'}</p>
+                <p class="text-sm text-gray-700 font-medium">
+                  ${hymn.year || 'Year Unknown'}
+                  ${hymn.meter ? ` • ${hymn.meter}` : ''}
+                  ${hymn.category ? ` • ${hymn.category}` : ''}
+                </p>
+                <p class="text-sm text-gray-700 font-medium">${hymn.channel} • ${hymn.duration}</p>
+              </div>
+              
+              ${hymn.lyrics && hymn.lyrics.length > 0 ? `
+                <div class="space-y-4">
+                  ${hymn.lyrics.map((verse, index) => `
+                    <div class="hymn-verse">
+                      <div class="hymn-verse-number">Verse ${index + 1}</div>
+                      <div class="hymn-verse-text">
+                        ${verse.split('\n').map(line => `<p>${line}</p>`).join('')}
+                      </div>
+                    </div>
+                  `).join('')}
+                </div>
+              ` : `
+                <div class="text-center text-gray-500 py-8">
+                  <i class="bi bi-file-text text-4xl mb-3"></i>
+                  <p>Lyrics not available for this hymn</p>
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+      ` : ''}
+    </div>
+  `;
+}
+
+// Toggle player collapse
+function togglePlayerCollapse() {
+  hymnsData.isPlayerCollapsed = !hymnsData.isPlayerCollapsed;
+  updateAudioPlayerDisplay();
+}
+
+// View hymn lyrics in full screen
+function viewHymnLyrics(serialNumber) {
+  console.log("[DEBUG] Viewing lyrics for hymn:", serialNumber);
+  
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === serialNumber);
+  if (!hymn) {
+    console.error("[DEBUG] Hymn not found:", serialNumber);
+    return;
+  }
+  
+  hymnsData.selectedHymn = hymn;
+  hymnsData.showLyrics = true;
+  
+  // Update URL with hymn parameter
+  const url = new URL(window.location);
+  url.searchParams.set('hymn', serialNumber);
+  window.history.pushState({}, '', url);
+  
+  // Update page title
+  updatePageTitle(hymn);
+  
+  // Re-render the hymns tab
+  updateHymnsDisplay();
+}
+
+// Render hymn lyrics view
+function renderHymnLyricsView() {
+  const hymn = hymnsData.selectedHymn;
+  
+  if (!hymn) {
+    return renderHymnsTab();
+  }
+  
+  return `
+    <div class="fade-in hymn-lyrics-container">
+      <!-- Back Button -->
+      <div class="mb-6">
+        <button onclick="backToHymnsList()" class="btn btn-ghost">
+          <i class="bi bi-arrow-left mr-2"></i>
+          Back to Hymns
+        </button>
+      </div>
+      
+      <!-- Hymn Header -->
+      <div class="hymn-lyrics-header bg-white">
+        <div class="hymn-lyrics-number">#${hymn.serial_number}</div>
+        <h1 class="hymn-lyrics-title">${hymn.title}</h1>
+        <p class="hymn-lyrics-author">by ${hymn.author || 'Unknown Author'}</p>
+        <div class="hymn-lyrics-details">
+          <span class="hymn-lyrics-year">${hymn.year || 'Year Unknown'}</span>
+          ${hymn.meter ? ` • ${hymn.meter}` : ''}
+          ${hymn.category ? ` • ${hymn.category}` : ''}
+        </div>
+        <p class="hymn-lyrics-channel">${hymn.channel} • ${hymn.duration}</p>
+      </div>
+      
+      <!-- Action Buttons -->
+      <div class="flex flex-wrap gap-3 justify-center mb-6">
+        <button onclick="playHymnEmbedded({
+          serial_number: ${hymn.serial_number},
+          title: '${hymn.title?.replace(/'/g, "\\'")}',
+          author: '${hymn.author?.replace(/'/g, "\\'")}',
+          meter: '${hymn.meter?.replace(/'/g, "\\'")}',
+          category: '${hymn.category?.replace(/'/g, "\\'")}',
+          year: ${hymn.year || 'null'},
+          channel: '${hymn.channel?.replace(/'/g, "\\'")}',
+          duration: '${hymn.duration}',
+          url: '${hymn.url}',
+          lyrics: ${JSON.stringify(hymn.lyrics || []).replace(/'/g, "\\'")}
+        })" class="btn btn-primary" ${!hymn.url ? 'disabled' : ''}>
+          <i class="bi bi-play-fill mr-2"></i>
+          Play Hymn
+        </button>
+        <button onclick="copyHymnLinkBySerial(${hymn.serial_number})" class="btn btn-outline">
+          <i class="bi bi-link-45deg mr-2"></i>
+          Copy Link
+        </button>
+        <button onclick="printHymnLyrics()" class="btn btn-outline">
+          <i class="bi bi-printer mr-2"></i>
+          Print
+        </button>
+      </div>
+      
+      <!-- Lyrics Content -->
+      <div class="hymn-lyrics-content">
+        ${hymn.lyrics && hymn.lyrics.length > 0 ? `
+          <div class="space-y-6">
+            ${hymn.lyrics.map((verse, index) => `
+              <div class="hymn-verse">
+                <div class="hymn-verse-number">Verse ${index + 1}</div>
+                <div class="hymn-verse-text">
+                  ${verse.split('\n').map(line => `<p>${line}</p>`).join('')}
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="text-center text-gray-500 py-12">
+            <i class="bi bi-file-text text-6xl mb-4"></i>
+            <h3 class="text-xl font-semibold mb-2">Lyrics Not Available</h3>
+            <p>Lyrics for this hymn are not yet available in our database.</p>
+          </div>
+        `}
+      </div>
+    </div>
+  `;
+}
+
+// Back to hymns list
+function backToHymnsList() {
+  console.log("[DEBUG] Returning to hymns list");
+  
+  hymnsData.showLyrics = false;
+  hymnsData.selectedHymn = null;
+  
+  // Clear URL parameters
+  const url = new URL(window.location);
+  url.searchParams.delete('hymn');
+  window.history.pushState({}, '', url);
+  
+  // Reset page title
+  document.title = 'ChoristerCorner - Worship Songs, Chords & Resources for Church Musicians';
+  
+  // Re-render hymns tab
+  updateHymnsDisplay();
+}
+
+// Search hymns
+function searchHymns(searchTerm) {
+  console.log("[DEBUG] Searching hymns for:", searchTerm);
+  
+  hymnsData.searchTerm = searchTerm.toLowerCase();
+  filterHymns();
+}
+
+// Filter hymns
+function filterHymns() {
+  let filtered = hymnsData.allHymns;
+  
+  // Apply search filter
+  if (hymnsData.searchTerm) {
+    filtered = filtered.filter(hymn => {
+      const searchableText = `
+        ${hymn.title || ''} 
+        ${hymn.author || ''}
+        ${hymn.channel || ''} 
+        ${hymn.category || ''}
+        ${hymn.meter || ''}
+        ${hymn.year || ''}
+        ${hymn.lyrics ? hymn.lyrics.join(' ') : ''}
+      `.toLowerCase();
+      
+      return searchableText.includes(hymnsData.searchTerm);
+    });
+  }
+  
+  // Apply category filter
+  if (hymnsData.categoryFilter && hymnsData.categoryFilter !== 'all') {
+    filtered = filtered.filter(hymn => hymn.category === hymnsData.categoryFilter);
+  }
+  
+  // Apply time period filter
+  if (hymnsData.timePeriodFilter && hymnsData.timePeriodFilter !== 'all') {
+    filtered = filtered.filter(hymn => {
+      const year = hymn.year || 0;
+      switch (hymnsData.timePeriodFilter) {
+        case '1500-1700': return year >= 1500 && year <= 1700;
+        case '1701-1800': return year >= 1701 && year <= 1800;
+        case '1801-1900': return year >= 1801 && year <= 1900;
+        case '1901-2000': return year >= 1901 && year <= 2000;
+        case '2001-present': return year >= 2001;
+        default: return true;
+      }
+    });
+  }
+  
+  // Apply meter filter
+  if (hymnsData.meterFilter && hymnsData.meterFilter !== 'all') {
+    filtered = filtered.filter(hymn => {
+      if (!hymn.meter) return false;
+      
+      // Extract base meter pattern (e.g., "CM" from "CM (8.6.8.6)")
+      const baseMeter = hymn.meter.split(' ')[0];
+      return baseMeter === hymnsData.meterFilter || hymn.meter.includes(hymnsData.meterFilter);
+    });
+  }
+  
+  // Apply sorting
+  filtered.sort((a, b) => {
+    let aValue, bValue;
+    
+    switch (hymnsData.sortBy) {
+      case 'title':
+        aValue = (a.title || '').toLowerCase();
+        bValue = (b.title || '').toLowerCase();
+        break;
+      case 'author':
+        aValue = (a.author || '').toLowerCase();
+        bValue = (b.author || '').toLowerCase();
+        break;
+      case 'year':
+        aValue = a.year || 0;
+        bValue = b.year || 0;
+        break;
+      case 'category':
+        aValue = (a.category || '').toLowerCase();
+        bValue = (b.category || '').toLowerCase();
+        break;
+      case 'duration':
+        aValue = parseDuration(a.duration);
+        bValue = parseDuration(b.duration);
+        break;
+      default:
+        aValue = a.serial_number;
+        bValue = b.serial_number;
+    }
+    
+    if (hymnsData.sortOrder === 'desc') {
+      return aValue < bValue ? 1 : aValue > bValue ? -1 : 0;
+    } else {
+      return aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+    }
+  });
+  
+  hymnsData.filteredHymns = filtered;
+  updateHymnsListOnly();
+}
+
+// Parse duration for sorting
+function parseDuration(duration) {
+  if (!duration) return 0;
+  
+  const minutes = duration.match(/(\d+)\s*minutes?/);
+  const seconds = duration.match(/(\d+)\s*seconds?/);
+  
+  let totalSeconds = 0;
+  if (minutes) totalSeconds += parseInt(minutes[1]) * 60;
+  if (seconds) totalSeconds += parseInt(seconds[1]);
+  
+  return totalSeconds;
+}
+
+// Filter by category
+function filterByCategory(category) {
+  hymnsData.categoryFilter = category;
+  filterHymns();
+}
+
+// Filter by time period
+function filterByTimePeriod(timePeriod) {
+  hymnsData.timePeriodFilter = timePeriod;
+  filterHymns();
+}
+
+// Filter by meter
+function filterByMeter(meter) {
+  hymnsData.meterFilter = meter;
+  filterHymns();
+}
+
+// Sort hymns
+function sortHymns(sortValue) {
+  const [sortBy, sortOrder] = sortValue.split('-');
+  hymnsData.sortBy = sortBy;
+  hymnsData.sortOrder = sortOrder;
+  filterHymns();
+}
+
+// Clear all filters
+function clearAllFilters() {
+  hymnsData.searchTerm = '';
+  hymnsData.categoryFilter = 'all';
+  hymnsData.timePeriodFilter = 'all';
+  hymnsData.meterFilter = 'all';
+  hymnsData.sortBy = 'title';
+  hymnsData.sortOrder = 'asc';
+  
+  // Reset UI
+  document.getElementById('hymn-search').value = '';
+  document.getElementById('category-filter').value = 'all';
+  document.getElementById('time-period-filter').value = 'all';
+  document.getElementById('meter-filter').value = 'all';
+  document.getElementById('sort-options').value = 'title-asc';
+  
+  filterHymns();
+}
+
+// Copy hymn link
+function copyHymnLinkBySerial(serialNumber) {
+  const url = new URL(window.location.origin + window.location.pathname);
+  url.searchParams.set('hymn', serialNumber);
+  
+  navigator.clipboard.writeText(url.toString()).then(() => {
+    // Show success message
+    showToast('Hymn link copied to clipboard!');
+  }).catch(err => {
+    console.error('Failed to copy link:', err);
+    showToast('Failed to copy link');
+  });
+}
+
+// Show toast notification
+function showToast(message) {
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg z-50 transform translate-y-full transition-transform duration-300';
+  toast.textContent = message;
+  
+  document.body.appendChild(toast);
+  
+  // Show toast
+  setTimeout(() => {
+    toast.classList.remove('translate-y-full');
+  }, 100);
+  
+  // Hide and remove toast
+  setTimeout(() => {
+    toast.classList.add('translate-y-full');
+    setTimeout(() => {
+      document.body.removeChild(toast);
+    }, 300);
+  }, 3000);
+}
+
+// Print hymn lyrics
+function printHymnLyrics() {
+  const hymn = hymnsData.selectedHymn;
+  if (!hymn) return;
+
+  // Create a new window for printing
+  const printWindow = window.open('', '_blank', 'width=800,height=600');
+  
+  // Generate print-friendly HTML
+  const printContent = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${hymn.title} - Lyrics</title>
+      <style>
+        body {
+          font-family: 'Times New Roman', serif;
+          line-height: 1.6;
+          margin: 40px;
+          color: #000;
+        }
+        .hymn-header {
+          text-align: center;
+          margin-bottom: 40px;
+          border-bottom: 2px solid #333;
+          padding-bottom: 20px;
+        }
+        .hymn-number {
+          font-size: 14px;
+          color: #666;
+          margin-bottom: 10px;
+        }
+        .hymn-title {
+          font-size: 28px;
+          font-weight: bold;
+          margin: 0 0 10px 0;
+        }
+        .hymn-author {
+          font-size: 18px;
+          font-style: italic;
+          margin: 0 0 10px 0;
+        }
+        .hymn-details {
+          font-size: 14px;
+          color: #666;
+          margin: 0 0 5px 0;
+        }
+        .hymn-source {
+          font-size: 12px;
+          color: #999;
+          margin: 0;
+        }
+        .hymn-verse {
+          margin-bottom: 25px;
+          page-break-inside: avoid;
+        }
+        .verse-number {
+          font-weight: bold;
+          font-size: 16px;
+          margin-bottom: 8px;
+          color: #333;
+        }
+        .verse-text {
+          margin-left: 20px;
+          line-height: 1.8;
+        }
+        .verse-text p {
+          margin: 0 0 5px 0;
+        }
+        .footer {
+          margin-top: 40px;
+          padding-top: 20px;
+          border-top: 1px solid #ccc;
+          font-size: 12px;
+          color: #666;
+          text-align: center;
+        }
+        @media print {
+          body { margin: 20px; }
+          .hymn-header { page-break-after: avoid; }
+          .hymn-verse { page-break-inside: avoid; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="hymn-header">
+        <div class="hymn-number">Hymn #${hymn.serial_number}</div>
+        <h1 class="hymn-title">${hymn.title}</h1>
+        <p class="hymn-author">by ${hymn.author || 'Unknown Author'}</p>
+        <div class="hymn-details">
+          ${hymn.year || 'Year Unknown'}
+          ${hymn.meter ? ` • ${hymn.meter}` : ''}
+          ${hymn.category ? ` • ${hymn.category}` : ''}
+        </div>
+        <p class="hymn-source">${hymn.channel} • ${hymn.duration}</p>
+      </div>
+      
+      <div class="hymn-content">
+        ${hymn.lyrics && hymn.lyrics.length > 0 ? `
+          ${hymn.lyrics.map((verse, index) => `
+            <div class="hymn-verse">
+              <div class="verse-number">Verse ${index + 1}</div>
+              <div class="verse-text">
+                ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
+              </div>
+            </div>
+          `).join('')}
+        ` : `
+          <div class="hymn-verse">
+            <div class="verse-text">
+              <p><em>Lyrics not available for this hymn.</em></p>
+            </div>
+          </div>
+        `}
+      </div>
+      
+      <div class="footer">
+        <p>Printed from ChoristerCorner.com</p>
+      </div>
+    </body>
+    </html>
+  `;
+  
+  // Write content to the print window
+  printWindow.document.write(printContent);
+  printWindow.document.close();
+  
+  // Wait for content to load, then print
+  printWindow.onload = function() {
+    printWindow.print();
+    // Close the window after printing (optional)
+    printWindow.onafterprint = function() {
+      printWindow.close();
+    };
+  };
+}
+
+// Update page title
+function updatePageTitle(hymn) {
+  if (hymn) {
+    document.title = `${hymn.title} - ChoristerCorner`;
+  } else {
+    document.title = 'ChoristerCorner - Worship Songs, Chords & Resources for Church Musicians';
+  }
+}
+
+// Update hymns display
+function updateHymnsDisplay() {
+  console.log("[DEBUG] Updating hymns display");
+  console.log("[DEBUG] Current hymnsData state:", {
+    isLoaded: hymnsData.isLoaded,
+    allHymnsCount: hymnsData.allHymns.length,
+    filteredHymnsCount: hymnsData.filteredHymns.length,
+    showLyrics: hymnsData.showLyrics,
+    selectedHymn: hymnsData.selectedHymn?.title
+  });
+  
+  // Ensure we have data before trying to update
+  if (!hymnsData.isLoaded) {
+    console.log("[DEBUG] Hymns not loaded yet, skipping display update");
+    return;
+  }
+  
+  updateHymnsListOnly();
+  
+  // Update audio player if it's visible
+  updateAudioPlayerDisplay();
+}
+
+// Update only the hymns list without affecting audio player
+function updateHymnsListOnly() {
+  console.log("[DEBUG] Updating hymns list only");
+  
+  // Try multiple possible container IDs
+  const possibleContainers = ['app-content', 'tab-content', 'app-root', 'app'];
+  let appContainer = null;
+  
+  for (const containerId of possibleContainers) {
+    appContainer = document.getElementById(containerId);
+    if (appContainer) {
+      console.log("[DEBUG] Found container:", containerId);
+      break;
+    }
+  }
+  
+  if (appContainer) {
+    appContainer.innerHTML = window.renderHymnsTab();
+  } else {
+    console.warn("[DEBUG] No suitable container found for hymns content");
+    // Fallback: try to find any container with hymns content
+    const hymnsContainer = document.getElementById('hymns-container');
+    if (hymnsContainer) {
+      hymnsContainer.innerHTML = renderHymnsContainer();
+    }
+  }
+  
+  // Populate filter dropdowns after re-rendering
+  setTimeout(() => {
+    populateFilterDropdowns();
+  }, 50);
+  
+  // Update the hymn count display in the header
+  setTimeout(() => {
+    updateHymnCountDisplay();
+  }, 100);
+}
+
+// Update hymn count in the header
+function updateHymnCountDisplay() {
+  const countElement = document.getElementById('hymn-count-display');
+  if (countElement) {
+    countElement.textContent = `${hymnsData.filteredHymns.length} of ${hymnsData.allHymns.length} hymns`;
+  }
+}
+
+// Update audio player display
+function updateAudioPlayerDisplay() {
+  const existingPlayer = document.getElementById('audio-player-section');
+  
+  if (hymnsData.isAudioPlayerVisible && hymnsData.currentPlayingHymn) {
+    // Add body classes for spacing
+    document.body.classList.add('audio-player-active');
+    if (hymnsData.isPlayerCollapsed) {
+      document.body.classList.add('player-collapsed');
+    } else {
+      document.body.classList.remove('player-collapsed');
+    }
+    
+    // If player should be visible but doesn't exist, add it
+    if (!existingPlayer) {
+      const playerHTML = renderEmbeddedAudioPlayer();
+      document.body.insertAdjacentHTML('beforeend', playerHTML);
+    } else {
+      // Only update if the hymn has actually changed
+      const currentHymnSerial = existingPlayer.querySelector('[title*="Copy page link"]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
+      if (currentHymnSerial !== String(hymnsData.currentPlayingHymn.serial_number)) {
+        console.log("[DEBUG] Hymn changed, updating audio player");
+        existingPlayer.outerHTML = renderEmbeddedAudioPlayer();
+      } else {
+        console.log("[DEBUG] Same hymn playing, keeping existing audio player");
+      }
+    }
+  } else {
+    // Remove body classes and player
+    document.body.classList.remove('audio-player-active', 'player-collapsed');
+    if (existingPlayer) {
+      existingPlayer.remove();
+    }
+  }
+}
+
+// Populate filter dropdowns with unique values from hymn data
+function populateFilterDropdowns() {
+  console.log("[DEBUG] Populating filter dropdowns");
+  
+  // Get unique categories
+  const categories = [...new Set(hymnsData.allHymns.map(h => h.category).filter(Boolean))].sort();
+  const categorySelect = document.getElementById('category-filter');
+  if (categorySelect) {
+    // Clear existing options except "All Categories"
+    categorySelect.innerHTML = '<option value="all">All Categories</option>';
+    categories.forEach(category => {
+      categorySelect.innerHTML += `<option value="${category}">${category}</option>`;
+    });
+    categorySelect.value = hymnsData.categoryFilter;
+  }
+  
+  // Populate time period filter
+  const timePeriodSelect = document.getElementById('time-period-filter');
+  if (timePeriodSelect) {
+    timePeriodSelect.innerHTML = `
+      <option value="all">All Time Periods</option>
+      <option value="1500-1700">1500-1700 (Reformation Era)</option>
+      <option value="1701-1800">1701-1800 (18th Century)</option>
+      <option value="1801-1900">1801-1900 (19th Century)</option>
+      <option value="1901-2000">1901-2000 (20th Century)</option>
+      <option value="2001-present">2001-Present (Modern)</option>
+    `;
+    timePeriodSelect.value = hymnsData.timePeriodFilter;
+  }
+  
+  // Get unique meters
+  const meters = [...new Set(hymnsData.allHymns.map(h => {
+    if (!h.meter) return null;
+    // Extract base meter pattern (e.g., "CM" from "CM (8.6.8.6)")
+    return h.meter.split(' ')[0];
+  }).filter(Boolean))].sort();
+  
+  const meterSelect = document.getElementById('meter-filter');
+  if (meterSelect) {
+    // Clear existing options except "All Meters"
+    meterSelect.innerHTML = '<option value="all">All Meters</option>';
+    meters.forEach(meter => {
+      const meterName = getMeterDisplayName(meter);
+      meterSelect.innerHTML += `<option value="${meter}">${meterName}</option>`;
+    });
+    meterSelect.value = hymnsData.meterFilter;
+  }
+}
+
+// Get display name for meter
+function getMeterDisplayName(meter) {
+  const meterNames = {
+    'CM': 'Common Meter (CM)',
+    'LM': 'Long Meter (LM)',
+    'SM': 'Short Meter (SM)',
+    'LMD': 'Long Meter Doubled (LMD)',
+    'CMD': 'Common Meter Doubled (CMD)',
+    'SMD': 'Short Meter Doubled (SMD)',
+    'Irregular': 'Irregular Meter'
+  };
+  
+  return meterNames[meter] || meter;
+}
+
+// Force refresh hymns display - useful for debugging
+window.forceRefreshHymns = function() {
+  console.log("[DEBUG] Force refreshing hymns...");
+  
+  // Reset state
+  hymnsData.isLoaded = false;
+  hymnsData.urlParametersProcessed = false;
+  
+  // Clear any existing content
+  const containers = ['app-content', 'tab-content', 'hymns-container'];
+  containers.forEach(id => {
+    const container = document.getElementById(id);
+    if (container) {
+      container.innerHTML = '<div class="text-center p-8">Loading hymns...</div>';
+    }
+  });
+  
+  // Reload data
+  loadHymnsData();
+};
+
+// Debug function to check hymns state
+window.debugHymns = function() {
+  console.log("[DEBUG] Hymns Debug Info:", {
+    isLoaded: hymnsData.isLoaded,
+    allHymns: hymnsData.allHymns.length,
+    filteredHymns: hymnsData.filteredHymns.length,
+    showLyrics: hymnsData.showLyrics,
+    selectedHymn: hymnsData.selectedHymn,
+    currentPlayingHymn: hymnsData.currentPlayingHymn,
+    searchTerm: hymnsData.searchTerm,
+    categoryFilter: hymnsData.categoryFilter,
+    timePeriodFilter: hymnsData.timePeriodFilter,
+    meterFilter: hymnsData.meterFilter,
+    urlParametersProcessed: hymnsData.urlParametersProcessed
+  });
+  
+  // Check if containers exist
+  const containers = ['app-content', 'tab-content', 'hymns-container'];
+  containers.forEach(id => {
+    const container = document.getElementById(id);
+    console.log(`Container ${id}:`, container ? 'EXISTS' : 'NOT FOUND');
+  });
+  
+  return hymnsData;
+};
+
+// Toggle view between grid and list
+function toggleHymnsView(view) {
+  console.log("[DEBUG] Toggling hymns view to:", view);
+  hymnsData.currentView = view;
+  updateHymnsDisplay();
+}

@@ -714,12 +714,18 @@ function renderLyricsContent(song) {
 
   return `
     <div class="space-y-4">
-      ${song.lyrics.map((verse, index) => `
-        <div class="lyrics-verse">
-          <div class="whitespace-pre-line text-gray-800 leading-relaxed text-sm">${verse}</div>
-          ${index < song.lyrics.length - 1 ? '<div class="border-b border-gray-200 mt-3"></div>' : ''}
-        </div>
-      `).join('')}
+      ${song.lyrics.map((verse, index) => {
+        // Split verse by line breaks and render each line as a paragraph
+        const lines = verse.split('\n').filter(line => line.trim() !== '');
+        return `
+          <div class="lyrics-verse">
+            <div class="text-gray-800 leading-relaxed text-sm space-y-1">
+              ${lines.map(line => `<p class="mb-1">${line.trim()}</p>`).join('')}
+            </div>
+            ${index < song.lyrics.length - 1 ? '<div class="border-b border-gray-200 mt-3"></div>' : ''}
+          </div>
+        `;
+      }).join('')}
     </div>
   `;
 }
