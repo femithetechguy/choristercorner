@@ -8,8 +8,10 @@ console.log("[DEBUG] App.js entry point loaded");
 // Load all the tab-specific modules
 function loadTabModules() {
   const modules = [
+    'js/shared-player.js',
     'js/home.js',
-    'js/songs.js', 
+    'js/songs.js',
+    'js/hymns.js',
     'js/about.js',
     'js/contact.js',
     'js/playlist-updater.js'

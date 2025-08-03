@@ -184,6 +184,9 @@ function renderCurrentTabContent() {
   if (currentTab.name === "Songs" && window.renderSongsTab) {
     return window.renderSongsTab(currentTab);
   }
+  if (currentTab.name === "Hymns" && window.renderHymnsTab) {
+    return window.renderHymnsTab(currentTab);
+  }
   if (currentTab.name === "About" && window.renderAboutTab) {
     return window.renderAboutTab(currentTab);
   }
