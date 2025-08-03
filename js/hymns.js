@@ -557,161 +557,32 @@ function renderHymnListItem(hymn) {
 
 // Play hymn in embedded player
 function playHymnEmbedded(hymn) {
-  console.log("[DEBUG] Playing hymn in embedded player:", hymn.title);
+  console.log("[DEBUG] Playing hymn in shared player:", hymn.title);
   
-  hymnsData.currentPlayingHymn = hymn;
-  hymnsData.isAudioPlayerVisible = true;
-  
-  // Update the hymns display to show the new player
-  updateHymnsDisplay();
-  
-  // Scroll to show the player (mobile friendly)
-  setTimeout(() => {
-    const playerSection = document.getElementById('audio-player-section');
-    if (playerSection) {
-      playerSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
-  }, 100);
+  // Use the shared player instead of hymn-specific player
+  showSharedPlayer(hymn, 'hymn');
 }
 
-// Close audio player
+// Close audio player (legacy function - now uses shared player)
 function closeAudioPlayer() {
-  console.log("[DEBUG] Closing audio player");
-  
-  hymnsData.currentPlayingHymn = null;
-  hymnsData.isAudioPlayerVisible = false;
-  
-  // Update display
-  updateHymnsDisplay();
+  console.log("[DEBUG] Closing audio player (using shared player)");
+  closeSharedPlayer();
 }
 
-// Extract YouTube video ID from URL
+// Extract YouTube video ID from URL (moved to shared-player.js)
 function extractYouTubeVideoId(url) {
-  console.log("[DEBUG] Extracting video ID from URL:", url);
-  
-  if (!url) return null;
-  
-  // Handle various YouTube URL formats
-  const patterns = [
-    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
-    /youtube\.com\/v\/([^&\n?#]+)/
-  ];
-  
-  for (const pattern of patterns) {
-    const match = url.match(pattern);
-    if (match) {
-      console.log("[DEBUG] Extracted video ID:", match[1]);
-      return match[1];
-    }
-  }
-  
-  console.warn("[DEBUG] Could not extract video ID from URL:", url);
-  return null;
+  return extractVideoId(url);
 }
 
-// Render embedded audio player (using YouTube iframe)
+// Render embedded audio player (now using shared player system)
 function renderEmbeddedAudioPlayer() {
-  if (!hymnsData.isAudioPlayerVisible || !hymnsData.currentPlayingHymn) {
-    return '';
-  }
-
-  const hymn = hymnsData.currentPlayingHymn;
-  console.log("[DEBUG] Rendering embedded audio player for:", hymn.title);
-
-  // Extract YouTube video ID from URL
-  const videoId = extractYouTubeVideoId(hymn.url);
-  
-  return `
-    <div id="audio-player-section" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40 transform transition-transform duration-300" style="max-height: 65vh;">
-      <!-- Player Header -->
-      <div class="flex items-center justify-between p-3 bg-gray-50 border-b border-gray-200">
-        <div class="flex items-center space-x-3">
-          <span class="text-sm font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">#${hymn.serial_number}</span>
-          <div>
-            <h3 class="font-semibold text-gray-900 text-sm line-clamp-1">${hymn.title || 'Untitled'}</h3>
-            <p class="text-xs text-gray-600">${hymn.channel || 'Unknown Artist'}</p>
-          </div>
-        </div>
-        <div class="flex items-center space-x-2">
-          <button onclick="copyHymnLinkBySerial(${hymn.serial_number})" class="btn btn-ghost btn-sm" title="Copy page link">
-            <i class="bi bi-link-45deg"></i>
-          </button>
-          <button onclick="togglePlayerCollapse()" class="btn btn-ghost btn-sm" title="Toggle player size">
-            <i class="bi bi-chevron-${hymnsData.isPlayerCollapsed ? 'up' : 'down'}"></i>
-          </button>
-          <button onclick="closeAudioPlayer()" class="btn btn-ghost btn-sm" title="Close player">
-            <i class="bi bi-x-lg"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Player Content (collapsible) -->
-      ${!hymnsData.isPlayerCollapsed ? `
-        <div class="audio-player-content grid grid-cols-1 lg:grid-cols-2 gap-0" style="height: calc(65vh - 80px);">
-          <!-- Audio Player -->
-          <div class="bg-black flex items-center justify-center h-full">
-            ${videoId ? `
-              <iframe 
-                id="youtube-player"
-                width="100%" 
-                height="100%" 
-                src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1" 
-                frameborder="0" 
-                allow="autoplay; encrypted-media" 
-                allowfullscreen>
-              </iframe>
-            ` : `
-              <div class="text-center text-white p-8">
-                <i class="bi bi-music-note text-6xl mb-4"></i>
-                <p class="text-lg mb-2">Audio Preview Not Available</p>
-                <p class="text-sm opacity-75">This hymn doesn't have a valid YouTube link</p>
-              </div>
-            `}
-          </div>
-
-          <!-- Lyrics Display -->
-          <div class="bg-white overflow-y-auto p-6">
-            <div class="max-w-none">
-              <div class="mb-4">
-                <h2 class="text-xl font-bold text-gray-900 mb-2">${hymn.title}</h2>
-                <p class="text-gray-700 mb-1 font-medium">by ${hymn.author || 'Unknown Author'}</p>
-                <p class="text-sm text-gray-700 font-medium">
-                  ${hymn.year || 'Year Unknown'}
-                  ${hymn.meter ? ` • ${hymn.meter}` : ''}
-                  ${hymn.category ? ` • ${hymn.category}` : ''}
-                </p>
-                <p class="text-sm text-gray-700 font-medium">${hymn.channel} • ${hymn.duration}</p>
-              </div>
-              
-              ${hymn.lyrics && hymn.lyrics.length > 0 ? `
-                <div class="space-y-4">
-                  ${hymn.lyrics.map((verse, index) => `
-                    <div class="hymn-verse">
-                      <div class="hymn-verse-number">Verse ${index + 1}</div>
-                      <div class="hymn-verse-text">
-                        ${verse.split('\n').map(line => `<p>${line}</p>`).join('')}
-                      </div>
-                    </div>
-                  `).join('')}
-                </div>
-              ` : `
-                <div class="text-center text-gray-500 py-8">
-                  <i class="bi bi-file-text text-4xl mb-3"></i>
-                  <p>Lyrics not available for this hymn</p>
-                </div>
-              `}
-            </div>
-          </div>
-        </div>
-      ` : ''}
-    </div>
-  `;
+  // Return empty string since we now use the shared player system
+  return '';
 }
 
-// Toggle player collapse
+// Toggle player collapse (legacy function - now uses shared player)
 function togglePlayerCollapse() {
-  hymnsData.isPlayerCollapsed = !hymnsData.isPlayerCollapsed;
-  updateAudioPlayerDisplay();
+  toggleSharedPlayerCollapse();
 }
 
 // View hymn lyrics in full screen
@@ -798,18 +669,16 @@ function renderHymnLyricsView() {
       </div>
       
       <!-- Lyrics Content -->
-      <div class="hymn-lyrics-content">
+      <div class="lyrics-container">
         ${hymn.lyrics && hymn.lyrics.length > 0 ? `
-          <div class="space-y-6">
-            ${hymn.lyrics.map((verse, index) => `
-              <div class="hymn-verse">
-                <div class="hymn-verse-number">Verse ${index + 1}</div>
-                <div class="hymn-verse-text">
-                  ${verse.split('\n').map(line => `<p>${line}</p>`).join('')}
-                </div>
+          ${hymn.lyrics.map((verse, index) => `
+            <div class="lyrics-verse">
+              <div class="verse-number">Verse ${index + 1}</div>
+              <div class="verse-content">
+                ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
               </div>
-            `).join('')}
-          </div>
+            </div>
+          `).join('')}
         ` : `
           <div class="text-center text-gray-500 py-12">
             <i class="bi bi-file-text text-6xl mb-4"></i>
@@ -1201,7 +1070,27 @@ function updateHymnsDisplay() {
     return;
   }
   
-  updateHymnsListOnly();
+  // If we're showing lyrics, we need to re-render the entire tab
+  if (hymnsData.showLyrics && hymnsData.selectedHymn) {
+    console.log("[DEBUG] Rendering lyrics view for:", hymnsData.selectedHymn.title);
+    const possibleContainers = ['app-content', 'tab-content', 'app-root', 'app'];
+    let appContainer = null;
+    
+    for (const containerId of possibleContainers) {
+      appContainer = document.getElementById(containerId);
+      if (appContainer) {
+        console.log("[DEBUG] Found container for lyrics view:", containerId);
+        break;
+      }
+    }
+    
+    if (appContainer) {
+      appContainer.innerHTML = window.renderHymnsTab();
+    }
+  } else {
+    // Only update the hymns list when not in lyrics view
+    updateHymnsListOnly();
+  }
   
   // Update audio player if it's visible
   updateAudioPlayerDisplay();
@@ -1211,38 +1100,34 @@ function updateHymnsDisplay() {
 function updateHymnsListOnly() {
   console.log("[DEBUG] Updating hymns list only");
   
-  // Try multiple possible container IDs
-  const possibleContainers = ['app-content', 'tab-content', 'app-root', 'app'];
-  let appContainer = null;
-  
-  for (const containerId of possibleContainers) {
-    appContainer = document.getElementById(containerId);
-    if (appContainer) {
-      console.log("[DEBUG] Found container:", containerId);
-      break;
-    }
-  }
-  
-  if (appContainer) {
-    appContainer.innerHTML = window.renderHymnsTab();
+  // Update only the hymns container, not the entire tab
+  const hymnsContainer = document.getElementById('hymns-container');
+  if (hymnsContainer) {
+    console.log("[DEBUG] Found hymns-container, updating content");
+    hymnsContainer.innerHTML = renderHymnsContainer();
   } else {
-    console.warn("[DEBUG] No suitable container found for hymns content");
+    console.warn("[DEBUG] hymns-container not found, falling back to full re-render");
     // Fallback: try to find any container with hymns content
-    const hymnsContainer = document.getElementById('hymns-container');
-    if (hymnsContainer) {
-      hymnsContainer.innerHTML = renderHymnsContainer();
+    const possibleContainers = ['app-content', 'tab-content', 'app-root', 'app'];
+    let appContainer = null;
+    
+    for (const containerId of possibleContainers) {
+      appContainer = document.getElementById(containerId);
+      if (appContainer) {
+        console.log("[DEBUG] Found container:", containerId);
+        break;
+      }
+    }
+    
+    if (appContainer) {
+      appContainer.innerHTML = window.renderHymnsTab();
     }
   }
-  
-  // Populate filter dropdowns after re-rendering
-  setTimeout(() => {
-    populateFilterDropdowns();
-  }, 50);
   
   // Update the hymn count display in the header
   setTimeout(() => {
     updateHymnCountDisplay();
-  }, 100);
+  }, 50);
 }
 
 // Update hymn count in the header
@@ -1253,40 +1138,10 @@ function updateHymnCountDisplay() {
   }
 }
 
-// Update audio player display
+// Update audio player display (now uses shared player system)
 function updateAudioPlayerDisplay() {
-  const existingPlayer = document.getElementById('audio-player-section');
-  
-  if (hymnsData.isAudioPlayerVisible && hymnsData.currentPlayingHymn) {
-    // Add body classes for spacing
-    document.body.classList.add('audio-player-active');
-    if (hymnsData.isPlayerCollapsed) {
-      document.body.classList.add('player-collapsed');
-    } else {
-      document.body.classList.remove('player-collapsed');
-    }
-    
-    // If player should be visible but doesn't exist, add it
-    if (!existingPlayer) {
-      const playerHTML = renderEmbeddedAudioPlayer();
-      document.body.insertAdjacentHTML('beforeend', playerHTML);
-    } else {
-      // Only update if the hymn has actually changed
-      const currentHymnSerial = existingPlayer.querySelector('[title*="Copy page link"]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
-      if (currentHymnSerial !== String(hymnsData.currentPlayingHymn.serial_number)) {
-        console.log("[DEBUG] Hymn changed, updating audio player");
-        existingPlayer.outerHTML = renderEmbeddedAudioPlayer();
-      } else {
-        console.log("[DEBUG] Same hymn playing, keeping existing audio player");
-      }
-    }
-  } else {
-    // Remove body classes and player
-    document.body.classList.remove('audio-player-active', 'player-collapsed');
-    if (existingPlayer) {
-      existingPlayer.remove();
-    }
-  }
+  // No longer needed since shared player handles its own display
+  console.log("[DEBUG] Audio player display managed by shared player system");
 }
 
 // Populate filter dropdowns with unique values from hymn data

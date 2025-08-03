@@ -35,6 +35,8 @@ async function loadHomeData() {
       homeData.featuredSongs = songsData.slice(0, 3); // Get first 3 songs as featured
       homeData.stats.totalSongs = songsData.length;
       
+      console.log("[DEBUG] Featured songs loaded:", homeData.featuredSongs);
+      
       // Calculate unique artists from songs
       const uniqueChannels = new Set(songsData.map(song => song.channel));
       
@@ -88,8 +90,29 @@ async function loadHomeData() {
 window.renderHomeTab = function(tab) {
   console.log("[DEBUG] Rendering Home tab");
   
+  // If data is not loaded, show loading state and load data in background
   if (!homeData.isLoaded) {
-    loadHomeData();
+    console.log("[DEBUG] Data not loaded, loading in background...");
+    loadHomeData().then(() => {
+      // Re-render after data loads
+      if (typeof window.renderAppUI === 'function') {
+        window.renderAppUI();
+      }
+    });
+    
+    // Return loading state
+    return `
+      <div class="fade-in">
+        <div class="text-center py-12">
+          <div class="mx-auto mb-6">
+            <i class="bi bi-music-note-beamed text-6xl text-purple-600 animate-pulse"></i>
+          </div>
+          <h1 class="text-4xl font-bold text-gray-900 mb-4">Loading ChoristerCorner...</h1>
+          <div class="loading-spinner mx-auto"></div>
+          <p class="text-gray-600 mt-4">Preparing your worship experience...</p>
+        </div>
+      </div>
+    `;
   }
   
   return `
@@ -105,7 +128,7 @@ window.renderHomeTab = function(tab) {
         </p>
         
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto mb-8">
           <div class="card hover:scale-105 transition-transform">
             <div class="card-body text-center">
               <i class="bi bi-music-note-list text-3xl text-blue-600 mb-3"></i>
@@ -256,7 +279,7 @@ function renderFeaturedSongs() {
       <p class="text-sm text-gray-600 mb-3">${song.channel || 'Unknown Artist'}</p>
       <div class="flex space-x-2">
         <button 
-          onclick="playSong('${song.url}')" 
+          onclick="console.log('Button clicked for song:', ${song.serial_number}); playSongFromHome(${song.serial_number})" 
           class="flex-1 btn btn-primary btn-sm"
           ${!song.url ? 'disabled' : ''}
         >
@@ -295,7 +318,7 @@ function renderFeaturedHymns() {
       <p class="text-sm text-gray-600 mb-3">${hymn.channel || 'Unknown Artist'}</p>
       <div class="flex space-x-2">
         <button 
-          onclick="playHymn('${hymn.url}')" 
+          onclick="console.log('Button clicked for hymn:', ${hymn.serial_number}); playHymnFromHome(${hymn.serial_number})" 
           class="flex-1 btn btn-secondary btn-sm"
           ${!hymn.url ? 'disabled' : ''}
         >
@@ -341,21 +364,133 @@ function showFavorites() {
   alert('Favorites feature coming soon!');
 }
 
-function playSong(url) {
-  console.log("[DEBUG] Playing song:", url);
-  if (url && url !== 'undefined') {
-    window.open(url, '_blank');
+function playSongObject(song) {
+  console.log("[DEBUG] Playing song in shared player:", song?.title);
+  console.log("[DEBUG] Song object:", song);
+  console.log("[DEBUG] Song URL:", song?.url);
+  console.log("[DEBUG] showSharedPlayer function exists:", typeof showSharedPlayer);
+  
+  if (song && song.url) {
+    // Wait for shared player to be available if not already loaded
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait
+    
+    const tryShowPlayer = () => {
+      if (typeof showSharedPlayer === 'function') {
+        console.log("[DEBUG] Calling showSharedPlayer with song:", song.title);
+        showSharedPlayer(song, 'song');
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        console.log("[DEBUG] Waiting for shared player to load... attempt", attempts);
+        setTimeout(tryShowPlayer, 100);
+      } else {
+        console.error("[DEBUG] Shared player not available after 5 seconds, opening in new tab");
+        console.log("[DEBUG] Opening URL:", song.url);
+        if (song.url && typeof song.url === 'string') {
+          window.open(song.url, '_blank');
+        } else {
+          console.error("[DEBUG] Invalid URL for fallback:", song.url);
+          alert('Unable to play song - invalid URL');
+        }
+      }
+    };
+    tryShowPlayer();
   } else {
-    alert('Song URL not available');
+    console.error("[DEBUG] Song or URL not available:", { song, url: song?.url });
+    alert('Song not available');
   }
 }
 
-function playHymn(url) {
-  console.log("[DEBUG] Playing hymn:", url);
-  if (url && url !== 'undefined') {
-    window.open(url, '_blank');
+function playHymnObject(hymn) {
+  console.log("[DEBUG] Playing hymn in shared player:", hymn?.title);
+  console.log("[DEBUG] Hymn object:", hymn);
+  console.log("[DEBUG] Hymn URL:", hymn?.url);
+  console.log("[DEBUG] showSharedPlayer function exists:", typeof showSharedPlayer);
+  
+  if (hymn && hymn.url) {
+    // Wait for shared player to be available if not already loaded
+    let attempts = 0;
+    const maxAttempts = 50; // 5 seconds max wait
+    
+    const tryShowPlayer = () => {
+      if (typeof showSharedPlayer === 'function') {
+        console.log("[DEBUG] Calling showSharedPlayer with hymn:", hymn.title);
+        showSharedPlayer(hymn, 'hymn');
+      } else if (attempts < maxAttempts) {
+        attempts++;
+        console.log("[DEBUG] Waiting for shared player to load... attempt", attempts);
+        setTimeout(tryShowPlayer, 100);
+      } else {
+        console.error("[DEBUG] Shared player not available after 5 seconds, opening in new tab");
+        console.log("[DEBUG] Opening URL:", hymn.url);
+        if (hymn.url && typeof hymn.url === 'string') {
+          window.open(hymn.url, '_blank');
+        } else {
+          console.error("[DEBUG] Invalid URL for fallback:", hymn.url);
+          alert('Unable to play hymn - invalid URL');
+        }
+      }
+    };
+    tryShowPlayer();
   } else {
-    alert('Hymn URL not available');
+    console.error("[DEBUG] Hymn or URL not available:", { hymn, url: hymn?.url });
+    alert('Hymn not available');
+  }
+}
+
+function playSongFromHome(serialNumber) {
+  console.log("[DEBUG] playSongFromHome called with:", serialNumber, typeof serialNumber);
+  console.log("[DEBUG] homeData.isLoaded:", homeData.isLoaded);
+  console.log("[DEBUG] homeData.featuredSongs:", homeData.featuredSongs);
+  
+  // Ensure data is loaded
+  if (!homeData.isLoaded || !homeData.featuredSongs.length) {
+    console.error("[DEBUG] Home data not loaded");
+    alert('Data not loaded yet. Please try again.');
+    return;
+  }
+  
+  // Try both string and number comparison
+  let song = homeData.featuredSongs.find(s => s.serial_number === parseInt(serialNumber));
+  if (!song) {
+    song = homeData.featuredSongs.find(s => s.serial_number === serialNumber);
+  }
+  if (!song) {
+    song = homeData.featuredSongs.find(s => String(s.serial_number) === String(serialNumber));
+  }
+  
+  console.log("[DEBUG] Found song:", song);
+  console.log("[DEBUG] All featured songs serial numbers:", homeData.featuredSongs.map(s => s.serial_number));
+  
+  if (song) {
+    console.log("[DEBUG] About to call playSongObject with:", song);
+    playSongObject(song);
+  } else {
+    console.error("[DEBUG] Song not found with serial number:", serialNumber);
+    alert('Song not found');
+  }
+}
+
+function playHymnFromHome(serialNumber) {
+  console.log("[DEBUG] Playing hymn from home:", serialNumber);
+  console.log("[DEBUG] homeData.isLoaded:", homeData.isLoaded);
+  console.log("[DEBUG] homeData.featuredHymns:", homeData.featuredHymns);
+  
+  // Ensure data is loaded
+  if (!homeData.isLoaded || !homeData.featuredHymns.length) {
+    console.error("[DEBUG] Home data not loaded");
+    alert('Data not loaded yet. Please try again.');
+    return;
+  }
+  
+  const hymn = homeData.featuredHymns.find(h => h.serial_number === parseInt(serialNumber));
+  console.log("[DEBUG] Found hymn:", hymn);
+  
+  if (hymn) {
+    playHymnObject(hymn);
+  } else {
+    console.error("[DEBUG] Hymn not found with serial number:", serialNumber);
+    alert('Hymn not found');
   }
 }
 
@@ -379,5 +514,15 @@ function viewHymnLyrics(serialNumber) {
 
 // Initialize home data when the module loads
 loadHomeData();
+
+// Make home functions globally accessible
+window.playSongFromHome = playSongFromHome;
+window.playHymnFromHome = playHymnFromHome;
+window.viewSongLyrics = viewSongLyrics;
+window.viewHymnLyrics = viewHymnLyrics;
+window.navigateToSongs = navigateToSongs;
+window.navigateToHymns = navigateToHymns;
+window.navigateToContact = navigateToContact;
+window.showFavorites = showFavorites;
 
 console.log("[DEBUG] Home tab module initialization complete");

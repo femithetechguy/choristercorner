@@ -240,38 +240,8 @@
   margin-bottom: 2rem;
 }
 
-.hymn-verse {
-  margin-bottom: 2rem;
-  padding: 1.5rem;
-  background: var(--bg-gray-50);
-  border-radius: var(--border-radius);
-  border-left: 4px solid var(--color-primary);
-}
-
-.hymn-verse:last-child {
-  margin-bottom: 0;
-}
-
-.hymn-verse-number {
-  font-weight: 600;
-  color: var(--color-primary);
-  margin-bottom: 0.75rem;
-  font-size: 0.9rem;
-}
-
-.hymn-verse-text {
-  line-height: 1.8;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-}
-
-.hymn-verse-text p {
-  margin-bottom: 0.5rem;
-}
-
-.hymn-verse-text p:last-child {
-  margin-bottom: 0;
-}
+/* Use common lyrics styles from styles.css */
+/* .lyrics-container, .lyrics-verse, .verse-number, .verse-content */
 
 /* Audio Player Styles */
 .audio-player-section {

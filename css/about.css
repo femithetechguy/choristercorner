@@ -74,11 +74,7 @@
   color: var(--color-primary);
 }
 
-.app-info-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-}
+/* Use common .quick-actions-grid from styles.css for app-info-grid */
 
 .app-info-item {
   padding: var(--spacing-lg);
@@ -124,11 +120,7 @@
   text-align: center;
 }
 
-.features-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: var(--spacing-lg);
-}
+/* Use common .features-grid from styles.css */
 
 .feature-card {
   background: var(--color-white);
