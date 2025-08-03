@@ -670,16 +670,32 @@ function renderHymnLyricsView() {
       
       <!-- Lyrics Content -->
       <div class="lyrics-container">
-        ${hymn.lyrics && hymn.lyrics.length > 0 ? `
-          ${hymn.lyrics.map((verse, index) => `
-            <div class="lyrics-verse">
-              <div class="verse-number">Verse ${index + 1}</div>
-              <div class="verse-content">
-                ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
+        ${hymn.lyrics && hymn.lyrics.length > 0 ? 
+          hymn.lyrics.map((verse, index) => {
+            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Refrain:")
+            const lines = verse.split('\n').filter(line => line.trim());
+            let sectionLabel = 'Verse ' + (index + 1);
+            let content = verse;
+            
+            if (lines.length > 0) {
+              const firstLine = lines[0].trim();
+              // Check if first line ends with a colon (manual label)
+              if (firstLine.includes(':') && firstLine.length < 20) {
+                sectionLabel = firstLine.replace(':', '');
+                // Remove the label line from content
+                content = lines.slice(1).join('\n');
+              }
+            }
+            
+            return `
+              <div class="lyrics-verse">
+                <div class="verse-number">${sectionLabel}</div>
+                <div class="verse-content">
+                  ${content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
+                </div>
               </div>
-            </div>
-          `).join('')}
-        ` : `
+            `;
+          }).join('') : `
           <div class="text-center text-gray-500 py-12">
             <i class="bi bi-file-text text-6xl mb-4"></i>
             <h3 class="text-xl font-semibold mb-2">Lyrics Not Available</h3>
@@ -1005,16 +1021,32 @@ function printHymnLyrics() {
       </div>
       
       <div class="hymn-content">
-        ${hymn.lyrics && hymn.lyrics.length > 0 ? `
-          ${hymn.lyrics.map((verse, index) => `
-            <div class="hymn-verse">
-              <div class="verse-number">Verse ${index + 1}</div>
-              <div class="verse-text">
-                ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
+        ${hymn.lyrics && hymn.lyrics.length > 0 ? 
+          hymn.lyrics.map((verse, index) => {
+            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Refrain:")
+            const lines = verse.split('\n').filter(line => line.trim());
+            let sectionLabel = 'Verse ' + (index + 1);
+            let content = verse;
+            
+            if (lines.length > 0) {
+              const firstLine = lines[0].trim();
+              // Check if first line ends with a colon (manual label)
+              if (firstLine.includes(':') && firstLine.length < 20) {
+                sectionLabel = firstLine.replace(':', '');
+                // Remove the label line from content
+                content = lines.slice(1).join('\n');
+              }
+            }
+            
+            return `
+              <div class="hymn-verse">
+                <div class="verse-number">${sectionLabel}</div>
+                <div class="verse-text">
+                  ${content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
+                </div>
               </div>
-            </div>
-          `).join('')}
-        ` : `
+            `;
+          }).join('') : `
           <div class="hymn-verse">
             <div class="verse-text">
               <p><em>Lyrics not available for this hymn.</em></p>

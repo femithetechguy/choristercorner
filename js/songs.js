@@ -593,15 +593,30 @@ function renderLyricsContent(song) {
   return `
     <div class="lyrics-container">
       ${song.lyrics.map((verse, index) => {
-        // Split verse by line breaks and render each line as a paragraph
+        // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:")
         const lines = verse.split('\n').filter(line => line.trim() !== '');
+        let sectionLabel = 'Verse ' + (index + 1);
+        let content = verse;
+        
+        if (lines.length > 0) {
+          const firstLine = lines[0].trim();
+          // Improved detection: check if first line ends with a colon and looks like a section label
+          const colonIndex = firstLine.indexOf(':');
+          if (colonIndex > 0 && colonIndex < 30 && colonIndex === firstLine.length - 1) {
+            // This looks like a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:", "Bridge:")
+            sectionLabel = firstLine.substring(0, colonIndex);
+            // Remove the label line from content
+            content = lines.slice(1).join('\n');
+          }
+        }
+        
         return `
           <div class="lyrics-verse">
             <div class="verse-number">
-              Verse ${index + 1}
+              ${sectionLabel}
             </div>
             <div class="verse-content">
-              ${lines.map(line => `<p>${line.trim()}</p>`).join('')}
+              ${content.split('\n').filter(line => line.trim() !== '').map(line => '<p>' + line.trim() + '</p>').join('')}
             </div>
           </div>
         `;
@@ -1284,21 +1299,33 @@ function printSongLyrics() {
       </div>
       
       <div class="song-content">
-        ${song.lyrics && song.lyrics.length > 0 ? `
-          ${song.lyrics.map((verse, index) => `
-            <div class="song-verse">
-              <div class="verse-number">Verse ${index + 1}</div>
-              <div class="verse-text">
-                ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
-              </div>
-            </div>
-          `).join('')}
-        ` : ''}
+        ${song.lyrics && song.lyrics.length > 0 ? song.lyrics.map((verse, index) => {
+            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:")
+            const lines = verse.split('\n').filter(line => line.trim());
+            let sectionLabel = 'Verse ' + (index + 1);
+            let content = verse;
+            
+            if (lines.length > 0) {
+              const firstLine = lines[0].trim();
+              // Improved detection: check if first line ends with a colon and looks like a section label
+              const colonIndex = firstLine.indexOf(':');
+              if (colonIndex > 0 && colonIndex < 30 && colonIndex === firstLine.length - 1) {
+                // This looks like a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:", "Bridge:")
+                sectionLabel = firstLine.substring(0, colonIndex);
+                // Remove the label line from content
+                content = lines.slice(1).join('\n');
+              }
+            }
+            
+            return '<div class="song-verse"><div class="verse-number">' + sectionLabel + '</div><div class="verse-text">' + 
+                   content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('') + 
+                   '</div></div>';
+          }).join('') : ''}
         ${song.chorus ? `
           <div class="chorus-section">
             <div class="chorus-label">Chorus</div>
             <div class="chorus-text">
-              ${song.chorus.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
+              ${song.chorus.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
             </div>
           </div>
         ` : ''}
