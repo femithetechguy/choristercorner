@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="twitterBgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#8B5CF6;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#A855F7;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7C3AED;stop-opacity:1" />
+    </linearGradient>
+    <filter id="twitterTextShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="2" dy="4" stdDeviation="3" flood-color="#000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <rect width="1200" height="675" fill="url(#twitterBgGrad)"/>
+  
+  <!-- Musical note illustration -->
+  <g fill="white" opacity="0.9">
+    <!-- Main large note -->
+    <ellipse cx="180" cy="480" rx="55" ry="45" transform="rotate(-20 180 480)"/>
+    <rect x="225" y="280" width="28" height="200" rx="14"/>
+    <path d="M253 280 Q330 250 365 320 Q330 350 253 335 Z"/>
+    
+    <!-- Secondary notes -->
+    <ellipse cx="110" cy="420" rx="28" ry="23" transform="rotate(-20 110 420)"/>
+    <rect x="132" y="360" width="16" height="60" rx="8"/>
+    
+    <circle cx="365" cy="430" r="28"/>
+    <rect x="352" y="350" width="32" height="80" rx="16"/>
+    
+    <!-- Additional decorative notes -->
+    <circle cx="450" cy="200" r="20"/>
+    <rect x="440" y="160" width="20" height="40" rx="10"/>
+    
+    <ellipse cx="80" cy="250" rx="18" ry="15" transform="rotate(-15 80 250)"/>
+    <rect x="95" y="220" width="12" height="30" rx="6"/>
+  </g>
+  
+  <!-- Text content -->
+  <g fill="white" filter="url(#twitterTextShadow)">
+    <text x="550" y="300" font-family="Arial, sans-serif" font-size="68" font-weight="bold">ChoristerCorner</text>
+    <text x="550" y="360" font-family="Arial, sans-serif" font-size="30" opacity="0.9">Worship Songs, Chords & Resources</text>
+    <text x="550" y="400" font-family="Arial, sans-serif" font-size="26" opacity="0.8">for Church Musicians</text>
+    
+    <!-- Feature highlights -->
+    <text x="550" y="480" font-family="Arial, sans-serif" font-size="22" opacity="0.7">✓ Song Library with Lyrics ✓ YouTube Integration</text>
+    <text x="550" y="510" font-family="Arial, sans-serif" font-size="22" opacity="0.7">✓ Mobile-Friendly ✓ Free Access</text>
+  </g>
+  
+  <!-- Decorative elements -->
+  <g fill="rgba(255,255,255,0.1)">
+    <circle cx="950" cy="150" r="35"/>
+    <circle cx="1050" cy="520" r="28"/>
+    <circle cx="90" cy="120" r="22"/>
+  </g>
+  
+  <!-- Musical staff lines (subtle) -->
+  <g stroke="rgba(255,255,255,0.12)" stroke-width="2" fill="none">
+    <line x1="50" y1="530" x2="500" y2="530"/>
+    <line x1="50" y1="515" x2="500" y2="515"/>
+    <line x1="50" y1="500" x2="500" y2="500"/>
+    <line x1="50" y1="485" x2="500" y2="485"/>
+    <line x1="50" y1="470" x2="500" y2="470"/>
+  </g>
+</svg>
