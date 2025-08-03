@@ -415,18 +415,7 @@ function renderHymnCard(hymn) {
           </div>
         </div>
         <div class="hymn-card-actions">
-          <button onclick="playHymnEmbedded({
-            serial_number: ${safeHymn.serial_number},
-            title: '${escapeString(safeHymn.title)}',
-            author: '${escapeString(safeHymn.author)}',
-            meter: '${escapeString(safeHymn.meter)}',
-            category: '${escapeString(safeHymn.category)}',
-            year: ${safeHymn.year || 'null'},
-            channel: '${escapeString(safeHymn.channel)}',
-            duration: '${escapeString(safeHymn.duration)}',
-            url: '${escapeString(safeHymn.url)}',
-            lyrics: ${JSON.stringify(safeHymn.lyrics)}
-          })" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''}>
+          <button onclick="playHymnBySerial(${safeHymn.serial_number})" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''}>
             <i class="bi bi-play-fill mr-1"></i>
             Play
           </button>
@@ -513,18 +502,7 @@ function renderHymnListItem(hymn) {
           </div>
           
           <div class="flex items-center space-x-2 ml-4">
-            <button onclick="playHymnEmbedded({
-              serial_number: ${safeHymn.serial_number},
-              title: '${escapeString(safeHymn.title)}',
-              author: '${escapeString(safeHymn.author)}',
-              meter: '${escapeString(safeHymn.meter)}',
-              category: '${escapeString(safeHymn.category)}',
-              year: ${safeHymn.year || 'null'},
-              channel: '${escapeString(safeHymn.channel)}',
-              duration: '${escapeString(safeHymn.duration)}',
-              url: '${escapeString(safeHymn.url)}',
-              lyrics: ${JSON.stringify(safeHymn.lyrics)}
-            })" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''} title="Play hymn">
+            <button onclick="playHymnBySerial(${safeHymn.serial_number})" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''} title="Play hymn">
               <i class="bi bi-play-fill"></i>
             </button>
             <button onclick="viewHymnLyrics(${safeHymn.serial_number})" class="btn btn-outline btn-sm" title="View lyrics">
@@ -552,6 +530,19 @@ function renderHymnListItem(hymn) {
         </div>
       </div>
     `;
+  }
+}
+
+// Play hymn by serial number (safe wrapper for playHymnEmbedded)
+function playHymnBySerial(serialNumber) {
+  console.log("[DEBUG] Playing hymn by serial number:", serialNumber);
+  
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === serialNumber);
+  if (hymn) {
+    playHymnEmbedded(hymn);
+  } else {
+    console.warn("[DEBUG] Hymn not found for serial number:", serialNumber);
+    alert('Hymn not found');
   }
 }
 

@@ -206,7 +206,6 @@ function renderSharedPlayer() {
         <div class="bg-white overflow-y-auto p-6">
           <div class="max-w-none">
             <div class="mb-4">
-              <h2 class="text-xl font-bold text-gray-900 mb-2">${item.title}</h2>
               <p class="text-gray-700 mb-1 font-medium">by ${item.author || item.channel || 'Unknown Artist'}</p>
               ${type === 'hymn' ? `
                 <p class="text-sm text-gray-700 font-medium">
