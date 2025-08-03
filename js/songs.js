@@ -23,7 +23,9 @@ let songsData = {
   // Player collapse state
   isPlayerCollapsed: false,
   // Playlist updater state
-  showPlaylistUpdater: false
+  showPlaylistUpdater: false,
+  // URL handling state to prevent duplicate processing
+  urlParametersProcessed: false
 };
 
 // Load songs data
@@ -58,8 +60,23 @@ function handleSongUrlParameters() {
   const urlParams = new URLSearchParams(window.location.search);
   const songId = urlParams.get('song');
   
-  if (songId) {
-    console.log("[DEBUG] Direct song link detected:", songId);
+  // Only process if there's a song ID in the URL and we haven't processed this specific URL yet
+  if (!songId) {
+    console.log("[DEBUG] No song ID in URL, skipping URL parameter processing");
+    return;
+  }
+  
+  // Prevent processing the same URL parameters multiple times
+  const currentUrl = window.location.href;
+  if (songsData.urlParametersProcessed && songsData.lastProcessedUrl === currentUrl) {
+    console.log("[DEBUG] URL parameters already processed for this URL, skipping");
+    return;
+  }
+  
+  console.log("[DEBUG] Direct song link detected:", songId);
+  songsData.urlParametersProcessed = true; // Mark as processed
+  songsData.lastProcessedUrl = currentUrl; // Store the processed URL
+    
     const song = songsData.allSongs.find(s => s.serial_number === parseInt(songId));
     
     if (song) {
@@ -101,11 +118,16 @@ function handleSongUrlParameters() {
       // Clear any pending song ID if song doesn't exist
       sessionStorage.removeItem('pendingSongId');
     }
-  }
 }
 
 // Check for pending song URL parameters (for mobile reliability)
 function checkPendingSongUrlParameters() {
+  // Don't process if we already handled URL parameters
+  if (songsData.urlParametersProcessed) {
+    console.log("[DEBUG] URL parameters already processed, skipping pending check");
+    return;
+  }
+  
   const pendingSongId = sessionStorage.getItem('pendingSongId');
   
   if (pendingSongId && songsData.allSongs.length > 0) {
@@ -174,10 +196,16 @@ window.renderSongsTab = function(tab) {
   if (!songsData.isLoaded) {
     loadSongsData();
   } else {
-    // Check for pending song parameters when tab is rendered (mobile reliability)
-    setTimeout(() => {
-      checkPendingSongUrlParameters();
-    }, 100);
+    // Only check for pending song parameters on first load or if there are actual URL parameters
+    // Don't re-process if we're just switching tabs
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    
+    if (songId && !songsData.urlParametersProcessed) {
+      setTimeout(() => {
+        checkPendingSongUrlParameters();
+      }, 100);
+    }
   }
   
   if (songsData.showLyrics && songsData.selectedSong) {
@@ -275,8 +303,8 @@ window.renderSongsTab = function(tab) {
         ${renderSongsContainer()}
       </div>
 
-      <!-- Embedded Video Player with Lyrics -->
-      ${renderEmbeddedVideoPlayer()}
+      <!-- Embedded Video Player with Lyrics (only render if not already present) -->
+      ${document.getElementById('video-player-section') ? '' : renderEmbeddedVideoPlayer()}
     </div>
   `;
 };
@@ -945,8 +973,14 @@ function updateVideoPlayerDisplay() {
       const playerHTML = renderEmbeddedVideoPlayer();
       document.body.insertAdjacentHTML('beforeend', playerHTML);
     } else {
-      // Update existing player content
-      existingPlayer.outerHTML = renderEmbeddedVideoPlayer();
+      // Only update if the song has actually changed
+      const currentSongSerial = existingPlayer.querySelector('[title*="Copy page link"]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
+      if (currentSongSerial !== String(songsData.currentPlayingSong.serial_number)) {
+        console.log("[DEBUG] Song changed, updating video player");
+        existingPlayer.outerHTML = renderEmbeddedVideoPlayer();
+      } else {
+        console.log("[DEBUG] Same song playing, keeping existing video player");
+      }
     }
   } else {
     // Remove body classes and player
@@ -1234,6 +1268,9 @@ window.addEventListener('load', () => {
 // Handle browser back/forward navigation
 window.addEventListener('popstate', () => {
   console.log("[DEBUG] Popstate event, checking URL parameters");
+  // Reset the processing flag for new navigation
+  songsData.urlParametersProcessed = false;
+  
   if (songsData.isLoaded) {
     handleSongUrlParameters();
   } else {
