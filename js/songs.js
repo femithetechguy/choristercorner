@@ -216,7 +216,7 @@ window.renderSongsTab = function(tab) {
                   type="text" 
                   id="song-search"
                   class="form-input pl-10 w-full" 
-                  placeholder="Search songs, artists, or channels..."
+                  placeholder="Search songs, artists, channels, or lyrics..."
                   value="${songsData.searchTerm}"
                   oninput="handleSearch(this.value)"
                 >
@@ -767,13 +767,40 @@ function filterSongs() {
     return;
   }
 
+  console.log("[DEBUG] Filtering songs with search term:", songsData.searchTerm);
+  
   songsData.filteredSongs = songsData.allSongs.filter(song => {
     const title = (song.title || '').toLowerCase();
     const channel = (song.channel || '').toLowerCase();
     const searchTerm = songsData.searchTerm;
     
-    return title.includes(searchTerm) || channel.includes(searchTerm);
+    // Check title and channel
+    const titleMatch = title.includes(searchTerm);
+    const channelMatch = channel.includes(searchTerm);
+    
+    // Check lyrics if available
+    let lyricsMatch = false;
+    if (song.lyrics && Array.isArray(song.lyrics)) {
+      lyricsMatch = song.lyrics.some(verse => 
+        (verse || '').toLowerCase().includes(searchTerm)
+      );
+    }
+    
+    const isMatch = titleMatch || channelMatch || lyricsMatch;
+    
+    // Debug log matches
+    if (isMatch) {
+      const matchTypes = [];
+      if (titleMatch) matchTypes.push('title');
+      if (channelMatch) matchTypes.push('channel');
+      if (lyricsMatch) matchTypes.push('lyrics');
+      console.log(`[DEBUG] Match found in ${song.title} - matched in: ${matchTypes.join(', ')}`);
+    }
+    
+    return isMatch;
   });
+  
+  console.log("[DEBUG] Filtered results:", songsData.filteredSongs.length, "songs");
 }
 
 // Sort songs
@@ -890,7 +917,7 @@ function updateSearchPlaceholder() {
         searchContainer.appendChild(playingIcon);
       }
     } else {
-      searchInput.placeholder = 'Search songs, artists, or channels...';
+      searchInput.placeholder = 'Search songs, artists, channels, or lyrics...';
       // Remove the playing indicator
       const playingIcon = searchContainer.querySelector('.playing-indicator');
       if (playingIcon) {
