@@ -37,6 +37,21 @@
           "list": "json/songs.json"
         },
         {
+          "name": "Hymns",
+          "biIcon": "bi-book",
+          "jsFile": "js/hymns.js",
+          "cssFile": "css/hymns.css",
+          "content": [
+            "Traditional hymns library with search and filter",
+            "Fields: Title, Author, Year, Category",
+            "Hymn cards with sheet music and lyrics",
+            "Filters: Category, Time Period, Meter",
+            "Individual hymn pages with full lyrics and notation",
+            "Optional audio playback of hymn melodies"
+          ],
+          "list": "json/hymns.json"
+        },
+        {
           "name": "About",
           "biIcon": "bi-info-circle",
           "jsFile": "js/about.js",

@@ -8,8 +8,10 @@ console.log("[DEBUG] Home tab module loaded");
 // Home tab data and state
 let homeData = {
   featuredSongs: [],
+  featuredHymns: [],
   stats: {
     totalSongs: 0,
+    totalHymns: 0,
     totalArtists: 0,
     totalMinutes: 0
   },
@@ -22,18 +24,21 @@ async function loadHomeData() {
     console.log("[DEBUG] Loading home data");
     
     // Load songs data for statistics and featured content
-    const response = await fetch('json/songs.json');
-    const songsData = await response.json();
+    const songsResponse = await fetch('json/songs.json');
+    const songsData = await songsResponse.json();
+    
+    // Load hymns data for statistics and featured content
+    const hymnsResponse = await fetch('json/hymns.json');
+    const hymnsData = await hymnsResponse.json();
     
     if (Array.isArray(songsData)) {
       homeData.featuredSongs = songsData.slice(0, 3); // Get first 3 songs as featured
       homeData.stats.totalSongs = songsData.length;
       
-      // Calculate unique artists
+      // Calculate unique artists from songs
       const uniqueChannels = new Set(songsData.map(song => song.channel));
-      homeData.stats.totalArtists = uniqueChannels.size;
       
-      // Calculate total minutes (rough conversion from duration strings)
+      // Calculate total minutes from songs (rough conversion from duration strings)
       let totalMinutes = 0;
       songsData.forEach(song => {
         if (song.duration) {
@@ -43,6 +48,31 @@ async function loadHomeData() {
           }
         }
       });
+      
+      // Add hymns data
+      if (Array.isArray(hymnsData)) {
+        homeData.featuredHymns = hymnsData.slice(0, 3); // Get first 3 hymns as featured
+        homeData.stats.totalHymns = hymnsData.length;
+        
+        // Add hymn channels to unique artists
+        hymnsData.forEach(hymn => {
+          if (hymn.channel) {
+            uniqueChannels.add(hymn.channel);
+          }
+        });
+        
+        // Add hymn minutes to total
+        hymnsData.forEach(hymn => {
+          if (hymn.duration) {
+            const match = hymn.duration.match(/(\d+)\s*minutes?/);
+            if (match) {
+              totalMinutes += parseInt(match[1]);
+            }
+          }
+        });
+      }
+      
+      homeData.stats.totalArtists = uniqueChannels.size;
       homeData.stats.totalMinutes = totalMinutes;
       
       homeData.isLoaded = true;
@@ -75,12 +105,19 @@ window.renderHomeTab = function(tab) {
         </p>
         
         <!-- Quick Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 max-w-5xl mx-auto mb-8">
           <div class="card hover:scale-105 transition-transform">
             <div class="card-body text-center">
               <i class="bi bi-music-note-list text-3xl text-blue-600 mb-3"></i>
               <div class="text-3xl font-bold text-gray-900" id="total-songs">${homeData.stats.totalSongs}</div>
               <div class="text-gray-600">Total Songs</div>
+            </div>
+          </div>
+          <div class="card hover:scale-105 transition-transform">
+            <div class="card-body text-center">
+              <i class="bi bi-book text-3xl text-purple-600 mb-3"></i>
+              <div class="text-3xl font-bold text-gray-900" id="total-hymns">${homeData.stats.totalHymns}</div>
+              <div class="text-gray-600">Traditional Hymns</div>
             </div>
           </div>
           <div class="card hover:scale-105 transition-transform">
@@ -92,7 +129,7 @@ window.renderHomeTab = function(tab) {
           </div>
           <div class="card hover:scale-105 transition-transform">
             <div class="card-body text-center">
-              <i class="bi bi-clock text-3xl text-purple-600 mb-3"></i>
+              <i class="bi bi-clock text-3xl text-orange-600 mb-3"></i>
               <div class="text-3xl font-bold text-gray-900">${homeData.stats.totalMinutes}+</div>
               <div class="text-gray-600">Minutes of Worship</div>
             </div>
@@ -115,6 +152,21 @@ window.renderHomeTab = function(tab) {
         </div>
       </div>
 
+      <!-- Featured Hymns Section -->
+      <div class="card mb-8">
+        <div class="card-header">
+          <h2 class="text-2xl font-semibold text-gray-900 flex items-center">
+            <i class="bi bi-book text-purple-500 mr-3"></i>
+            Featured Traditional Hymns
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="featured-hymns-container">
+            ${renderFeaturedHymns()}
+          </div>
+        </div>
+      </div>
+
       <!-- Quick Actions Section -->
       <div class="card">
         <div class="card-header">
@@ -129,13 +181,13 @@ window.renderHomeTab = function(tab) {
               <i class="bi bi-search text-2xl text-blue-600 mb-2"></i>
               <div class="text-sm font-medium text-blue-900">Search Songs</div>
             </button>
-            <button class="quick-action-btn bg-green-50 hover:bg-green-100 border-green-200" onclick="navigateToSongs()">
-              <i class="bi bi-collection-play text-2xl text-green-600 mb-2"></i>
-              <div class="text-sm font-medium text-green-900">Browse Library</div>
+            <button class="quick-action-btn bg-purple-50 hover:bg-purple-100 border-purple-200" onclick="navigateToHymns()">
+              <i class="bi bi-book text-2xl text-purple-600 mb-2"></i>
+              <div class="text-sm font-medium text-purple-900">Browse Hymns</div>
             </button>
-            <button class="quick-action-btn bg-purple-50 hover:bg-purple-100 border-purple-200" onclick="showFavorites()">
-              <i class="bi bi-heart text-2xl text-purple-600 mb-2"></i>
-              <div class="text-sm font-medium text-purple-900">View Favorites</div>
+            <button class="quick-action-btn bg-green-50 hover:bg-green-100 border-green-200" onclick="showFavorites()">
+              <i class="bi bi-heart text-2xl text-green-600 mb-2"></i>
+              <div class="text-sm font-medium text-green-900">View Favorites</div>
             </button>
             <button class="quick-action-btn bg-orange-50 hover:bg-orange-100 border-orange-200" onclick="navigateToContact()">
               <i class="bi bi-plus-circle text-2xl text-orange-600 mb-2"></i>
@@ -158,22 +210,22 @@ window.renderHomeTab = function(tab) {
             <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <i class="bi bi-1-circle text-lg text-purple-600 mt-1"></i>
               <div>
-                <h3 class="font-medium text-gray-900">Explore the Song Library</h3>
-                <p class="text-sm text-gray-600">Browse our collection of worship songs with lyrics and YouTube links.</p>
+                <h3 class="font-medium text-gray-900">Explore the Music Library</h3>
+                <p class="text-sm text-gray-600">Browse our collection of worship songs and traditional hymns with lyrics and YouTube links.</p>
               </div>
             </div>
             <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <i class="bi bi-2-circle text-lg text-purple-600 mt-1"></i>
               <div>
                 <h3 class="font-medium text-gray-900">Use the Search Feature</h3>
-                <p class="text-sm text-gray-600">Find songs by title, artist, or browse by channel.</p>
+                <p class="text-sm text-gray-600">Find songs and hymns by title, artist, or browse by channel.</p>
               </div>
             </div>
             <div class="flex items-start space-x-3 p-3 bg-gray-50 rounded-lg">
               <i class="bi bi-3-circle text-lg text-purple-600 mt-1"></i>
               <div>
                 <h3 class="font-medium text-gray-900">Read the Lyrics</h3>
-                <p class="text-sm text-gray-600">Each song includes structured lyrics organized by verses and choruses.</p>
+                <p class="text-sm text-gray-600">Each song and hymn includes structured lyrics organized by verses and choruses.</p>
               </div>
             </div>
           </div>
@@ -222,11 +274,57 @@ function renderFeaturedSongs() {
   `).join('');
 }
 
+// Render featured hymns
+function renderFeaturedHymns() {
+  if (!homeData.featuredHymns.length) {
+    return `
+      <div class="col-span-full text-center py-8">
+        <i class="bi bi-book text-4xl text-gray-400 mb-3"></i>
+        <p class="text-gray-500">Featured hymns will appear here once data is loaded.</p>
+      </div>
+    `;
+  }
+
+  return homeData.featuredHymns.map(hymn => `
+    <div class="bg-purple-50 rounded-lg p-4 border border-purple-200 hover:shadow-md transition-shadow">
+      <div class="flex items-center justify-between mb-3">
+        <i class="bi bi-book text-2xl text-purple-600"></i>
+        <span class="text-sm text-purple-500">${hymn.duration || 'N/A'}</span>
+      </div>
+      <h3 class="font-semibold text-gray-900 mb-1 line-clamp-2">${hymn.title || 'Untitled'}</h3>
+      <p class="text-sm text-gray-600 mb-3">${hymn.channel || 'Unknown Artist'}</p>
+      <div class="flex space-x-2">
+        <button 
+          onclick="playHymn('${hymn.url}')" 
+          class="flex-1 btn btn-secondary btn-sm"
+          ${!hymn.url ? 'disabled' : ''}
+        >
+          <i class="bi bi-play-fill"></i>
+          <span>Listen</span>
+        </button>
+        <button 
+          onclick="viewHymnLyrics(${hymn.serial_number})" 
+          class="btn btn-outline btn-sm"
+        >
+          <i class="bi bi-file-text"></i>
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
 // Home tab specific functions
 function navigateToSongs() {
   console.log("[DEBUG] Navigating to Songs tab");
   if (typeof window.switchToTab === 'function') {
     window.switchToTab('Songs');
+  }
+}
+
+function navigateToHymns() {
+  console.log("[DEBUG] Navigating to Hymns tab");
+  if (typeof window.switchToTab === 'function') {
+    window.switchToTab('Hymns');
   }
 }
 
@@ -252,12 +350,30 @@ function playSong(url) {
   }
 }
 
+function playHymn(url) {
+  console.log("[DEBUG] Playing hymn:", url);
+  if (url && url !== 'undefined') {
+    window.open(url, '_blank');
+  } else {
+    alert('Hymn URL not available');
+  }
+}
+
 function viewSongLyrics(serialNumber) {
   console.log("[DEBUG] Viewing lyrics for song:", serialNumber);
   // Navigate to songs tab and show specific song
   if (typeof window.switchToTab === 'function') {
     window.switchToTab('Songs');
     // TODO: Implement song filtering by serial number
+  }
+}
+
+function viewHymnLyrics(serialNumber) {
+  console.log("[DEBUG] Viewing lyrics for hymn:", serialNumber);
+  // Navigate to hymns tab and show specific hymn
+  if (typeof window.switchToTab === 'function') {
+    window.switchToTab('Hymns');
+    // TODO: Implement hymn filtering by serial number
   }
 }
 

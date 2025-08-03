@@ -1,0 +1,470 @@
+/* Hymns Tab Specific Styles */
+/* This file contains styles specific to the hymns tab functionality */
+
+/* Use CSS variables from styles.css for consistency */
+
+/* Hymns Header Styles */
+.hymns-header {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  padding: 2rem;
+  border-radius: var(--border-radius-lg);
+  margin-bottom: 2rem;
+}
+
+.hymns-header h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hymns-header p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+/* Hymn Cards Grid */
+.hymns-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.hymn-card {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s ease;
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+}
+
+.hymn-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary);
+}
+
+.hymn-card-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.hymn-number {
+  display: inline-block;
+  background: var(--color-primary);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--border-radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.hymn-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
+
+.hymn-author {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+.hymn-year {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.hymn-card-body {
+  padding: 1rem 1.5rem;
+}
+
+.hymn-category {
+  display: inline-block;
+  background: var(--color-accent);
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--border-radius);
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.hymn-meter {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  margin-bottom: 0.75rem;
+}
+
+.hymn-lyrics-preview {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.hymn-card-actions {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: var(--bg-gray-50);
+  border-top: 1px solid var(--border-color);
+}
+
+.hymn-card-actions .btn {
+  flex: 1;
+}
+
+/* Hymns List View */
+.hymns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hymn-list-item {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border-color);
+  transition: all 0.2s ease;
+}
+
+.hymn-list-item:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-primary);
+}
+
+.hymn-list-content {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 1rem;
+  padding: 1.5rem;
+  align-items: center;
+}
+
+.hymn-list-number {
+  background: var(--color-primary);
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--border-radius);
+  font-weight: 600;
+  font-size: 0.9rem;
+  min-width: 3rem;
+  text-align: center;
+}
+
+.hymn-list-info {
+  min-width: 0; /* Allow text truncation */
+}
+
+.hymn-list-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.hymn-list-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.hymn-list-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Hymn Lyrics View */
+.hymn-lyrics-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.hymn-lyrics-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  color: white;
+  border-radius: var(--border-radius-lg);
+}
+
+.hymn-lyrics-number {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: var(--border-radius-full);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  display: inline-block;
+}
+
+.hymn-lyrics-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.hymn-lyrics-author {
+  font-size: 1.1rem;
+  opacity: 0.9;
+  margin-bottom: 0.25rem;
+}
+
+.hymn-lyrics-year {
+  font-size: 1rem;
+  opacity: 0.8;
+}
+
+.hymn-lyrics-content {
+  background: white;
+  border-radius: var(--border-radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.hymn-verse {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: var(--bg-gray-50);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--color-primary);
+}
+
+.hymn-verse:last-child {
+  margin-bottom: 0;
+}
+
+.hymn-verse-number {
+  font-weight: 600;
+  color: var(--color-primary);
+  margin-bottom: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.hymn-verse-text {
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.hymn-verse-text p {
+  margin-bottom: 0.5rem;
+}
+
+.hymn-verse-text p:last-child {
+  margin-bottom: 0;
+}
+
+/* Audio Player Styles */
+.audio-player-section {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: white;
+  border-top: 1px solid var(--border-color);
+  box-shadow: var(--shadow-xl);
+  z-index: 40;
+  transform: translateY(100%);
+  transition: transform 0.3s ease;
+}
+
+.audio-player-section.visible {
+  transform: translateY(0);
+}
+
+.audio-player-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--bg-gray-50);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.audio-player-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.audio-player-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.audio-player-content {
+  padding: 1.5rem;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+/* Search and Filter Styles */
+.hymns-search-container {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.hymns-search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.5rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius-lg);
+  font-size: 1rem;
+  transition: border-color 0.2s ease;
+}
+
+.hymns-search-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(var(--color-primary-rgb), 0.1);
+}
+
+.hymns-search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  font-size: 1.1rem;
+}
+
+.hymns-filters {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.hymn-filter-select {
+  padding: 0.75rem;
+  border: 2px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background: white;
+  font-size: 0.9rem;
+  transition: border-color 0.2s ease;
+}
+
+.hymn-filter-select:focus {
+  outline: none;
+  border-color: var(--color-primary);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hymns-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .hymn-card-header {
+    padding: 1rem;
+  }
+  
+  .hymn-card-body {
+    padding: 1rem;
+  }
+  
+  .hymn-card-actions {
+    padding: 1rem;
+    flex-direction: column;
+  }
+  
+  .hymn-list-content {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    text-align: center;
+  }
+  
+  .hymn-list-actions {
+    justify-content: center;
+  }
+  
+  .hymn-lyrics-title {
+    font-size: 2rem;
+  }
+  
+  .hymn-lyrics-content {
+    padding: 1.5rem;
+  }
+  
+  .hymns-filters {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Animation Classes */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hymn-card,
+.hymn-list-item {
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* Loading States */
+.hymns-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.hymns-loading i {
+  animation: spin 1s linear infinite;
+  margin-right: 0.5rem;
+}
+
+.hymns-empty {
+  text-align: center;
+  padding: 3rem;
+  color: var(--text-secondary);
+}
+
+.hymns-empty i {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: var(--text-muted);
+}
+
+/* Print Styles */
+@media print {
+  .hymn-card-actions,
+  .hymns-filters,
+  .audio-player-section {
+    display: none !important;
+  }
+  
+  .hymn-lyrics-content {
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+}
