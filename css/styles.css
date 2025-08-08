@@ -419,6 +419,23 @@ a:hover {
   box-shadow: var(--shadow-md);
 }
 
+/* === PWA INSTALL BUTTON STYLES === */
+#pwa-install-btn {
+  display: none;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  animation: pulse 2s infinite;
+}
+
+#pwa-install-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.4);
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
 /* === UTILITY CLASSES === */
 .line-clamp-2 {
   display: -webkit-box;
