@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Offline - ChoristerCorner</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="bg-gray-50">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="text-center max-w-md mx-auto p-6">
+            <!-- Offline Icon -->
+            <div class="mb-6">
+                <i class="bi bi-wifi-off text-6xl text-gray-400"></i>
+            </div>
+            
+            <!-- Main Message -->
+            <h1 class="text-2xl font-bold text-gray-900 mb-4">You're Offline</h1>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+                It looks like you're not connected to the internet. Don't worry! 
+                ChoristerCorner works offline with cached content.
+            </p>
+            
+            <!-- Action Buttons -->
+            <div class="space-y-3">
+                <button onclick="window.location.reload()" class="btn btn-primary w-full">
+                    <i class="bi bi-arrow-clockwise mr-2"></i>
+                    Try Again
+                </button>
+                
+                <button onclick="goToHome()" class="btn btn-outline w-full">
+                    <i class="bi bi-house mr-2"></i>
+                    Go to Home
+                </button>
+            </div>
+            
+            <!-- Offline Features -->
+            <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                <h3 class="font-semibold text-blue-900 mb-2">Available Offline:</h3>
+                <ul class="text-sm text-blue-700 space-y-1">
+                    <li>• Previously viewed songs and hymns</li>
+                    <li>• Cached lyrics and content</li>
+                    <li>• Basic navigation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function goToHome() {
+            window.location.href = '/';
+        }
+        
+        // Check connection status
+        function checkConnection() {
+            if (navigator.onLine) {
+                window.location.reload();
+            }
+        }
+        
+        // Check every 5 seconds if we're back online
+        setInterval(checkConnection, 5000);
+        
+        // Listen for online event
+        window.addEventListener('online', () => {
+            window.location.reload();
+        });
+    </script>
+</body>
+</html>
