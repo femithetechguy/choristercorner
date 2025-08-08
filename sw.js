@@ -1,10 +1,11 @@
 const CACHE_NAME = 'choristercorner-v1.0.0';
 const OFFLINE_URL = '/offline.html';
 
-// Resources to cache immediately
+// Resources to cache immediately - ONLY FILES THAT EXIST
 const STATIC_CACHE_URLS = [
   '/',
   '/index.html',
+  '/manifest.json',
   '/css/styles.css',
   '/css/tailwind-custom.css',
   '/css/home.css',
@@ -23,6 +24,10 @@ const STATIC_CACHE_URLS = [
   '/json/songs.json',
   '/json/hymns.json',
   '/json/app.json',
+  '/images/favicon.ico',
+  '/images/favicon.svg',
+  '/images/favicon-32x32.png',
+  '/images/favicon-16x16.png',
   OFFLINE_URL
 ];
 
@@ -33,7 +38,15 @@ self.addEventListener('install', event => {
     caches.open(CACHE_NAME)
       .then(cache => {
         console.log('[SW] Caching static resources');
-        return cache.addAll(STATIC_CACHE_URLS);
+        // Cache files one by one to avoid failing on missing files
+        return Promise.allSettled(
+          STATIC_CACHE_URLS.map(url => 
+            cache.add(url).catch(error => {
+              console.warn(`[SW] Failed to cache ${url}:`, error);
+              return null;
+            })
+          )
+        );
       })
       .then(() => {
         console.log('[SW] Static resources cached successfully');
