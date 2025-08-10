@@ -187,9 +187,12 @@ function renderCurrentTabContent() {
   if (currentTab.name === "Hymns" && window.renderHymnsTab) {
     return window.renderHymnsTab(currentTab);
   }
-  if (currentTab.name === "Metronome" && window.renderMetronomeTab) {  // ADD THIS
-    return window.renderMetronomeTab(currentTab);                      // ADD THIS
-  }                                                                     // ADD THIS
+  if (currentTab.name === "Metronome" && window.renderMetronomeTab) {
+    return window.renderMetronomeTab(currentTab);
+  }
+  if (currentTab.name === "Drummer" && window.renderDrummerTab) {    // ADD THIS
+    return window.renderDrummerTab(currentTab);                       // ADD THIS
+  }                                                                    // ADD THIS
   if (currentTab.name === "About" && window.renderAboutTab) {
     return window.renderAboutTab(currentTab);
   }
