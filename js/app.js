@@ -12,7 +12,8 @@ function loadTabModules() {
     'js/home.js',
     'js/songs.js',
     'js/hymns.js',
-    'js/metronome.js',        // Add this line
+    'js/metronome.js',
+    'js/drummer.js',          // ADD THIS LINE
     'js/about.js',
     'js/contact.js',
     'js/playlist-updater.js'

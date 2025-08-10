@@ -59,6 +59,17 @@
           ]
         },
         {
+          "name": "Drummer",
+          "biIcon": "bi-disc",
+          "jsFile": "js/drummer.js",
+          "cssFile": "css/drummer.css",
+          "content": [
+            "Interactive drum machine for worship practice",
+            "Multiple drum patterns and styles",
+            "Perfect for rhythm training and practice sessions"
+          ]
+        },
+        {
           "name": "About",
           "biIcon": "bi-info-circle",
           "jsFile": "js/about.js",
