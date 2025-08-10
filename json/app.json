@@ -43,13 +43,20 @@
           "cssFile": "css/hymns.css",
           "content": [
             "Traditional hymns library with search and filter",
-            "Fields: Title, Author, Year, Category",
-            "Hymn cards with sheet music and lyrics",
-            "Filters: Category, Time Period, Meter",
-            "Individual hymn pages with full lyrics and notation",
-            "Optional audio playback of hymn melodies"
+            "Find hymns by title, author, or category"
           ],
           "list": "json/hymns.json"
+        },
+        {
+          "name": "Metronome",
+          "biIcon": "bi-clock",
+          "jsFile": "js/metronome.js",
+          "cssFile": "css/metronome.css",
+          "content": [
+            "Interactive metronome with adjustable BPM",
+            "Visual beat indicator",
+            "Preset tempos for common worship songs"
+          ]
         },
         {
           "name": "About",
@@ -59,10 +66,7 @@
           "content": [
             "App mission and vision",
             "Features overview",
-            "How to use the platform",
-            "Community guidelines",
-            "Version history and updates",
-            "Credits and acknowledgments"
+            "How to use the platform"
           ]
         },
         {
@@ -71,12 +75,9 @@
           "jsFile": "js/contact.js",
           "cssFile": "css/contact.css",
           "content": [
-            "Contact form for feedback and suggestions",
-            "Fields: Name, Email, Subject, Message",
-            "Social media links",
-            "Support information",
-            "Feature request submission",
-            "Bug reporting form"
+            "Get in touch with us",
+            "Feedback and suggestions",
+            "Support and help"
           ]
         }
       ]

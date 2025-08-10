@@ -1,4 +1,11 @@
-const CACHE_NAME = 'choristercorner-v1.0.0';
+self.addEventListener('message', (event) => {
+  if (event.data === 'skipWaiting') {
+    self.skipWaiting();
+  }
+});
+
+// Update cache name with timestamp to force update
+const CACHE_NAME = 'choristercorner-v1.0.2'; // Increment version to force update
 const OFFLINE_URL = '/offline.html';
 
 // Resources to cache immediately - ONLY FILES THAT EXIST
@@ -11,6 +18,7 @@ const STATIC_CACHE_URLS = [
   '/css/home.css',
   '/css/songs.css',
   '/css/hymns.css',
+  '/css/metronome.css',     // Add this line
   '/css/about.css',
   '/css/contact.css',
   '/js/app.js',
@@ -18,6 +26,7 @@ const STATIC_CACHE_URLS = [
   '/js/home.js',
   '/js/songs.js',
   '/js/hymns.js',
+  '/js/metronome.js',       // Add this line
   '/js/about.js',
   '/js/contact.js',
   '/js/shared-player.js',
