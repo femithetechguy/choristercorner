@@ -59,92 +59,136 @@ if (document.readyState === 'loading') {
 
 // Register service worker for PWA functionality
 if ('serviceWorker' in navigator) {
+  let refreshing = false;
+  
+  // Listen for messages from service worker
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SW_UPDATED') {
+      console.log('[PWA] Service worker updated to:', event.data.version);
+      showUpdateNotification();
+    }
+  });
+  
+  // Handle page refresh when service worker updates
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    console.log('[PWA] Reloading page for service worker update');
+    window.location.reload();
+  });
+
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
-      .then(registration => {
-        console.log('[PWA] Service Worker registered successfully:', registration.scope);
+      .then((registration) => {
+        console.log('[PWA] SW registered: ', registration);
+        
+        // Check for updates periodically
+        setInterval(() => {
+          registration.update();
+        }, 60000); // Check every minute
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('[PWA] New service worker installing');
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                console.log('[PWA] New content available');
+                showUpdateAvailableNotification(registration);
+              } else {
+                console.log('[PWA] Content cached for offline use');
+                showOfflineReadyNotification();
+              }
+            }
+          });
+        });
       })
-      .catch(error => {
-        console.log('[PWA] Service Worker registration failed:', error);
+      .catch((registrationError) => {
+        console.log('[PWA] SW registration failed: ', registrationError);
       });
   });
 }
 
-// PWA Install Prompt
-let deferredPrompt;
-window.addEventListener('beforeinstallprompt', (e) => {
-  console.log('[PWA] Install prompt available');
-  e.preventDefault();
-  deferredPrompt = e;
+// Show update available notification
+function showUpdateAvailableNotification(registration) {
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.className = 'fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+  notification.innerHTML = `
+    <div class="flex items-start gap-3">
+      <i class="bi bi-arrow-clockwise text-xl mt-1"></i>
+      <div class="flex-1">
+        <h3 class="font-semibold mb-1">Update Available!</h3>
+        <p class="text-sm opacity-90 mb-3">A new version of ChoristerCorner is ready.</p>
+        <div class="flex gap-2">
+          <button id="update-now" class="bg-white text-blue-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100">
+            Update Now
+          </button>
+          <button id="update-later" class="text-white text-sm underline hover:no-underline">
+            Later
+          </button>
+        </div>
+      </div>
+      <button id="close-update" class="text-white hover:text-gray-200">
+        <i class="bi bi-x text-xl"></i>
+      </button>
+    </div>
+  `;
   
-  // Wait for DOM to be ready before showing install button
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    showInstallButton();
-  } else {
-    document.addEventListener('DOMContentLoaded', () => {
-      showInstallButton();
-    });
-  }
-});
-
-function showInstallButton() {
-  // Ensure document.body exists
-  if (!document.body) {
-    console.warn('[PWA] Document body not ready, retrying...');
-    setTimeout(showInstallButton, 100);
-    return;
-  }
+  document.body.appendChild(notification);
   
-  console.log('[PWA] App can be installed');
-  
-  let installBtn = document.getElementById('pwa-install-btn');
-  if (!installBtn) {
-    installBtn = document.createElement('button');
-    installBtn.id = 'pwa-install-btn';
-    installBtn.className = 'btn btn-primary btn-sm fixed bottom-4 right-4 z-50';
-    installBtn.innerHTML = '<i class="bi bi-download mr-2"></i>Install App';
-    installBtn.onclick = installApp;
-    
-    // Safely append to body
-    try {
-      document.body.appendChild(installBtn);
-      console.log('[PWA] Install button added successfully');
-    } catch (error) {
-      console.error('[PWA] Failed to add install button:', error);
-      return;
+  // Handle button clicks
+  document.getElementById('update-now').onclick = () => {
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
     }
-  }
-  installBtn.style.display = 'block';
+    notification.remove();
+  };
+  
+  document.getElementById('update-later').onclick = () => {
+    notification.remove();
+  };
+  
+  document.getElementById('close-update').onclick = () => {
+    notification.remove();
+  };
+  
+  // Auto-hide after 30 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove();
+    }
+  }, 30000);
 }
 
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('[PWA] User accepted the install prompt');
-      } else {
-        console.log('[PWA] User dismissed the install prompt');
-      }
-      deferredPrompt = null;
-      hideInstallButton();
-    });
-  }
+// Show when app is ready for offline use
+function showOfflineReadyNotification() {
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+  notification.innerHTML = `
+    <div class="flex items-center gap-3">
+      <i class="bi bi-wifi-off text-xl"></i>
+      <div class="flex-1">
+        <h3 class="font-semibold mb-1">Ready for Offline!</h3>
+        <p class="text-sm opacity-90">ChoristerCorner is now available offline.</p>
+      </div>
+      <button onclick="this.parentNode.parentNode.remove()" class="text-white hover:text-gray-200">
+        <i class="bi bi-x text-xl"></i>
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto-hide after 5 seconds
+  setTimeout(() => {
+    if (notification.parentNode) {
+      notification.remove();
+    }
+  }, 5000);
 }
-
-function hideInstallButton() {
-  const installBtn = document.getElementById('pwa-install-btn');
-  if (installBtn) {
-    installBtn.style.display = 'none';
-  }
-}
-
-// Handle successful app installation
-window.addEventListener('appinstalled', () => {
-  console.log('[PWA] App was installed successfully');
-  deferredPrompt = null;
-  hideInstallButton();
-});
 
 // Handle online/offline status
 window.addEventListener('online', () => {
