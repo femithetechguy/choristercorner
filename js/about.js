@@ -30,6 +30,16 @@ const aboutData = {
       description: "Lyrics are structured in paragraphs and sections for easy reading and learning"
     },
     {
+      icon: "bi-clock",
+      title: "Professional Metronome",
+      description: "Interactive metronome with adjustable BPM, time signatures, and tap tempo for worship practice"
+    },
+    {
+      icon: "bi-disc",
+      title: "Drummer",  // Changed from "Drum Machine"
+      description: "Professional drum patterns and rhythms for worship teams and choir practice sessions"
+    },
+    {
       icon: "bi-phone",
       title: "Mobile Responsive",
       description: "Access your songs anywhere with our mobile-friendly design"
@@ -47,11 +57,11 @@ const aboutData = {
   ],
   mission: {
     title: "Our Mission",
-    content: "To empower worship leaders and choristers with easy access to quality worship songs, complete with lyrics and multimedia resources. We believe that worship is central to Christian life, and having the right tools makes all the difference in leading others into God's presence."
+    content: "To empower worship leaders and choristers with easy access to quality worship songs, complete with lyrics, multimedia resources, and practice tools. We believe that worship is central to Christian life, and having the right tools makes all the difference in leading others into God's presence."
   },
   vision: {
     title: "Our Vision",
-    content: "To become the go-to platform for worship teams worldwide, providing not just songs and lyrics, but also resources for training, community building, and spiritual growth in worship ministry."
+    content: "To become the go-to platform for worship teams worldwide, providing not just songs and lyrics, but also professional practice tools, resources for training, community building, and spiritual growth in worship ministry."
   },
   howToUse: [
     {
@@ -71,10 +81,32 @@ const aboutData = {
     },
     {
       step: 4,
+      title: "Practice with Tools",
+      description: "Use the Metronome for timing and Drummer for rhythm practice"
+    },
+    {
+      step: 5,
       title: "Listen & Learn",
       description: "Use the YouTube links to listen to songs and learn the melodies"
     }
   ],
+  practiceTools: [
+    {
+      icon: "bi-clock",
+      title: "Metronome",
+      tabName: "Metronome",  // Add this for navigation
+      description: "Professional metronome with BPM range from 40-300, multiple time signatures, visual feedback, and tap tempo feature",
+      features: ["Adjustable BPM", "Time signatures", "Tap tempo", "Visual indicators", "Mobile friendly"]
+    },
+    {
+      icon: "bi-disc",
+      title: "Drummer",  // Change from "Drum Machine" to "Drummer"
+      tabName: "Drummer",  // Add this for navigation
+      description: "Interactive drum patterns for worship practice with multiple styles and customizable rhythms",
+      features: ["Multiple patterns", "Worship styles", "Loop control", "Volume control", "Layer sounds"]
+    }
+  ],
+
   credits: [
     {
       category: "Development",
@@ -138,6 +170,21 @@ window.renderAboutTab = function(tab) {
         </div>
       </div>
 
+      <!-- Practice Tools Section -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="text-2xl font-semibold text-gray-900 flex items-center">
+            <i class="bi bi-tools text-orange-500 mr-3"></i>
+            Professional Practice Tools
+          </h2>
+        </div>
+        <div class="card-body">
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            ${aboutData.practiceTools.map(tool => renderPracticeToolCard(tool)).join('')}
+          </div>
+        </div>
+      </div>
+
       <!-- Features Section -->
       <div class="card">
         <div class="card-header">
@@ -162,7 +209,7 @@ window.renderAboutTab = function(tab) {
           </h2>
         </div>
         <div class="card-body">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             ${aboutData.howToUse.map(step => renderHowToStep(step)).join('')}
           </div>
         </div>
@@ -177,7 +224,7 @@ window.renderAboutTab = function(tab) {
           </h2>
         </div>
         <div class="card-body">
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center" id="app-stats">
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center" id="app-stats">
             <div class="stat-item">
               <div class="text-3xl font-bold text-blue-600" id="total-songs-stat">-</div>
               <div class="text-gray-600 text-sm">Total Songs</div>
@@ -187,11 +234,11 @@ window.renderAboutTab = function(tab) {
               <div class="text-gray-600 text-sm">Artists/Channels</div>
             </div>
             <div class="stat-item">
-              <div class="text-3xl font-bold text-purple-600" id="total-minutes-stat">-</div>
-              <div class="text-gray-600 text-sm">Minutes of Music</div>
+              <div class="text-3xl font-bold text-orange-600">2</div>
+              <div class="text-gray-600 text-sm">Practice Tools</div>
             </div>
             <div class="stat-item">
-              <div class="text-3xl font-bold text-orange-600">100%</div>
+              <div class="text-3xl font-bold text-purple-600">100%</div>
               <div class="text-gray-600 text-sm">Free to Use</div>
             </div>
           </div>
@@ -260,7 +307,7 @@ window.renderAboutTab = function(tab) {
                 <span class="text-sm text-gray-500">Current</span>
               </div>
               <p class="text-gray-600 text-sm mt-1">
-                Initial release with song library, search functionality, lyrics display, and YouTube integration.
+                Initial release with song library, search functionality, lyrics display, YouTube integration, professional metronome, and drum machine.
               </p>
             </div>
             <div class="border-l-4 border-gray-300 pl-4">
@@ -269,7 +316,7 @@ window.renderAboutTab = function(tab) {
                 <span class="text-sm text-gray-500">Coming Soon</span>
               </div>
               <p class="text-gray-500 text-sm mt-1">
-                Planned features: Favorites system, user accounts, playlist creation, and advanced search filters.
+                Planned features: Favorites system, user accounts, playlist creation, advanced search filters, and more practice tools.
               </p>
             </div>
           </div>
@@ -318,6 +365,35 @@ function renderCreditSection(credit) {
           </li>
         `).join('')}
       </ul>
+    </div>
+  `;
+}
+
+// Render practice tool card
+function renderPracticeToolCard(tool) {
+  return `
+    <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg p-6 hover:shadow-lg transition-all">
+      <div class="flex items-center mb-4">
+        <i class="bi ${tool.icon} text-4xl text-purple-600 mr-4"></i>
+        <div>
+          <h3 class="text-xl font-semibold text-gray-900">${tool.title}</h3>
+        </div>
+      </div>
+      <p class="text-gray-700 mb-4">${tool.description}</p>
+      <div class="flex flex-wrap gap-2">
+        ${tool.features.map(feature => `
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+            <i class="bi bi-check2 mr-1"></i>
+            ${feature}
+          </span>
+        `).join('')}
+      </div>
+      <div class="mt-4">
+        <button onclick="navigateToTool('${tool.tabName}')" class="btn btn-primary btn-sm">
+          <i class="bi ${tool.icon}"></i>
+          <span>Try ${tool.title}</span>
+        </button>
+      </div>
     </div>
   `;
 }
@@ -378,6 +454,23 @@ function suggestSong() {
     window.switchToTab('Contact');
     // TODO: Pre-fill form with song suggestion template
   }
+}
+
+// Replace the individual navigation functions with a single one
+function navigateToTool(tabName) {
+  console.log(`[DEBUG] Navigating to ${tabName} tab`);
+  if (typeof window.switchToTab === 'function') {
+    window.switchToTab(tabName);
+  }
+}
+
+// Keep these for backward compatibility, but simplify them
+function navigateToMetronome() {
+  navigateToTool('Metronome');
+}
+
+function navigateToDrummer() {
+  navigateToTool('Drummer');
 }
 
 // Load statistics when about tab is rendered
