@@ -1,24 +1,25 @@
 self.addEventListener('message', (event) => {
-  if (event.data === 'skipWaiting') {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('[SW] Received SKIP_WAITING message');
     self.skipWaiting();
   }
 });
 
 // Update cache name with timestamp to force update
-const CACHE_NAME = 'choristercorner-v1.0.2'; // Increment version to force update
-const OFFLINE_URL = '/offline.html';
+const CACHE_NAME = 'chorister-corner-v1.0.6'; // Update this for every release
+const DATA_CACHE_NAME = 'chorister-corner-data-v1.0.6'; // Separate cache for dynamic data
 
-// Resources to cache immediately - ONLY FILES THAT EXIST
-const STATIC_CACHE_URLS = [
+// Static assets to cache
+const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
   '/css/styles.css',
-  '/css/tailwind-custom.css',
   '/css/home.css',
   '/css/songs.css',
   '/css/hymns.css',
-  '/css/metronome.css',     // Add this line
+  '/css/metronome.css',
+  '/css/drummer.css',
   '/css/about.css',
   '/css/contact.css',
   '/js/app.js',
@@ -26,116 +27,186 @@ const STATIC_CACHE_URLS = [
   '/js/home.js',
   '/js/songs.js',
   '/js/hymns.js',
-  '/js/metronome.js',       // Add this line
+  '/js/metronome.js',
+  '/js/drummer.js',
   '/js/about.js',
   '/js/contact.js',
   '/js/shared-player.js',
-  '/json/songs.json',
-  '/json/hymns.json',
-  '/json/app.json',
-  '/images/favicon.ico',
-  '/images/favicon.svg',
-  '/images/favicon-32x32.png',
-  '/images/favicon-16x16.png',
-  OFFLINE_URL
+  '/js/playlist-updater.js'
 ];
 
-// Install event - cache static resources
-self.addEventListener('install', event => {
-  console.log('[SW] Installing service worker...');
+// Dynamic content URLs (API-like calls)
+const dataUrls = [
+  '/json/app.json',
+  '/json/songs.json',
+  '/json/hymns.json'
+];
+
+const OFFLINE_URL = '/offline.html';
+
+// Install event - cache static assets
+self.addEventListener('install', (event) => {
+  console.log('[SW] Installing service worker version:', CACHE_NAME);
+  
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Caching static resources');
-        // Cache files one by one to avoid failing on missing files
-        return Promise.allSettled(
-          STATIC_CACHE_URLS.map(url => 
-            cache.add(url).catch(error => {
-              console.warn(`[SW] Failed to cache ${url}:`, error);
-              return null;
-            })
-          )
-        );
-      })
-      .then(() => {
-        console.log('[SW] Static resources cached successfully');
-        return self.skipWaiting();
-      })
-      .catch(error => {
-        console.error('[SW] Failed to cache static resources:', error);
-      })
+    Promise.all([
+      // Cache static assets
+      caches.open(CACHE_NAME)
+        .then((cache) => {
+          console.log('[SW] Caching static assets');
+          return cache.addAll(urlsToCache);
+        }),
+      
+      // Cache dynamic data with stale-while-revalidate
+      caches.open(DATA_CACHE_NAME)
+        .then((cache) => {
+          console.log('[SW] Pre-caching dynamic data');
+          return cache.addAll(dataUrls);
+        })
+    ]).then(() => {
+      console.log('[SW] Skip waiting to activate immediately');
+      return self.skipWaiting();
+    })
   );
 });
 
 // Activate event - clean up old caches
-self.addEventListener('activate', event => {
-  console.log('[SW] Activating service worker...');
+self.addEventListener('activate', (event) => {
+  console.log('[SW] Activating service worker version:', CACHE_NAME);
+  
+  const cacheWhitelist = [CACHE_NAME, DATA_CACHE_NAME];
+  
   event.waitUntil(
-    caches.keys()
-      .then(cacheNames => {
+    Promise.all([
+      // Clean up old caches
+      caches.keys().then((cacheNames) => {
         return Promise.all(
-          cacheNames
-            .filter(cacheName => cacheName !== CACHE_NAME)
-            .map(cacheName => {
+          cacheNames.map((cacheName) => {
+            if (!cacheWhitelist.includes(cacheName)) {
               console.log('[SW] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
-            })
-        );
-      })
-      .then(() => {
-        console.log('[SW] Service worker activated');
-        return self.clients.claim();
-      })
-  );
-});
-
-// Fetch event - serve from cache with network fallback
-self.addEventListener('fetch', event => {
-  // Skip non-GET requests
-  if (event.request.method !== 'GET') return;
-  
-  // Skip chrome-extension and other non-http requests
-  if (!event.request.url.startsWith('http')) return;
-
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => {
-        // Return cached version if available
-        if (response) {
-          console.log('[SW] Serving from cache:', event.request.url);
-          return response;
-        }
-        
-        // Otherwise fetch from network
-        console.log('[SW] Fetching from network:', event.request.url);
-        return fetch(event.request)
-          .then(response => {
-            // Don't cache non-successful responses
-            if (!response || response.status !== 200 || response.type !== 'basic') {
-              return response;
             }
-            
-            // Cache successful responses
-            const responseToCache = response.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => {
-                cache.put(event.request, responseToCache);
-              });
-            
-            return response;
           })
-          .catch(() => {
-            // Return offline page for navigation requests
-            if (event.request.mode === 'navigate') {
-              return caches.match(OFFLINE_URL);
-            }
-            
-            // Return a basic offline response for other requests
-            return new Response('Offline - Content not available', {
-              status: 503,
-              statusText: 'Service Unavailable'
-            });
+        );
+      }),
+      
+      // Take control immediately
+      self.clients.claim()
+    ]).then(() => {
+      console.log('[SW] Service worker activated and ready');
+      
+      // Notify all clients about the update
+      self.clients.matchAll().then(clients => {
+        clients.forEach(client => {
+          client.postMessage({
+            type: 'SW_UPDATED',
+            version: CACHE_NAME
           });
-      })
+        });
+      });
+    })
   );
 });
+
+// Fetch event with different strategies for different content types
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  const url = new URL(request.url);
+
+  // Skip non-GET requests and external URLs
+  if (request.method !== 'GET' || !url.origin.includes(self.location.origin)) {
+    return;
+  }
+
+  // Handle different types of requests with appropriate strategies
+  if (dataUrls.some(dataUrl => request.url.includes(dataUrl))) {
+    // Stale-while-revalidate for JSON data
+    event.respondWith(staleWhileRevalidate(request, DATA_CACHE_NAME));
+  } else if (urlsToCache.some(staticUrl => request.url.includes(staticUrl))) {
+    // Cache-first for static assets
+    event.respondWith(cacheFirst(request, CACHE_NAME));
+  } else {
+    // Network-first for everything else
+    event.respondWith(networkFirst(request, CACHE_NAME));
+  }
+});
+
+// Cache-first strategy (good for static assets)
+async function cacheFirst(request, cacheName) {
+  const cachedResponse = await caches.match(request);
+  if (cachedResponse) {
+    console.log('[SW] Serving from cache:', request.url);
+    return cachedResponse;
+  }
+  
+  console.log('[SW] Fetching and caching:', request.url);
+  const response = await fetch(request);
+  
+  if (response.status === 200) {
+    const cache = await caches.open(cacheName);
+    cache.put(request, response.clone());
+  }
+  
+  return response;
+}
+
+// Stale-while-revalidate strategy (good for data that changes)
+async function staleWhileRevalidate(request, cacheName) {
+  const cachedResponse = await caches.match(request);
+  
+  // Serve cached version immediately if available
+  if (cachedResponse) {
+    console.log('[SW] Serving stale data:', request.url);
+    
+    // Update cache in background
+    fetch(request).then(response => {
+      if (response.status === 200) {
+        const cache = caches.open(cacheName);
+        cache.then(c => c.put(request, response.clone()));
+        console.log('[SW] Updated cache in background:', request.url);
+      }
+    }).catch(err => console.log('[SW] Background update failed:', err));
+    
+    return cachedResponse;
+  }
+  
+  // No cache, fetch from network
+  console.log('[SW] No cache, fetching:', request.url);
+  const response = await fetch(request);
+  
+  if (response.status === 200) {
+    const cache = await caches.open(cacheName);
+    cache.put(request, response.clone());
+  }
+  
+  return response;
+}
+
+// Network-first strategy (good for dynamic content)
+async function networkFirst(request, cacheName) {
+  try {
+    console.log('[SW] Network first:', request.url);
+    const response = await fetch(request);
+    
+    if (response.status === 200) {
+      const cache = await caches.open(cacheName);
+      cache.put(request, response.clone());
+    }
+    
+    return response;
+  } catch (error) {
+    console.log('[SW] Network failed, trying cache:', request.url);
+    const cachedResponse = await caches.match(request);
+    
+    if (cachedResponse) {
+      return cachedResponse;
+    }
+    
+    // Fallback for offline
+    if (request.destination === 'document') {
+      return caches.match('/index.html');
+    }
+    
+    throw error;
+  }
+}
