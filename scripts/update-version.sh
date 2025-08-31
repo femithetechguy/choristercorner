@@ -1,5 +1,4 @@
 #!/bin/bash
-# filepath: /Users/fttg/fttg_workspace/choristercorner/scripts/update-version.sh
 
 # Update version script
 VERSION=$1
@@ -72,7 +71,6 @@ echo ""
 echo "🚀 Next steps:"
 echo "   1. Test your app locally"
 echo "   2. Commit your changes: git add . && git commit -m 'Version $VERSION'"
-   3. Deploy to your server"
-
+echo "   3. Deploy to your server"
 echo ""
 echo "Don't forget to test and commit your changes!"
