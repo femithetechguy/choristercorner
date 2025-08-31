@@ -1,7 +1,7 @@
 {
   "appName": "ChoristerCorner",
   "description": "A comprehensive platform for choristers and worship leaders",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "pages": [
     {
       "name": "Main App",
