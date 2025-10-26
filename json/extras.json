@@ -1,0 +1,25 @@
+{
+    "external_tools": [
+        {
+            "name": "Chosic Playlist Generator",
+            "url": "https://www.chosic.com/playlist-generator/",
+            "description": "A tool for generating music playlists based on various parameters and preferences.",
+            "category": "Music",
+            "tags": ["playlist", "music", "generator", "tool"]
+        },
+        {
+            "name": "GCC Hymns Library",
+            "url": "https://gccsatx.com/hymns/",
+            "description": "A searchable library of hymns from GCC San Antonio.",
+            "category": "Hymns",
+            "tags": ["hymns", "library", "search", "music"]
+        },
+        {
+            "name": "AZLyrics",
+            "url": "https://www.azlyrics.com/lyrics/",
+            "description": "Search for song lyrics from a vast database of artists and tracks.",
+            "category": "Lyrics",
+            "tags": ["lyrics", "search", "music", "database"]
+        }
+    ]
+}

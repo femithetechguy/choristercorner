@@ -1,0 +1,103 @@
+/* Card container */
+.extras-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid #ede9fe;
+}
+
+/* Card hover effect */
+.extras-card:hover {
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15), 0 1.5px 6px rgba(0,0,0,0.05);
+  transform: translateY(-2px) scale(1.02);
+  border-color: #c4b5fd;
+}
+
+/* Card title */
+.extras-card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* Card icon */
+.extras-card .bi {
+  vertical-align: middle;
+}
+
+/* Ultra-specific button override to beat Tailwind */
+.extras-card a[href][target="_blank"],
+.extras-card a.mt-auto,
+div.extras-card a {
+  background-color: #7c3aed !important;
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem 1.25rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2) !important;
+  outline: none !important;
+}
+
+/* Button hover effect - brighter and more engaging */
+.extras-card a[href][target="_blank"]:hover,
+.extras-card a.mt-auto:hover,
+div.extras-card a:hover {
+  background-color: #8b5cf6 !important;
+  background: #8b5cf6 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Button active/pressed state */
+.extras-card a[href][target="_blank"]:active,
+.extras-card a.mt-auto:active,
+div.extras-card a:active {
+  background-color: #6d28d9 !important;
+  background: #6d28d9 !important;
+  transform: translateY(0) !important;
+}
+
+/* Card tags */
+.extras-card .text-xs {
+  background: #f3f0ff;
+  border-radius: 4px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Ensure button icon is properly aligned */
+.extras-card a i {
+  font-size: 1rem !important;
+  margin-right: 0.25rem !important;
+  color: inherit !important;
+}
+
+/* Responsive improvements */
+@media (max-width: 640px) {
+  .extras-card {
+    margin-bottom: 1.25rem;
+    padding: 1rem;
+  }
+  
+  .extras-card a[href][target="_blank"],
+  .extras-card a.mt-auto,
+  div.extras-card a {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.9rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .extras-card {
+    width: 100%;
+    margin-right: 0;
+  }
+}

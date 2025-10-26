@@ -16,7 +16,8 @@ function loadTabModules() {
     'js/drummer.js',          // ADD THIS LINE
     'js/about.js',
     'js/contact.js',
-    'js/playlist-updater.js'
+    'js/playlist-updater.js',
+    'js/extras.js'
   ];
   
   modules.forEach(module => {

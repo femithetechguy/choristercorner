@@ -43,7 +43,7 @@ fetch("json/app.json")
   });
 
 // Initialize the application
-function initializeApp() {
+async function initializeApp() {
   console.log("[DEBUG] Initializing ChoristerCorner app");
   
   // Restore last selected tab if valid, else default to 0 (Home)
@@ -54,19 +54,31 @@ function initializeApp() {
   selectedTabIdx = idx;
   localStorage.setItem("selectedTabIdx", selectedTabIdx);
   
-  renderAppUI();
+  await renderAppUI();
   setupEventListeners();
 }
 
 // Main UI rendering function
-function renderAppUI() {
-  console.log("[DEBUG] renderAppUI", { selectedTabIdx, tabsCount: tabs.length });
+async function renderAppUI() {
+  // Always prioritize global selectedTabIdx if it exists and is different
+  if (window.selectedTabIdx !== undefined) {
+    if (window.selectedTabIdx !== selectedTabIdx) {
+      console.log('[DEBUG] Syncing selectedTabIdx from global:', window.selectedTabIdx);
+      selectedTabIdx = window.selectedTabIdx;
+      localStorage.setItem("selectedTabIdx", selectedTabIdx.toString());
+    }
+  }
+  
+  console.log(`[DEBUG] renderAppUI`, { selectedTabIdx, tabsCount: tabs.length });
   
   if (!config || !config.appName) {
     throw new Error("config must be initialized with appName before calling renderAppUI()");
   }
 
   // Main app structure
+  // Await tab content rendering
+  const tabContent = await renderCurrentTabContent();
+
   appRoot.innerHTML = `
     <div class="min-h-screen flex flex-col bg-gradient-to-br from-blue-50 to-purple-50">
       <!-- Navigation Header -->
@@ -112,7 +124,7 @@ function renderAppUI() {
       <!-- Main Content Area -->
       <main class="flex-1 max-w-7xl mx-auto py-6 sm:px-6 lg:px-8 w-full">
         <div class="px-4 py-6 sm:px-0" id="tab-content">
-          ${renderCurrentTabContent()}
+          ${tabContent}
         </div>
       </main>
 
@@ -171,7 +183,7 @@ function renderMobileTabBtn(tab, idx) {
 }
 
 // Render current tab content
-function renderCurrentTabContent() {
+async function renderCurrentTabContent() {
   const currentTab = tabs[selectedTabIdx];
   if (!currentTab) return "<div>No tab selected</div>";
 
@@ -198,6 +210,10 @@ function renderCurrentTabContent() {
   }
   if (currentTab.name === "Contact" && window.renderContactTab) {
     return window.renderContactTab(currentTab);
+  }
+  if (currentTab.name === "Extras" && window.renderExtrasTab) {
+    const result = await window.renderExtrasTab(currentTab);
+    return result;
   }
 
   // Default tab content based on tab configuration
@@ -231,6 +247,24 @@ function renderDefaultTabContent(tab) {
 // Set up event listeners
 function setupEventListeners() {
   console.log("[DEBUG] Setting up event listeners");
+  
+  // Add tab navigation event listeners
+  const navTabs = document.querySelectorAll('.nav-tab, .mobile-nav-tab');
+  navTabs.forEach((button) => {
+    const tabIdx = parseInt(button.dataset.tabIdx);
+    const tabName = button.textContent.trim();
+    
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log(`Clicked ${tabName} (switching to index ${tabIdx})`);
+      
+      // Update selected tab
+      updateSelectedTab(tabIdx);
+      
+      // Render the app
+      renderAppUI();
+    });
+  });
   
   // Mobile menu toggle
   setupMobileMenuToggle();
@@ -268,7 +302,6 @@ function setupTabClickHandlers() {
   if (desktopTabs) {
     desktopTabs.addEventListener("click", handleTabClick);
   }
-  
   // Mobile tabs
   const mobileTabs = document.getElementById("mobile-tabs");
   if (mobileTabs) {
@@ -277,38 +310,15 @@ function setupTabClickHandlers() {
 }
 
 // Handle tab click events
-function handleTabClick(event) {
+async function handleTabClick(event) {
   const button = event.target.closest("[data-tab-idx]");
   if (!button) return;
-  
   const idx = parseInt(button.getAttribute("data-tab-idx"), 10);
   if (isNaN(idx) || idx < 0 || idx >= tabs.length) return;
   
-  console.log("[DEBUG] Tab clicked:", tabs[idx].name, "index:", idx);
-  
-  // Update selected tab
-  selectedTabIdx = idx;
-  localStorage.setItem("selectedTabIdx", selectedTabIdx);
-  
-  // Hide mobile menu if open
-  const mobileMenu = document.getElementById("mobile-menu");
-  const mobileMenuButton = document.getElementById("mobile-menu-button");
-  if (mobileMenu && !mobileMenu.classList.contains("hidden")) {
-    mobileMenu.classList.add("hidden");
-    if (mobileMenuButton) {
-      mobileMenuButton.innerHTML = '<i class="bi bi-list text-xl"></i>';
-    }
-  }
-  
-  // Re-render the app with new tab
-  renderAppUI();
-  setupEventListeners();
-  
-  // Load tab-specific scripts if needed
-  loadTabSpecificAssets(tabs[idx]);
-  
-  // Initialize tab-specific functionality
-  initializeTabSpecificFeatures(tabs[idx]);
+  updateSelectedTab(idx);
+  await renderAppUI();           // ✅ Now it waits for rendering to complete
+  setupEventListeners();        // ✅ This runs after UI is fully rendered
 }
 
 // Load tab-specific CSS and JS files
@@ -328,8 +338,6 @@ function loadTabSpecificAssets(tab) {
 
 // Initialize tab-specific features
 function initializeTabSpecificFeatures(tab) {
-  if (!tab) return;
-  
   console.log("[DEBUG] Initializing features for tab:", tab.name);
   
   // Initialize specific tab features
@@ -337,6 +345,11 @@ function initializeTabSpecificFeatures(tab) {
     case 'About':
       if (typeof window.initializeAboutTab === 'function') {
         window.initializeAboutTab();
+      }
+      break;
+    case 'Extras':
+      if (typeof window.initializeExtrasTab === 'function') {
+        window.initializeExtrasTab();
       }
       break;
     // Add other tab initializations as needed
@@ -391,8 +404,7 @@ window.switchToTab = function(tabName) {
   );
   
   if (tabIndex !== -1) {
-    selectedTabIdx = tabIndex;
-    localStorage.setItem("selectedTabIdx", selectedTabIdx);
+    updateSelectedTab(tabIndex);
     renderAppUI();
     setupEventListeners();
     return true;
@@ -419,5 +431,77 @@ window.addTab = function(newTab) {
   console.log("[DEBUG] Added new tab:", newTab.name);
   return true;
 };
+
+// Update selected tab index and sync with global
+function updateSelectedTab(newIdx) {
+  selectedTabIdx = newIdx;
+  window.selectedTabIdx = newIdx;
+  localStorage.setItem("selectedTabIdx", newIdx.toString());
+  console.log('[DEBUG] Updated selectedTabIdx to:', newIdx, 'for tab:', tabs[newIdx]?.name);
+}
+
+// Add this function to scipts.js
+function applyExtrasTabStyling() {
+  // Force apply CSS to extras buttons after tab switch
+  const extrasButtons = document.querySelectorAll('.extras-card a[href]');
+  
+  if (extrasButtons.length > 0) {
+    console.log('[DEBUG] Applying extras button styling to', extrasButtons.length, 'buttons');
+    
+    extrasButtons.forEach(button => {
+      // Force CSS classes to be recognized
+      button.classList.add('extras-tool-btn');
+      
+      // Ensure the button is properly styled
+      const computedStyle = window.getComputedStyle(button);
+      if (computedStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+          computedStyle.backgroundColor === 'transparent') {
+        console.log('[DEBUG] Forcing button styling');
+        // Apply inline styles as backup
+        Object.assign(button.style, {
+          backgroundColor: '#7c3aed',
+          color: '#ffffff',
+          border: 'none',
+          opacity: '1'
+        });
+      }
+    });
+  }
+}
+
+// Update your setupEventListeners function
+function setupEventListeners() {
+  console.log("[DEBUG] Setting up event listeners");
+  
+  // Add tab navigation event listeners
+  const navTabs = document.querySelectorAll('.nav-tab, .mobile-nav-tab');
+  navTabs.forEach((button) => {
+    const tabIdx = parseInt(button.dataset.tabIdx);
+    const tabName = button.textContent.trim();
+    
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log(`Clicked ${tabName} (switching to index ${tabIdx})`);
+      
+      // Update selected tab
+      updateSelectedTab(tabIdx);
+      
+      // Render the app
+      renderAppUI();
+    });
+  });
+  
+  // Mobile menu toggle
+  setupMobileMenuToggle();
+  
+  // Tab click handlers
+  setupTabClickHandlers();
+  
+  // Window resize handler for mobile menu
+  window.addEventListener("resize", handleWindowResize);
+
+  // Apply extras styling after DOM update
+  setTimeout(applyExtrasTabStyling, 100);
+}
 
 console.log("[DEBUG] Scripts.js initialization complete");
