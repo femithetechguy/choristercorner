@@ -422,4 +422,50 @@ function updateSelectedTab(newIdx) {
   console.log('[DEBUG] Updated selectedTabIdx to:', newIdx, 'for tab:', tabs[newIdx]?.name);
 }
 
+// Add this function to scipts.js
+function applyExtrasTabStyling() {
+  // Force apply CSS to extras buttons after tab switch
+  const extrasButtons = document.querySelectorAll('.extras-card a[href]');
+  
+  if (extrasButtons.length > 0) {
+    console.log('[DEBUG] Applying extras button styling to', extrasButtons.length, 'buttons');
+    
+    extrasButtons.forEach(button => {
+      // Force CSS classes to be recognized
+      button.classList.add('extras-tool-btn');
+      
+      // Ensure the button is properly styled
+      const computedStyle = window.getComputedStyle(button);
+      if (computedStyle.backgroundColor === 'rgba(0, 0, 0, 0)' || 
+          computedStyle.backgroundColor === 'transparent') {
+        console.log('[DEBUG] Forcing button styling');
+        // Apply inline styles as backup
+        Object.assign(button.style, {
+          backgroundColor: '#7c3aed',
+          color: '#ffffff',
+          border: 'none',
+          opacity: '1'
+        });
+      }
+    });
+  }
+}
+
+// Update your setupEventListeners function
+function setupEventListeners() {
+  console.log("[DEBUG] Setting up event listeners");
+  
+  // Mobile menu toggle
+  setupMobileMenuToggle();
+  
+  // Tab click handlers
+  setupTabClickHandlers();
+  
+  // Window resize handler for mobile menu
+  window.addEventListener("resize", handleWindowResize);
+
+  // Apply extras styling after DOM update
+  setTimeout(applyExtrasTabStyling, 100);
+}
+
 console.log("[DEBUG] Scripts.js initialization complete");

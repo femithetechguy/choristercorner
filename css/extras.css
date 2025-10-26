@@ -2,10 +2,6 @@
 .extras-card {
   transition: box-shadow 0.2s, transform 0.2s;
   border: 1px solid #ede9fe;
-  background: #fff;
-  margin-bottom: 1.5rem;
-  padding: 1.5rem;
-  border-radius: 1rem;
 }
 
 /* Card hover effect */
@@ -26,6 +22,48 @@
   vertical-align: middle;
 }
 
+/* Ultra-specific button override to beat Tailwind */
+.extras-card a[href][target="_blank"],
+.extras-card a.mt-auto,
+div.extras-card a {
+  background-color: #7c3aed !important;
+  background: #7c3aed !important;
+  color: #ffffff !important;
+  border: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+  padding: 0.75rem 1.25rem !important;
+  border-radius: 0.5rem !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 4px rgba(124, 58, 237, 0.2) !important;
+  outline: none !important;
+}
+
+/* Button hover effect - brighter and more engaging */
+.extras-card a[href][target="_blank"]:hover,
+.extras-card a.mt-auto:hover,
+div.extras-card a:hover {
+  background-color: #8b5cf6 !important;
+  background: #8b5cf6 !important;
+  color: #ffffff !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 8px rgba(124, 58, 237, 0.3) !important;
+}
+
+/* Button active/pressed state */
+.extras-card a[href][target="_blank"]:active,
+.extras-card a.mt-auto:active,
+div.extras-card a:active {
+  background-color: #6d28d9 !important;
+  background: #6d28d9 !important;
+  transform: translateY(0) !important;
+}
+
 /* Card tags */
 .extras-card .text-xs {
   background: #f3f0ff;
@@ -35,65 +73,25 @@
   margin-top: 4px;
 }
 
-/* Ensure the button is always visible and has strong contrast */
-.extras-card a {
-  display: inline-block;
-  background: #7c3aed;         /* Strong purple */
-  color: #fff;                 /* White text */
-  opacity: 1;
-  pointer-events: auto;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  font-weight: 500;
-  box-shadow: none;
-  transition: background 0.2s, box-shadow 0.2s;
+/* Ensure button icon is properly aligned */
+.extras-card a i {
+  font-size: 1rem !important;
+  margin-right: 0.25rem !important;
+  color: inherit !important;
 }
 
-/* Optional: Enhance hover effect */
-.extras-card a:hover {
-  background: #5b21b6;         /* Even darker purple on hover */
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
-}
-
-.extras-card button {
-  background: #5b21b6;         /* Dark purple for high contrast */
-  color: #fff;                 /* White text */
-  border: 2px solid #7c3aed;   /* Strong purple border */
-  font-weight: 600;
-  border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
-  box-shadow: none;
-  opacity: 1;
-  transition: background 0.2s, box-shadow 0.2s;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.extras-card button:hover {
-  background: #7c3aed;         /* Lighter purple on hover */
-  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
-  border-color: #5b21b6;
-}
-
-/* Responsive iframe */
-.extras-card iframe {
-  width: 100%;
-  height: 60vh;
-  border-radius: 0.5rem;
-  border: 1px solid #c4b5fd;
-  margin-top: 1rem;
-  background: #f9fafb;
-}
-
-/* On mobile, reduce iframe height and padding */
+/* Responsive improvements */
 @media (max-width: 640px) {
   .extras-card {
+    margin-bottom: 1.25rem;
     padding: 1rem;
-    margin-bottom: 1rem;
   }
-  .extras-card iframe {
-    height: 35vh;
+  
+  .extras-card a[href][target="_blank"],
+  .extras-card a.mt-auto,
+  div.extras-card a {
+    padding: 0.6rem 1rem !important;
+    font-size: 0.9rem !important;
   }
 }
 

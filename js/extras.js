@@ -35,6 +35,77 @@ function renderExtrasCard(resource) {
   `;
 }
 
+// Update in extras.js
+async function renderExtrasTab() {
+  console.log("[DEBUG] Rendering Extras tab");
+  
+  const container = document.getElementById("app-root");
+  if (!container) {
+    console.error("App root container not found");
+    return;
+  }
+  
+  const extrasHTML = `
+    <div class="max-w-7xl mx-auto p-4">
+      <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">External Tools & Resources</h1>
+        <p class="text-gray-600">Discover powerful tools to enhance your music journey and worship experience.</p>
+      </div>
+      
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        ${externalResources.map(resource => renderExtrasCard(resource)).join('')}
+      </div>
+    </div>
+  `;
+  
+  container.innerHTML = extrasHTML;
+  
+  // Force CSS application after render
+  setTimeout(() => {
+    forceExtrasButtonStyling();
+  }, 50);
+}
+
+// Add this function to extras.js
+function forceExtrasButtonStyling() {
+  const buttons = document.querySelectorAll('.extras-card a[href]');
+  console.log('[DEBUG] Forcing styling on', buttons.length, 'extras buttons');
+  
+  buttons.forEach((button, index) => {
+    // Ensure CSS classes are properly applied
+    if (!button.style.backgroundColor || button.style.backgroundColor === 'transparent') {
+      console.log(`[DEBUG] Fixing button ${index + 1} styling`);
+      
+      // Apply critical styles inline to ensure they work
+      Object.assign(button.style, {
+        backgroundColor: '#7c3aed !important',
+        color: '#ffffff !important',
+        padding: '0.75rem 1.25rem',
+        borderRadius: '0.5rem',
+        textDecoration: 'none',
+        fontWeight: '600',
+        display: 'inline-flex',
+        alignItems: 'center',
+        gap: '0.5rem',
+        border: 'none',
+        opacity: '1',
+        transition: 'all 0.2s ease'
+      });
+      
+      // Add hover effects
+      button.addEventListener('mouseenter', function() {
+        this.style.backgroundColor = '#8b5cf6';
+        this.style.transform = 'translateY(-1px)';
+      });
+      
+      button.addEventListener('mouseleave', function() {
+        this.style.backgroundColor = '#7c3aed';
+        this.style.transform = 'translateY(0)';
+      });
+    }
+  });
+}
+
 // Render the Extras tab
 window.renderExtrasTab = async function(tab) {
   if (!extrasData.length) {
