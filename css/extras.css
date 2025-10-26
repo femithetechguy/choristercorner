@@ -1,0 +1,105 @@
+/* Card container */
+.extras-card {
+  transition: box-shadow 0.2s, transform 0.2s;
+  border: 1px solid #ede9fe;
+  background: #fff;
+  margin-bottom: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 1rem;
+}
+
+/* Card hover effect */
+.extras-card:hover {
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.15), 0 1.5px 6px rgba(0,0,0,0.05);
+  transform: translateY(-2px) scale(1.02);
+  border-color: #c4b5fd;
+}
+
+/* Card title */
+.extras-card h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+/* Card icon */
+.extras-card .bi {
+  vertical-align: middle;
+}
+
+/* Card tags */
+.extras-card .text-xs {
+  background: #f3f0ff;
+  border-radius: 4px;
+  padding: 2px 8px;
+  display: inline-block;
+  margin-top: 4px;
+}
+
+/* Ensure the button is always visible and has strong contrast */
+.extras-card a {
+  display: inline-block;
+  background: #7c3aed;         /* Strong purple */
+  color: #fff;                 /* White text */
+  opacity: 1;
+  pointer-events: auto;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  box-shadow: none;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+/* Optional: Enhance hover effect */
+.extras-card a:hover {
+  background: #5b21b6;         /* Even darker purple on hover */
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+}
+
+.extras-card button {
+  background: #5b21b6;         /* Dark purple for high contrast */
+  color: #fff;                 /* White text */
+  border: 2px solid #7c3aed;   /* Strong purple border */
+  font-weight: 600;
+  border-radius: 0.5rem;
+  padding: 0.5rem 1rem;
+  box-shadow: none;
+  opacity: 1;
+  transition: background 0.2s, box-shadow 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.extras-card button:hover {
+  background: #7c3aed;         /* Lighter purple on hover */
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.15);
+  border-color: #5b21b6;
+}
+
+/* Responsive iframe */
+.extras-card iframe {
+  width: 100%;
+  height: 60vh;
+  border-radius: 0.5rem;
+  border: 1px solid #c4b5fd;
+  margin-top: 1rem;
+  background: #f9fafb;
+}
+
+/* On mobile, reduce iframe height and padding */
+@media (max-width: 640px) {
+  .extras-card {
+    padding: 1rem;
+    margin-bottom: 1rem;
+  }
+  .extras-card iframe {
+    height: 35vh;
+  }
+}
+
+@media (max-width: 768px) {
+  .extras-card {
+    width: 100%;
+    margin-right: 0;
+  }
+}
