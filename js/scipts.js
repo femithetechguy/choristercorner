@@ -248,6 +248,24 @@ function renderDefaultTabContent(tab) {
 function setupEventListeners() {
   console.log("[DEBUG] Setting up event listeners");
   
+  // Add tab navigation event listeners
+  const navTabs = document.querySelectorAll('.nav-tab, .mobile-nav-tab');
+  navTabs.forEach((button) => {
+    const tabIdx = parseInt(button.dataset.tabIdx);
+    const tabName = button.textContent.trim();
+    
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log(`Clicked ${tabName} (switching to index ${tabIdx})`);
+      
+      // Update selected tab
+      updateSelectedTab(tabIdx);
+      
+      // Render the app
+      renderAppUI();
+    });
+  });
+  
   // Mobile menu toggle
   setupMobileMenuToggle();
   
@@ -454,6 +472,24 @@ function applyExtrasTabStyling() {
 // Update your setupEventListeners function
 function setupEventListeners() {
   console.log("[DEBUG] Setting up event listeners");
+  
+  // Add tab navigation event listeners
+  const navTabs = document.querySelectorAll('.nav-tab, .mobile-nav-tab');
+  navTabs.forEach((button) => {
+    const tabIdx = parseInt(button.dataset.tabIdx);
+    const tabName = button.textContent.trim();
+    
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      console.log(`Clicked ${tabName} (switching to index ${tabIdx})`);
+      
+      // Update selected tab
+      updateSelectedTab(tabIdx);
+      
+      // Render the app
+      renderAppUI();
+    });
+  });
   
   // Mobile menu toggle
   setupMobileMenuToggle();
