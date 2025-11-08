@@ -583,46 +583,27 @@ function toggleLyricsSize() {
 function renderLyricsContent(song) {
   if (!song.lyrics || !Array.isArray(song.lyrics) || song.lyrics.length === 0) {
     return `
-      <div class="text-center py-4">
-        <i class="bi bi-file-text text-3xl text-gray-400 mb-2"></i>
-        <p class="text-gray-500 text-sm">Lyrics not available for this song.</p>
+      <div class="text-center py-8">
+        <i class="bi bi-file-text text-4xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">Lyrics not available for this song.</p>
       </div>
     `;
   }
 
-  return `
-    <div class="lyrics-container">
-      ${song.lyrics.map((verse, index) => {
-        // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:")
-        const lines = verse.split('\n').filter(line => line.trim() !== '');
-        let sectionLabel = 'Verse ' + (index + 1);
-        let content = verse;
-        
-        if (lines.length > 0) {
-          const firstLine = lines[0].trim();
-          // Improved detection: check if first line ends with a colon and looks like a section label
-          const colonIndex = firstLine.indexOf(':');
-          if (colonIndex > 0 && colonIndex < 30 && colonIndex === firstLine.length - 1) {
-            // This looks like a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:", "Bridge:")
-            sectionLabel = firstLine.substring(0, colonIndex);
-            // Remove the label line from content
-            content = lines.slice(1).join('\n');
-          }
-        }
-        
-        return `
-          <div class="lyrics-verse">
-            <div class="verse-number">
-              ${sectionLabel}
-            </div>
-            <div class="verse-content">
-              ${content.split('\n').filter(line => line.trim() !== '').map(line => '<p>' + line.trim() + '</p>').join('')}
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
+  // Use the shared lyrics rendering utility
+  if (window.renderLyrics) {
+    return `<div id="lyrics-display">${window.renderLyrics(song.lyrics, false)}</div>`;
+  } else {
+    // Fallback if utility not loaded yet
+    console.warn('[DEBUG] Lyrics utility not loaded, using fallback rendering');
+    return `
+      <div class="text-center py-8">
+        <i class="bi bi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+        <p class="text-gray-600 mb-2">Lyrics utility not loaded</p>
+        <p class="text-gray-500 text-sm">Please refresh the page</p>
+      </div>
+    `;
+  }
 }
 
 // Toggle player collapse/expand
@@ -1192,6 +1173,33 @@ function printSongLyrics() {
   // Create a new window for printing
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   
+  // Use the shared lyrics parsing function
+  let lyricsHTML = '';
+  if (song.lyrics && song.lyrics.length > 0) {
+    lyricsHTML = song.lyrics.map((verse, index) => {
+      // Use the shared parsing function
+      const { label, text } = window.parseLyricSection ? window.parseLyricSection(verse) : { label: null, text: verse };
+      const displayLabel = label || `Verse ${index + 1}`;
+      
+      return `
+        <div class="song-verse">
+          <div class="verse-number">${displayLabel}</div>
+          <div class="verse-text">
+            ${text.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    lyricsHTML = `
+      <div class="song-verse">
+        <div class="verse-text">
+          <p><em>Lyrics not available for this song.</em></p>
+        </div>
+      </div>
+    `;
+  }
+  
   // Generate print-friendly HTML
   const printContent = `
     <!DOCTYPE html>
@@ -1253,23 +1261,6 @@ function printSongLyrics() {
         .verse-text p {
           margin: 0 0 5px 0;
         }
-        .chorus-section {
-          margin-bottom: 25px;
-          page-break-inside: avoid;
-        }
-        .chorus-label {
-          font-weight: bold;
-          font-size: 16px;
-          margin-bottom: 8px;
-          color: #333;
-        }
-        .chorus-text {
-          margin-left: 20px;
-          line-height: 1.8;
-        }
-        .chorus-text p {
-          margin: 0 0 5px 0;
-        }
         .footer {
           margin-top: 40px;
           padding-top: 20px;
@@ -1282,7 +1273,6 @@ function printSongLyrics() {
           body { margin: 20px; }
           .song-header { page-break-after: avoid; }
           .song-verse { page-break-inside: avoid; }
-          .chorus-section { page-break-inside: avoid; }
         }
       </style>
     </head>
@@ -1299,43 +1289,7 @@ function printSongLyrics() {
       </div>
       
       <div class="song-content">
-        ${song.lyrics && song.lyrics.length > 0 ? song.lyrics.map((verse, index) => {
-            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:")
-            const lines = verse.split('\n').filter(line => line.trim());
-            let sectionLabel = 'Verse ' + (index + 1);
-            let content = verse;
-            
-            if (lines.length > 0) {
-              const firstLine = lines[0].trim();
-              // Improved detection: check if first line ends with a colon and looks like a section label
-              const colonIndex = firstLine.indexOf(':');
-              if (colonIndex > 0 && colonIndex < 30 && colonIndex === firstLine.length - 1) {
-                // This looks like a manual label (e.g., "Verse 1:", "Chorus:", "Pre-chorus:", "Bridge:")
-                sectionLabel = firstLine.substring(0, colonIndex);
-                // Remove the label line from content
-                content = lines.slice(1).join('\n');
-              }
-            }
-            
-            return '<div class="song-verse"><div class="verse-number">' + sectionLabel + '</div><div class="verse-text">' + 
-                   content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('') + 
-                   '</div></div>';
-          }).join('') : ''}
-        ${song.chorus ? `
-          <div class="chorus-section">
-            <div class="chorus-label">Chorus</div>
-            <div class="chorus-text">
-              ${song.chorus.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
-            </div>
-          </div>
-        ` : ''}
-        ${(!song.lyrics || song.lyrics.length === 0) && !song.chorus ? `
-          <div class="song-verse">
-            <div class="verse-text">
-              <p><em>Lyrics not available for this song.</em></p>
-            </div>
-          </div>
-        ` : ''}
+        ${lyricsHTML}
       </div>
       
       <div class="footer">
@@ -1357,6 +1311,23 @@ function printSongLyrics() {
       printWindow.close();
     };
   };
+}
+
+// Display lyrics in the lyrics container
+function displayLyrics(lyrics) {
+  const lyricsContainer = document.getElementById('lyrics-display');
+  if (!lyricsContainer) {
+    console.log('[DEBUG] Lyrics display container not found');
+    return;
+  }
+  
+  if (lyrics && lyrics.length > 0) {
+    console.log('[DEBUG] Rendering full lyrics view with utility function');
+    // Use the shared lyrics rendering function for full view (not media player)
+    lyricsContainer.innerHTML = window.renderLyrics(lyrics, false);
+  } else {
+    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available</p>';
+  }
 }
 
 console.log("[DEBUG] Songs tab module initialization complete");

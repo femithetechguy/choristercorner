@@ -8,12 +8,13 @@ console.log("[DEBUG] App.js entry point loaded");
 // Load all the tab-specific modules
 function loadTabModules() {
   const modules = [
+    'js/lyrics-utils.js',      // Load this FIRST so other modules can use it
     'js/shared-player.js',
     'js/home.js',
     'js/songs.js',
     'js/hymns.js',
     'js/metronome.js',
-    'js/drummer.js',          // ADD THIS LINE
+    'js/drummer.js',
     'js/about.js',
     'js/contact.js',
     'js/playlist-updater.js',
