@@ -662,31 +662,13 @@ function renderHymnLyricsView() {
       <!-- Lyrics Content -->
       <div class="lyrics-container">
         ${hymn.lyrics && hymn.lyrics.length > 0 ? 
-          hymn.lyrics.map((verse, index) => {
-            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Refrain:")
-            const lines = verse.split('\n').filter(line => line.trim());
-            let sectionLabel = 'Verse ' + (index + 1);
-            let content = verse;
-            
-            if (lines.length > 0) {
-              const firstLine = lines[0].trim();
-              // Check if first line ends with a colon (manual label)
-              if (firstLine.includes(':') && firstLine.length < 20) {
-                sectionLabel = firstLine.replace(':', '');
-                // Remove the label line from content
-                content = lines.slice(1).join('\n');
-              }
-            }
-            
-            return `
-              <div class="lyrics-verse">
-                <div class="verse-number">${sectionLabel}</div>
-                <div class="verse-content">
-                  ${content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
-                </div>
-              </div>
-            `;
-          }).join('') : `
+          (window.renderLyrics ? window.renderLyrics(hymn.lyrics, false) : `
+            <div class="text-center text-gray-500 py-12">
+              <i class="bi bi-exclamation-triangle text-6xl mb-4"></i>
+              <h3 class="text-xl font-semibold mb-2">Lyrics Utility Not Loaded</h3>
+              <p>Please refresh the page to load the lyrics utility.</p>
+            </div>
+          `) : `
           <div class="text-center text-gray-500 py-12">
             <i class="bi bi-file-text text-6xl mb-4"></i>
             <h3 class="text-xl font-semibold mb-2">Lyrics Not Available</h3>
@@ -922,6 +904,33 @@ function printHymnLyrics() {
   // Create a new window for printing
   const printWindow = window.open('', '_blank', 'width=800,height=600');
   
+  // Use the shared lyrics parsing function
+  let lyricsHTML = '';
+  if (hymn.lyrics && hymn.lyrics.length > 0) {
+    lyricsHTML = hymn.lyrics.map((verse, index) => {
+      // Use the shared parsing function
+      const { label, text } = window.parseLyricSection ? window.parseLyricSection(verse) : { label: null, text: verse };
+      const displayLabel = label || `Verse ${index + 1}`;
+      
+      return `
+        <div class="hymn-verse">
+          <div class="verse-number">${displayLabel}</div>
+          <div class="verse-text">
+            ${text.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+  } else {
+    lyricsHTML = `
+      <div class="hymn-verse">
+        <div class="verse-text">
+          <p><em>Lyrics not available for this hymn.</em></p>
+        </div>
+      </div>
+    `;
+  }
+  
   // Generate print-friendly HTML
   const printContent = `
     <!DOCTYPE html>
@@ -1012,38 +1021,7 @@ function printHymnLyrics() {
       </div>
       
       <div class="hymn-content">
-        ${hymn.lyrics && hymn.lyrics.length > 0 ? 
-          hymn.lyrics.map((verse, index) => {
-            // Check if the verse starts with a manual label (e.g., "Verse 1:", "Chorus:", "Refrain:")
-            const lines = verse.split('\n').filter(line => line.trim());
-            let sectionLabel = 'Verse ' + (index + 1);
-            let content = verse;
-            
-            if (lines.length > 0) {
-              const firstLine = lines[0].trim();
-              // Check if first line ends with a colon (manual label)
-              if (firstLine.includes(':') && firstLine.length < 20) {
-                sectionLabel = firstLine.replace(':', '');
-                // Remove the label line from content
-                content = lines.slice(1).join('\n');
-              }
-            }
-            
-            return `
-              <div class="hymn-verse">
-                <div class="verse-number">${sectionLabel}</div>
-                <div class="verse-text">
-                  ${content.split('\n').filter(line => line.trim()).map(line => '<p>' + line.trim() + '</p>').join('')}
-                </div>
-              </div>
-            `;
-          }).join('') : `
-          <div class="hymn-verse">
-            <div class="verse-text">
-              <p><em>Lyrics not available for this hymn.</em></p>
-            </div>
-          </div>
-        `}
+        ${lyricsHTML}
       </div>
       
       <div class="footer">
@@ -1283,4 +1261,20 @@ function toggleHymnsView(view) {
   console.log("[DEBUG] Toggling hymns view to:", view);
   hymnsData.currentView = view;
   updateHymnsDisplay();
+}
+
+function displayHymnLyrics(lyrics) {
+  const lyricsContainer = document.getElementById('hymn-lyrics-display');
+  if (!lyricsContainer) {
+    console.log('[DEBUG] Hymn lyrics display container not found');
+    return;
+  }
+  
+  if (lyrics && lyrics.length > 0) {
+    console.log('[DEBUG] Rendering hymn lyrics with utility function');
+    // Use the shared lyrics rendering function for full view
+    lyricsContainer.innerHTML = window.renderLyrics(lyrics, false);
+  } else {
+    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available</p>';
+  }
 }

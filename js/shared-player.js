@@ -153,6 +153,31 @@ function renderSharedPlayer() {
   // Determine the appropriate copy function based on type
   const copyFunction = type === 'song' ? 'copySongLinkBySerial' : 'copyHymnLinkBySerial';
   
+  // Render lyrics using the shared utility function
+  let lyricsHTML = '';
+  if (item.lyrics && item.lyrics.length > 0) {
+    if (window.renderLyrics) {
+      lyricsHTML = window.renderLyrics(item.lyrics, true);
+    } else {
+      // Fallback if utility not loaded
+      console.warn('[DEBUG] Lyrics utility not loaded in renderSharedPlayer');
+      lyricsHTML = `
+        <div class="text-center py-8">
+          <i class="bi bi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+          <p class="text-gray-600 mb-2">Lyrics utility not loaded</p>
+          <p class="text-gray-500 text-sm">Please refresh the page</p>
+        </div>
+      `;
+    }
+  } else {
+    lyricsHTML = `
+      <div class="text-center text-gray-500 py-8">
+        <i class="bi bi-file-text text-4xl mb-3"></i>
+        <p>Lyrics not available for this ${type}</p>
+      </div>
+    `;
+  }
+  
   return `
     <div id="shared-player-section" class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-2xl z-40 transform transition-transform duration-300" style="max-height: 65vh;">
       <!-- Player Header -->
@@ -217,28 +242,60 @@ function renderSharedPlayer() {
               <p class="text-sm text-gray-700 font-medium">${item.channel} • ${item.duration}</p>
             </div>
             
-            ${item.lyrics && item.lyrics.length > 0 ? `
-              <div class="space-y-4">
-                ${item.lyrics.map((verse, index) => `
-                  <div class="lyrics-verse">
-                    <div class="verse-number">Verse ${index + 1}</div>
-                    <div class="verse-content">
-                      ${verse.split('\n').filter(line => line.trim()).map(line => `<p>${line.trim()}</p>`).join('')}
-                    </div>
-                  </div>
-                `).join('')}
-              </div>
-            ` : `
-              <div class="text-center text-gray-500 py-8">
-                <i class="bi bi-file-text text-4xl mb-3"></i>
-                <p>Lyrics not available for this ${type}</p>
-              </div>
-            `}
+            <div id="player-lyrics-content" class="space-y-4">
+              ${lyricsHTML}
+            </div>
           </div>
         </div>
       </div>
     </div>
   `;
+}
+
+// Update Lyrics Display
+function updateLyricsDisplay(song) {
+  const lyricsContainer = document.getElementById('player-lyrics-content');
+  if (!lyricsContainer) {
+    console.log('[DEBUG] Lyrics container not found');
+    return;
+  }
+  
+  if (song && song.lyrics && song.lyrics.length > 0) {
+    console.log('[DEBUG] Rendering lyrics with utility function for media player');
+    
+    // Check if the lyrics utility is available
+    if (window.renderLyrics) {
+      // Use the shared lyrics rendering function with media player styling (true parameter)
+      lyricsContainer.innerHTML = window.renderLyrics(song.lyrics, true);
+    } else {
+      // Fallback if utility hasn't loaded yet
+      console.warn('[DEBUG] Lyrics utility not loaded, trying manual rendering');
+      
+      // Try to wait for it to load
+      let retryCount = 0;
+      const maxRetries = 10;
+      const waitForUtility = setInterval(() => {
+        if (window.renderLyrics) {
+          clearInterval(waitForUtility);
+          lyricsContainer.innerHTML = window.renderLyrics(song.lyrics, true);
+          console.log('[DEBUG] Lyrics utility loaded, rendered successfully');
+        } else if (retryCount >= maxRetries) {
+          clearInterval(waitForUtility);
+          console.error('[DEBUG] Lyrics utility failed to load after retries');
+          lyricsContainer.innerHTML = `
+            <div class="text-center py-8">
+              <i class="bi bi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
+              <p class="text-gray-600 mb-2">Lyrics utility not loaded</p>
+              <p class="text-gray-500 text-sm">Please refresh the page</p>
+            </div>
+          `;
+        }
+        retryCount++;
+      }, 200);
+    }
+  } else {
+    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available for this song</p>';
+  }
 }
 
 // Check if shared player is currently visible
