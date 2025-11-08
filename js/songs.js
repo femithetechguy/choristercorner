@@ -1136,6 +1136,49 @@ function toggleFavorite(serialNumber) {
   alert('Favorites feature coming soon!');
 }
 
+// View song details
+function viewSongDetails(serialNumber) {
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
+  
+  if (!song) {
+    console.error('[DEBUG] Song not found:', serialNumber);
+    return;
+  }
+  
+  console.log('[DEBUG] Viewing song details:', song.title);
+  songsData.selectedSong = song;
+  songsData.showLyrics = true;
+  
+  // Update meta tags for social sharing
+  if (window.updateMetaTags) {
+    window.updateMetaTags(song, 'song');
+  }
+  
+  // Update URL without page reload
+  const newUrl = `${window.location.pathname}?song=${serialNumber}`;
+  window.history.pushState({ song: serialNumber }, '', newUrl);
+  
+  // Update display
+  updateSongsDisplay();
+}
+
+// Back to songs list
+function backToSongsList() {
+  console.log('[DEBUG] Returning to songs list');
+  songsData.showLyrics = false;
+  songsData.selectedSong = null;
+  
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
+  
+  updateSongsDisplay();
+}
+
 // Initialize songs data when the module loads
 loadSongsData();
 

@@ -8,7 +8,8 @@ console.log("[DEBUG] App.js entry point loaded");
 // Load all the tab-specific modules
 function loadTabModules() {
   const modules = [
-    'js/lyrics-utils.js',      // Load this FIRST so other modules can use it
+    'js/lyrics-utils.js',
+    'js/meta-tags.js',          // Add this line
     'js/shared-player.js',
     'js/home.js',
     'js/songs.js',

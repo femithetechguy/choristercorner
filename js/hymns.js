@@ -601,6 +601,49 @@ function viewHymnLyrics(serialNumber) {
   updateHymnsDisplay();
 }
 
+// View hymn details
+function viewHymnDetails(serialNumber) {
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === parseInt(serialNumber));
+  
+  if (!hymn) {
+    console.error('[DEBUG] Hymn not found:', serialNumber);
+    return;
+  }
+  
+  console.log('[DEBUG] Viewing hymn details:', hymn.title);
+  hymnsData.selectedHymn = hymn;
+  hymnsData.showLyrics = true;
+  
+  // Update meta tags for social sharing
+  if (window.updateMetaTags) {
+    window.updateMetaTags(hymn, 'hymn');
+  }
+  
+  // Update URL without page reload
+  const newUrl = `${window.location.pathname}?hymn=${serialNumber}`;
+  window.history.pushState({ hymn: serialNumber }, '', newUrl);
+  
+  // Update display
+  updateHymnsDisplay();
+}
+
+// Back to hymns list
+function backToHymnsList() {
+  console.log('[DEBUG] Returning to hymns list');
+  hymnsData.showLyrics = false;
+  hymnsData.selectedHymn = null;
+  
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
+  
+  updateHymnsDisplay();
+}
+
 // Render hymn lyrics view
 function renderHymnLyricsView() {
   const hymn = hymnsData.selectedHymn;
@@ -682,20 +725,18 @@ function renderHymnLyricsView() {
 
 // Back to hymns list
 function backToHymnsList() {
-  console.log("[DEBUG] Returning to hymns list");
-  
+  console.log('[DEBUG] Returning to hymns list');
   hymnsData.showLyrics = false;
   hymnsData.selectedHymn = null;
   
-  // Clear URL parameters
-  const url = new URL(window.location);
-  url.searchParams.delete('hymn');
-  window.history.pushState({}, '', url);
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
   
-  // Reset page title
-  document.title = 'ChoristerCorner - Worship Songs, Chords & Resources for Church Musicians';
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
   
-  // Re-render hymns tab
   updateHymnsDisplay();
 }
 
