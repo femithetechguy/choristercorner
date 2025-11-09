@@ -1030,18 +1030,38 @@ function showCopyNotification(message, type = 'success') {
 
 // Copy song link by serial number (for onclick handlers)
 function copySongLinkBySerial(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
-  if (song) {
-    copySongLink(song);
-  } else {
-    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
-    showCopyNotification('Song not found', 'error');
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
+  
+  if (!song) {
+    console.error('[DEBUG] Song not found for serial:', serialNumber);
+    showToast('Song not found', 'error');
+    return;
   }
+  
+  // Create URL-friendly title
+  const urlTitle = song.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')      // Replace spaces with hyphens
+    .replace(/-+/g, '-')       // Replace multiple hyphens with single
+    .trim();
+  
+  // Create the link with title for SEO
+  const link = `${window.location.origin}${window.location.pathname}?song=${serialNumber}&title=${urlTitle}`;
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(link).then(() => {
+    console.log('[DEBUG] Song link copied:', link);
+    showToast('Song link copied to clipboard!', 'success');
+  }).catch(err => {
+    console.error('[DEBUG] Failed to copy link:', err);
+    showToast('Failed to copy link', 'error');
+  });
 }
 
 // Copy YouTube link by serial number (for onclick handlers)
 function copyYouTubeLinkBySerial(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
   if (song) {
     copyYouTubeLink(song);
   } else {
@@ -1134,6 +1154,49 @@ function toggleFavorite(serialNumber) {
   console.log("[DEBUG] Toggling favorite for song:", serialNumber);
   // TODO: Implement favorites functionality
   alert('Favorites feature coming soon!');
+}
+
+// View song details
+function viewSongDetails(serialNumber) {
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
+  
+  if (!song) {
+    console.error('[DEBUG] Song not found:', serialNumber);
+    return;
+  }
+  
+  console.log('[DEBUG] Viewing song details:', song.title);
+  songsData.selectedSong = song;
+  songsData.showLyrics = true;
+  
+  // Update meta tags for social sharing
+  if (window.updateMetaTags) {
+    window.updateMetaTags(song, 'song');
+  }
+  
+  // Update URL without page reload
+  const newUrl = `${window.location.pathname}?song=${serialNumber}`;
+  window.history.pushState({ song: serialNumber }, '', newUrl);
+  
+  // Update display
+  updateSongsDisplay();
+}
+
+// Back to songs list
+function backToSongsList() {
+  console.log('[DEBUG] Returning to songs list');
+  songsData.showLyrics = false;
+  songsData.selectedSong = null;
+  
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
+  
+  updateSongsDisplay();
 }
 
 // Initialize songs data when the module loads

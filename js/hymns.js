@@ -601,6 +601,49 @@ function viewHymnLyrics(serialNumber) {
   updateHymnsDisplay();
 }
 
+// View hymn details
+function viewHymnDetails(serialNumber) {
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === parseInt(serialNumber));
+  
+  if (!hymn) {
+    console.error('[DEBUG] Hymn not found:', serialNumber);
+    return;
+  }
+  
+  console.log('[DEBUG] Viewing hymn details:', hymn.title);
+  hymnsData.selectedHymn = hymn;
+  hymnsData.showLyrics = true;
+  
+  // Update meta tags for social sharing
+  if (window.updateMetaTags) {
+    window.updateMetaTags(hymn, 'hymn');
+  }
+  
+  // Update URL without page reload
+  const newUrl = `${window.location.pathname}?hymn=${serialNumber}`;
+  window.history.pushState({ hymn: serialNumber }, '', newUrl);
+  
+  // Update display
+  updateHymnsDisplay();
+}
+
+// Back to hymns list
+function backToHymnsList() {
+  console.log('[DEBUG] Returning to hymns list');
+  hymnsData.showLyrics = false;
+  hymnsData.selectedHymn = null;
+  
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
+  
+  updateHymnsDisplay();
+}
+
 // Render hymn lyrics view
 function renderHymnLyricsView() {
   const hymn = hymnsData.selectedHymn;
@@ -682,20 +725,18 @@ function renderHymnLyricsView() {
 
 // Back to hymns list
 function backToHymnsList() {
-  console.log("[DEBUG] Returning to hymns list");
-  
+  console.log('[DEBUG] Returning to hymns list');
   hymnsData.showLyrics = false;
   hymnsData.selectedHymn = null;
   
-  // Clear URL parameters
-  const url = new URL(window.location);
-  url.searchParams.delete('hymn');
-  window.history.pushState({}, '', url);
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
   
-  // Reset page title
-  document.title = 'ChoristerCorner - Worship Songs, Chords & Resources for Church Musicians';
+  // Update URL
+  window.history.pushState({}, '', window.location.pathname);
   
-  // Re-render hymns tab
   updateHymnsDisplay();
 }
 
@@ -859,17 +900,34 @@ function clearAllFilters() {
   filterHymns();
 }
 
-// Copy hymn link
+// Copy hymn link by serial number
 function copyHymnLinkBySerial(serialNumber) {
-  const url = new URL(window.location.origin + window.location.pathname);
-  url.searchParams.set('hymn', serialNumber);
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === parseInt(serialNumber));
   
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    // Show success message
-    showToast('Hymn link copied to clipboard!');
+  if (!hymn) {
+    console.error('[DEBUG] Hymn not found for serial:', serialNumber);
+    showToast('Hymn not found', 'error');
+    return;
+  }
+  
+  // Create URL-friendly title
+  const urlTitle = hymn.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')      // Replace spaces with hyphens
+    .replace(/-+/g, '-')       // Replace multiple hyphens with single
+    .trim();
+  
+  // Create the link with title for SEO
+  const link = `${window.location.origin}${window.location.pathname}?hymn=${serialNumber}&title=${urlTitle}`;
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(link).then(() => {
+    console.log('[DEBUG] Hymn link copied:', link);
+    showToast('Hymn link copied to clipboard!', 'success');
   }).catch(err => {
-    console.error('Failed to copy link:', err);
-    showToast('Failed to copy link');
+    console.error('[DEBUG] Failed to copy link:', err);
+    showToast('Failed to copy link', 'error');
   });
 }
 
