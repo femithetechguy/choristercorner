@@ -534,8 +534,8 @@ async function renderAppUI() {
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center h-16">
             
-            <!-- Logo and App Name -->
-            <div class="flex items-center space-x-3">
+            <!-- Logo and App Name (Clickable to return home) -->
+            <div class="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity" onclick="goToHome()">
               <div class="flex-shrink-0">
                 <i class="bi bi-music-note-beamed text-3xl text-purple-600"></i>
               </div>
@@ -953,3 +953,45 @@ function setupEventListeners() {
 }
 
 console.log("[DEBUG] Scripts.js initialization complete");
+
+/**
+ * Navigate to home page (first tab)
+ */
+function goToHome() {
+  console.log('[DEBUG] Navigating to home');
+  
+  // Close any open media player
+  if (window.closeSharedPlayer) {
+    window.closeSharedPlayer();
+  }
+  
+  // Reset any selected items in songs/hymns
+  if (window.songsData) {
+    window.songsData.showLyrics = false;
+    window.songsData.selectedSong = null;
+  }
+  if (window.hymnsData) {
+    window.hymnsData.showLyrics = false;
+    window.hymnsData.selectedHymn = null;
+  }
+  
+  // Reset meta tags to default
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Update URL to remove parameters
+  const newUrl = window.location.pathname;
+  window.history.pushState({}, '', newUrl);
+  
+  // Switch to home tab (index 0)
+  selectedTabIdx = 0;
+  window.selectedTabIdx = 0;
+  localStorage.setItem("selectedTabIdx", "0");
+  
+  // Re-render the UI
+  renderAppUI();
+}
+
+// Make goToHome globally accessible
+window.goToHome = goToHome;
