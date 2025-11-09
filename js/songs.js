@@ -1030,18 +1030,38 @@ function showCopyNotification(message, type = 'success') {
 
 // Copy song link by serial number (for onclick handlers)
 function copySongLinkBySerial(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
-  if (song) {
-    copySongLink(song);
-  } else {
-    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
-    showCopyNotification('Song not found', 'error');
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
+  
+  if (!song) {
+    console.error('[DEBUG] Song not found for serial:', serialNumber);
+    showToast('Song not found', 'error');
+    return;
   }
+  
+  // Create URL-friendly title
+  const urlTitle = song.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')      // Replace spaces with hyphens
+    .replace(/-+/g, '-')       // Replace multiple hyphens with single
+    .trim();
+  
+  // Create the link with title for SEO
+  const link = `${window.location.origin}${window.location.pathname}?song=${serialNumber}&title=${urlTitle}`;
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(link).then(() => {
+    console.log('[DEBUG] Song link copied:', link);
+    showToast('Song link copied to clipboard!', 'success');
+  }).catch(err => {
+    console.error('[DEBUG] Failed to copy link:', err);
+    showToast('Failed to copy link', 'error');
+  });
 }
 
 // Copy YouTube link by serial number (for onclick handlers)
 function copyYouTubeLinkBySerial(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
   if (song) {
     copyYouTubeLink(song);
   } else {

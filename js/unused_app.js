@@ -40,17 +40,125 @@ function loadMainScript() {
   document.head.appendChild(script);
 }
 
-// Initialize the application
-function initializeApp() {
-  console.log("[DEBUG] Initializing ChoristerCorner application");
+/**
+ * Check URL parameters and navigate to specific content
+ */
+function handleURLParameters() {
+  const urlParams = new URLSearchParams(window.location.search);
   
-  // Load tab modules first
-  loadTabModules();
+  // Check for song parameter
+  const songId = urlParams.get('song');
+  if (songId) {
+    console.log('[DEBUG] URL contains song parameter:', songId);
+    
+    // Wait for songs data to load, then navigate to song
+    const checkSongsLoaded = setInterval(() => {
+      if (window.songsData && window.songsData.allSongs && window.songsData.allSongs.length > 0) {
+        clearInterval(checkSongsLoaded);
+        
+        // Switch to Songs tab
+        window.selectedTabIdx = 1; // Songs tab index
+        renderAppUI();
+        
+        // Wait for tab to render, then view song details
+        setTimeout(() => {
+          if (window.viewSongDetails) {
+            console.log('[DEBUG] Navigating to song:', songId);
+            window.viewSongDetails(parseInt(songId));
+          } else {
+            console.error('[DEBUG] viewSongDetails function not available');
+          }
+        }, 500);
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkSongsLoaded), 10000);
+    return true;
+  }
   
-  // Then load main script after a short delay to ensure modules are loaded
-  setTimeout(() => {
-    loadMainScript();
-  }, 100);
+  // Check for hymn parameter
+  const hymnId = urlParams.get('hymn');
+  if (hymnId) {
+    console.log('[DEBUG] URL contains hymn parameter:', hymnId);
+    
+    // Wait for hymns data to load, then navigate to hymn
+    const checkHymnsLoaded = setInterval(() => {
+      if (window.hymnsData && window.hymnsData.allHymns && window.hymnsData.allHymns.length > 0) {
+        clearInterval(checkHymnsLoaded);
+        
+        // Switch to Hymns tab
+        window.selectedTabIdx = 2; // Hymns tab index
+        renderAppUI();
+        
+        // Wait for tab to render, then view hymn details
+        setTimeout(() => {
+          if (window.viewHymnDetails) {
+            console.log('[DEBUG] Navigating to hymn:', hymnId);
+            window.viewHymnDetails(parseInt(hymnId));
+          } else {
+            console.error('[DEBUG] viewHymnDetails function not available');
+          }
+        }, 500);
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkHymnsLoaded), 10000);
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Initialize the application
+ */
+async function initializeApp() {
+  console.log("[DEBUG] Initializing ChoristerCorner app...");
+
+  try {
+    // Check if we're in a service worker context
+    if (!('serviceWorker' in navigator)) {
+      console.warn("[DEBUG] Service Workers not supported");
+    }
+
+    // Load all tab modules
+    console.log("[DEBUG] Loading tab modules...");
+    loadTabModules();
+
+    // Wait for modules to load
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    // Check if URL has parameters for direct navigation
+    const hasUrlParams = handleURLParameters();
+    
+    if (!hasUrlParams) {
+      // No URL params, render normally
+      console.log("[DEBUG] Rendering main app UI...");
+      renderAppUI();
+    }
+
+    // Set up event listeners
+    console.log("[DEBUG] Setting up event listeners...");
+    setupEventListeners();
+
+    console.log("[DEBUG] App initialization complete");
+  } catch (error) {
+    console.error("[DEBUG] Error during app initialization:", error);
+    document.getElementById("app-root").innerHTML = `
+      <div class="flex items-center justify-center min-h-screen bg-red-50">
+        <div class="text-center p-8">
+          <i class="bi bi-exclamation-triangle text-6xl text-red-600 mb-4"></i>
+          <h1 class="text-2xl font-bold text-gray-900 mb-4">Application Error</h1>
+          <p class="text-gray-700 mb-4">Failed to initialize the application. Please try refreshing the page.</p>
+          <button onclick="location.reload()" class="btn btn-primary">
+            Refresh Page
+          </button>
+        </div>
+      </div>
+    `;
+  }
 }
 
 // Start the application when DOM is ready

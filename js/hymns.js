@@ -900,17 +900,34 @@ function clearAllFilters() {
   filterHymns();
 }
 
-// Copy hymn link
+// Copy hymn link by serial number
 function copyHymnLinkBySerial(serialNumber) {
-  const url = new URL(window.location.origin + window.location.pathname);
-  url.searchParams.set('hymn', serialNumber);
+  const hymn = hymnsData.allHymns.find(h => h.serial_number === parseInt(serialNumber));
   
-  navigator.clipboard.writeText(url.toString()).then(() => {
-    // Show success message
-    showToast('Hymn link copied to clipboard!');
+  if (!hymn) {
+    console.error('[DEBUG] Hymn not found for serial:', serialNumber);
+    showToast('Hymn not found', 'error');
+    return;
+  }
+  
+  // Create URL-friendly title
+  const urlTitle = hymn.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-')      // Replace spaces with hyphens
+    .replace(/-+/g, '-')       // Replace multiple hyphens with single
+    .trim();
+  
+  // Create the link with title for SEO
+  const link = `${window.location.origin}${window.location.pathname}?hymn=${serialNumber}&title=${urlTitle}`;
+  
+  // Copy to clipboard
+  navigator.clipboard.writeText(link).then(() => {
+    console.log('[DEBUG] Hymn link copied:', link);
+    showToast('Hymn link copied to clipboard!', 'success');
   }).catch(err => {
-    console.error('Failed to copy link:', err);
-    showToast('Failed to copy link');
+    console.error('[DEBUG] Failed to copy link:', err);
+    showToast('Failed to copy link', 'error');
   });
 }
 

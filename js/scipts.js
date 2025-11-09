@@ -6,10 +6,44 @@ let appRoot = document.getElementById("app-root") || document.body;
 let config = { appName: "ChoristerCorner" };
 let selectedTabIdx = 0;
 
+// --- Load all utility modules first ---
+function loadUtilityModules() {
+  const modules = [
+    'js/lyrics-utils.js',
+    'js/meta-tags.js',
+    'js/shared-player.js',
+    'js/home.js',
+    'js/songs.js',
+    'js/hymns.js',
+    'js/metronome.js',
+    'js/drummer.js',
+    'js/about.js',
+    'js/contact.js',
+    'js/playlist-updater.js',
+    'js/extras.js'
+  ];
+  
+  return Promise.all(modules.map(module => {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = module;
+      script.onload = () => {
+        console.log(`[DEBUG] Loaded module: ${module}`);
+        resolve();
+      };
+      script.onerror = () => {
+        console.warn(`[DEBUG] Failed to load module: ${module}`);
+        resolve(); // Don't reject, continue with other modules
+      };
+      document.head.appendChild(script);
+    });
+  }));
+}
+
 // --- DYNAMIC RENDERING: Always use tabs from app.json ---
 fetch("json/app.json")
   .then((response) => response.json())
-  .then((appData) => {
+  .then(async (appData) => {
     config.appName = appData.appName || "ChoristerCorner";
     config.description = appData.description || "A comprehensive platform for choristers and worship leaders";
     config.version = appData.version || "1.0.0";
@@ -23,6 +57,14 @@ fetch("json/app.json")
       window.tabs = tabs; // Ensure global reference is always up to date
     }
     console.log("[DEBUG] Tabs loaded:", tabs);
+    
+    // Load utility modules
+    console.log("[DEBUG] Loading utility modules...");
+    await loadUtilityModules();
+    
+    // Wait a bit for modules to initialize
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
     window.renderAppUI = renderAppUI; // Ensure global reference is always up to date
     
     // Initialize the app
@@ -46,16 +88,423 @@ fetch("json/app.json")
 async function initializeApp() {
   console.log("[DEBUG] Initializing ChoristerCorner app");
   
-  // Restore last selected tab if valid, else default to 0 (Home)
-  let idx = parseInt(localStorage.getItem("selectedTabIdx"), 10);
-  if (isNaN(idx) || idx < 0 || idx >= tabs.length) {
-    idx = 0;
-  }
-  selectedTabIdx = idx;
-  localStorage.setItem("selectedTabIdx", selectedTabIdx);
+  // Check for URL parameters first (for deep linking)
+  const hasUrlParams = handleURLParameters();
   
-  await renderAppUI();
+  if (!hasUrlParams) {
+    // No URL params, restore last selected tab if valid, else default to 0 (Home)
+    let idx = parseInt(localStorage.getItem("selectedTabIdx"), 10);
+    if (isNaN(idx) || idx < 0 || idx >= tabs.length) {
+      idx = 0;
+    }
+    selectedTabIdx = idx;
+    window.selectedTabIdx = idx;
+    localStorage.setItem("selectedTabIdx", selectedTabIdx);
+    
+    await renderAppUI();
+  }
+  
   setupEventListeners();
+  setupBrowserNavigation();
+  setupServiceWorker();
+}
+
+/**
+ * Check URL parameters and navigate to specific content
+ */
+function handleURLParameters() {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Check for song parameter
+  const songId = urlParams.get('song');
+  if (songId) {
+    console.log('[DEBUG] URL contains song parameter:', songId);
+    
+    // Switch to Songs tab
+    selectedTabIdx = 1; // Songs tab index
+    window.selectedTabIdx = 1;
+    
+    // Wait for songs data to load, then navigate to song
+    const checkSongsLoaded = setInterval(() => {
+      if (window.songsData && window.songsData.allSongs && window.songsData.allSongs.length > 0) {
+        clearInterval(checkSongsLoaded);
+        
+        renderAppUI().then(() => {
+          // Wait for tab to render, then view song details
+          setTimeout(() => {
+            if (window.viewSongLyrics) {
+              console.log('[DEBUG] Navigating to song:', songId);
+              window.viewSongLyrics(parseInt(songId));
+            } else {
+              console.error('[DEBUG] viewSongLyrics function not available');
+            }
+          }, 500);
+        });
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkSongsLoaded), 10000);
+    return true;
+  }
+  
+  // Check for hymn parameter
+  const hymnId = urlParams.get('hymn');
+  if (hymnId) {
+    console.log('[DEBUG] URL contains hymn parameter:', hymnId);
+    
+    // Switch to Hymns tab
+    selectedTabIdx = 2; // Hymns tab index
+    window.selectedTabIdx = 2;
+    
+    // Wait for hymns data to load, then navigate to hymn
+    const checkHymnsLoaded = setInterval(() => {
+      if (window.hymnsData && window.hymnsData.allHymns && window.hymnsData.allHymns.length > 0) {
+        clearInterval(checkHymnsLoaded);
+        
+        renderAppUI().then(() => {
+          // Wait for tab to render, then view hymn details
+          setTimeout(() => {
+            if (window.viewHymnDetails) {
+              console.log('[DEBUG] Navigating to hymn:', hymnId);
+              window.viewHymnDetails(parseInt(hymnId));
+            } else {
+              console.error('[DEBUG] viewHymnDetails function not available');
+            }
+          }, 500);
+        });
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkHymnsLoaded), 10000);
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Setup browser navigation (back/forward buttons)
+ */
+function setupBrowserNavigation() {
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', (event) => {
+    console.log('[DEBUG] Browser navigation detected', event.state);
+    
+    if (event.state && event.state.song) {
+      // Navigate to song
+      selectedTabIdx = 1;
+      window.selectedTabIdx = 1;
+      renderAppUI().then(() => {
+        setTimeout(() => {
+          if (window.viewSongLyrics) {
+            window.viewSongLyrics(event.state.song);
+          }
+        }, 300);
+      });
+    } else if (event.state && event.state.hymn) {
+      // Navigate to hymn
+      selectedTabIdx = 2;
+      window.selectedTabIdx = 2;
+      renderAppUI().then(() => {
+        setTimeout(() => {
+          if (window.viewHymnDetails) {
+            window.viewHymnDetails(event.state.hymn);
+          }
+        }, 300);
+      });
+    } else {
+      // Navigate to home or check URL params
+      const hasParams = handleURLParameters();
+      if (!hasParams) {
+        renderAppUI();
+      }
+    }
+  });
+}
+
+/**
+ * Setup Service Worker for PWA
+ */
+function setupServiceWorker() {
+  if (!('serviceWorker' in navigator)) {
+    console.warn('[DEBUG] Service Workers not supported');
+    return;
+  }
+
+  let refreshing = false;
+  
+  // Listen for messages from service worker
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SW_UPDATED') {
+      console.log('[PWA] Service worker updated to:', event.data.version);
+    }
+  });
+  
+  // Handle page refresh when service worker updates
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (refreshing) return;
+    refreshing = true;
+    console.log('[PWA] Reloading page for service worker update');
+    window.location.reload();
+  });
+
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('[PWA] SW registered: ', registration);
+        
+        // Check for updates periodically
+        setInterval(() => {
+          registration.update();
+        }, 60000); // Check every minute
+        
+        // Listen for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('[PWA] New service worker installing');
+          
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed') {
+              if (navigator.serviceWorker.controller) {
+                console.log('[PWA] New content available');
+                showUpdateAvailableNotification(registration);
+              } else {
+                console.log('[PWA] Content cached for offline use');
+                showOfflineReadyNotification();
+              }
+            }
+          });
+        });
+      })
+      .catch((registrationError) => {
+        console.log('[PWA] SW registration failed: ', registrationError);
+      });
+  });
+
+  // Handle online/offline status
+  window.addEventListener('online', showOnlineStatus);
+  window.addEventListener('offline', showOfflineStatus);
+}
+
+// Show update available notification
+function showUpdateAvailableNotification(registration) {
+  const notification = document.createElement('div');
+  notification.id = 'update-notification';
+  notification.className = 'fixed top-4 right-4 bg-blue-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+  notification.innerHTML = `
+    <div class="flex items-start gap-3">
+      <i class="bi bi-arrow-clockwise text-xl mt-1"></i>
+      <div class="flex-1">
+        <h3 class="font-semibold mb-1">Update Available!</h3>
+        <p class="text-sm opacity-90 mb-3">A new version of ChoristerCorner is ready.</p>
+        <div class="flex gap-2">
+          <button id="update-now" class="bg-white text-blue-500 px-3 py-1 rounded text-sm font-medium hover:bg-gray-100">
+            Update Now
+          </button>
+          <button id="update-later" class="text-white text-sm underline hover:no-underline">
+            Later
+          </button>
+        </div>
+      </div>
+      <button id="close-update" class="text-white hover:text-gray-200">
+        <i class="bi bi-x text-xl"></i>
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  document.getElementById('update-now').onclick = () => {
+    if (registration.waiting) {
+      registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+    }
+    notification.remove();
+  };
+  
+  document.getElementById('update-later').onclick = () => notification.remove();
+  document.getElementById('close-update').onclick = () => notification.remove();
+  
+  setTimeout(() => notification.parentNode && notification.remove(), 30000);
+}
+
+function showOfflineReadyNotification() {
+  const notification = document.createElement('div');
+  notification.className = 'fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 max-w-sm';
+  notification.innerHTML = `
+    <div class="flex items-center gap-3">
+      <i class="bi bi-wifi-off text-xl"></i>
+      <div class="flex-1">
+        <h3 class="font-semibold mb-1">Ready for Offline!</h3>
+        <p class="text-sm opacity-90">ChoristerCorner is now available offline.</p>
+      </div>
+      <button onclick="this.parentNode.parentNode.remove()" class="text-white hover:text-gray-200">
+        <i class="bi bi-x text-xl"></i>
+      </button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  setTimeout(() => notification.parentNode && notification.remove(), 5000);
+}
+
+function showOnlineStatus() {
+  const offlineIndicator = document.getElementById('offline-indicator');
+  if (offlineIndicator) offlineIndicator.remove();
+}
+
+function showOfflineStatus() {
+  if (!document.body) {
+    setTimeout(showOfflineStatus, 100);
+    return;
+  }
+  
+  let offlineIndicator = document.getElementById('offline-indicator');
+  if (!offlineIndicator) {
+    offlineIndicator = document.createElement('div');
+    offlineIndicator.id = 'offline-indicator';
+    offlineIndicator.className = 'fixed top-0 left-0 right-0 bg-yellow-500 text-white text-center py-2 z-50';
+    offlineIndicator.innerHTML = '<i class="bi bi-wifi-off mr-2"></i>You are offline - Some features may be limited';
+    document.body.appendChild(offlineIndicator);
+  }
+}
+
+// Initialize the application
+async function initializeApp() {
+  console.log("[DEBUG] Initializing ChoristerCorner app");
+  
+  // Check for URL parameters first (for deep linking)
+  const hasUrlParams = handleURLParameters();
+  
+  if (!hasUrlParams) {
+    // No URL params, restore last selected tab if valid, else default to 0 (Home)
+    let idx = parseInt(localStorage.getItem("selectedTabIdx"), 10);
+    if (isNaN(idx) || idx < 0 || idx >= tabs.length) {
+      idx = 0;
+    }
+    selectedTabIdx = idx;
+    window.selectedTabIdx = idx;
+    localStorage.setItem("selectedTabIdx", selectedTabIdx);
+    
+    await renderAppUI();
+  }
+  
+  setupEventListeners();
+  setupBrowserNavigation();
+}
+
+// Check URL parameters and navigate to specific content
+function handleURLParameters() {
+  const urlParams = new URLSearchParams(window.location.search);
+  
+  // Check for song parameter
+  const songId = urlParams.get('song');
+  if (songId) {
+    console.log('[DEBUG] URL contains song parameter:', songId);
+    
+    // Switch to Songs tab
+    selectedTabIdx = 1; // Songs tab index
+    window.selectedTabIdx = 1;
+    
+    // Wait for songs data to load, then navigate to song
+    const checkSongsLoaded = setInterval(() => {
+      if (window.songsData && window.songsData.allSongs && window.songsData.allSongs.length > 0) {
+        clearInterval(checkSongsLoaded);
+        
+        renderAppUI().then(() => {
+          // Wait for tab to render, then view song details
+          setTimeout(() => {
+            if (window.viewSongLyrics) {
+              console.log('[DEBUG] Navigating to song:', songId);
+              window.viewSongLyrics(parseInt(songId));
+            } else {
+              console.error('[DEBUG] viewSongLyrics function not available');
+            }
+          }, 500);
+        });
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkSongsLoaded), 10000);
+    return true;
+  }
+  
+  // Check for hymn parameter
+  const hymnId = urlParams.get('hymn');
+  if (hymnId) {
+    console.log('[DEBUG] URL contains hymn parameter:', hymnId);
+    
+    // Switch to Hymns tab
+    selectedTabIdx = 2; // Hymns tab index
+    window.selectedTabIdx = 2;
+    
+    // Wait for hymns data to load, then navigate to hymn
+    const checkHymnsLoaded = setInterval(() => {
+      if (window.hymnsData && window.hymnsData.allHymns && window.hymnsData.allHymns.length > 0) {
+        clearInterval(checkHymnsLoaded);
+        
+        renderAppUI().then(() => {
+          // Wait for tab to render, then view hymn details
+          setTimeout(() => {
+            if (window.viewHymnDetails) {
+              console.log('[DEBUG] Navigating to hymn:', hymnId);
+              window.viewHymnDetails(parseInt(hymnId));
+            } else {
+              console.error('[DEBUG] viewHymnDetails function not available');
+            }
+          }, 500);
+        });
+      }
+    }, 100);
+    
+    // Timeout after 10 seconds
+    setTimeout(() => clearInterval(checkHymnsLoaded), 10000);
+    return true;
+  }
+  
+  return false;
+}
+
+/**
+ * Setup browser navigation (back/forward buttons)
+ */
+function setupBrowserNavigation() {
+  // Handle browser back/forward buttons
+  window.addEventListener('popstate', (event) => {
+    console.log('[DEBUG] Browser navigation detected', event.state);
+    
+    if (event.state && event.state.song) {
+      // Navigate to song
+      selectedTabIdx = 1;
+      window.selectedTabIdx = 1;
+      renderAppUI().then(() => {
+        setTimeout(() => {
+          if (window.viewSongLyrics) {
+            window.viewSongLyrics(event.state.song);
+          }
+        }, 300);
+      });
+    } else if (event.state && event.state.hymn) {
+      // Navigate to hymn
+      selectedTabIdx = 2;
+      window.selectedTabIdx = 2;
+      renderAppUI().then(() => {
+        setTimeout(() => {
+          if (window.viewHymnDetails) {
+            window.viewHymnDetails(event.state.hymn);
+          }
+        }, 300);
+      });
+    } else {
+      // Navigate to home or check URL params
+      const hasParams = handleURLParameters();
+      if (!hasParams) {
+        renderAppUI();
+      }
+    }
+  });
 }
 
 // Main UI rendering function
@@ -75,7 +524,6 @@ async function renderAppUI() {
     throw new Error("config must be initialized with appName before calling renderAppUI()");
   }
 
-  // Main app structure
   // Await tab content rendering
   const tabContent = await renderCurrentTabContent();
 
