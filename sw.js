@@ -6,8 +6,8 @@ self.addEventListener('message', (event) => {
 });
 
 // Update cache name with timestamp to force update
-const CACHE_NAME = 'chorister-corner-v1.1.20'; // Updated version
-const DATA_CACHE_NAME = 'chorister-corner-data-v1.1.20'; // Updated version
+const CACHE_NAME = 'chorister-corner-v1.1.22'; // Updated version
+const DATA_CACHE_NAME = 'chorister-corner-data-v1.1.22'; // Updated version
 
 // Static assets to cache
 const urlsToCache = [
