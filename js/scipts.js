@@ -371,6 +371,69 @@ function showOfflineStatus() {
   }
 }
 
+// Toast notification system
+function showToast(message, type = 'info') {
+  console.log(`[TOAST] ${type.toUpperCase()}: ${message}`);
+  
+  // Create toast container if it doesn't exist
+  let toastContainer = document.getElementById('toast-container');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toast-container';
+    toastContainer.className = 'fixed top-4 right-4 z-50 space-y-2';
+    document.body.appendChild(toastContainer);
+  }
+  
+  // Create toast element
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${type} animate-slide-in`;
+  
+  // Icon based on type
+  const icons = {
+    success: 'bi-check-circle-fill',
+    error: 'bi-exclamation-circle-fill',
+    info: 'bi-info-circle-fill',
+    warning: 'bi-exclamation-triangle-fill'
+  };
+  
+  const icon = icons[type] || icons.info;
+  
+  toast.innerHTML = `
+    <div class="flex items-center gap-3 px-4 py-3 rounded-lg shadow-lg bg-white border-l-4 ${
+      type === 'success' ? 'border-green-500' :
+      type === 'error' ? 'border-red-500' :
+      type === 'warning' ? 'border-yellow-500' :
+      'border-blue-500'
+    }">
+      <i class="bi ${icon} text-xl ${
+        type === 'success' ? 'text-green-500' :
+        type === 'error' ? 'text-red-500' :
+        type === 'warning' ? 'text-yellow-500' :
+        'text-blue-500'
+      }"></i>
+      <span class="text-gray-700 font-medium">${message}</span>
+    </div>
+  `;
+  
+  // Add to container
+  toastContainer.appendChild(toast);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    toast.classList.add('animate-slide-out');
+    setTimeout(() => {
+      toast.remove();
+      // Remove container if empty
+      if (toastContainer.children.length === 0) {
+        toastContainer.remove();
+      }
+    }, 300);
+  }, 3000);
+}
+
+// Export showToast globally
+window.showToast = showToast;
+
 // Desktop tab button rendering
 function renderDesktopTabBtn(tab, idx) {
   const isActive = idx === selectedTabIdx;

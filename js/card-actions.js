@@ -1,192 +1,77 @@
-console.log("[DEBUG] card-actions.js loaded");
-
 /**
  * Card Actions Utility
- * Provides reusable action buttons for song/hymn cards
+ * Generates reusable action buttons for songs and hymns
  */
 
+console.log("[DEBUG] card-actions.js loading...");
+
 /**
- * Generate action buttons HTML for a card
+ * Generate action buttons for song/hymn cards
  * @param {Object} item - Song or hymn object
  * @param {string} type - 'song' or 'hymn'
- * @param {Object} options - Options for which buttons to show
- * @returns {string} HTML string for action buttons
+ * @returns {string} HTML for action buttons
  */
-function generateCardActions(item, type = 'song', options = {}) {
-  const defaults = {
-    showPlay: true,
-    showLyrics: true,
-    showCopyLink: true,
-    showOpenNew: true,
-    showFavorite: true
-  };
+function generateCardActions(item, type) {
+  const isHymn = type === 'hymn';
+  const playFunction = isHymn ? 'playHymnEmbedded' : 'playSongEmbedded';
+  const copyFunction = isHymn ? 'copyHymnLinkBySerial' : 'copySongLinkBySerial';
+  const viewFunction = isHymn ? 'viewHymnDetails' : 'viewSongLyrics';
+  const favoriteFunction = isHymn ? 'toggleHymnFavorite' : 'toggleSongFavorite';
   
-  const settings = { ...defaults, ...options };
+  // Check if item is favorited
+  const isFavorited = checkIfFavorited(item.serial_number, type);
   
-  const actions = [];
-  
-  // Play/Listen button (primary action) - uses same function as thumbnail click
-  if (settings.showPlay) {
-    const playFunction = type === 'song' ? 'playSongEmbedded' : 'playHymnEmbedded';
-    const serialNumber = item.serial_number;
-    
-    actions.push(`
+  return `
+    <!-- Play Button -->
+    ${item.url ? `
       <button 
-        onclick="playItemBySerial(${serialNumber}, '${type}')" 
-        class="card-action-btn card-action-btn-primary"
+        onclick="${playFunction}(${JSON.stringify(item).replace(/'/g, "\\'")}); showActionToast('Playing ${escapeHtml(item.title)}', 'info')"
+        class="btn btn-sm btn-primary"
         title="Play ${type}"
-        aria-label="Play ${item.title}"
-        ${!item.url ? 'disabled' : ''}>
+        aria-label="Play ${type}">
         <i class="bi bi-play-fill"></i>
       </button>
-    `);
-  }
-  
-  // Lyrics button
-  if (settings.showLyrics) {
-    const lyricsFunction = type === 'song' ? 'viewSongLyrics' : 'viewHymnDetails';
-    actions.push(`
-      <button 
-        onclick="${lyricsFunction}(${item.serial_number})" 
-        class="card-action-btn"
-        title="View lyrics"
-        aria-label="View lyrics for ${item.title}">
-        <i class="bi bi-file-text"></i>
-      </button>
-    `);
-  }
-  
-  // Copy link button
-  if (settings.showCopyLink) {
-    const copyFunction = type === 'song' ? 'copySongLinkBySerial' : 'copyHymnLinkBySerial';
-    actions.push(`
-      <button 
-        onclick="${copyFunction}(${item.serial_number})" 
-        class="card-action-btn"
-        title="Copy link"
-        aria-label="Copy link for ${item.title}">
-        <i class="bi bi-link-45deg"></i>
-      </button>
-    `);
-  }
-  
-  // Open in new tab button
-  if (settings.showOpenNew) {
-    const urlTitle = item.title
-      .toLowerCase()
-      .replace(/[^\w\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-')
-      .trim();
-    const url = `${window.location.origin}${window.location.pathname}?${type}=${item.serial_number}&title=${urlTitle}`;
+    ` : ''}
     
-    actions.push(`
+    <!-- View Lyrics Button -->
+    <button 
+      onclick="${viewFunction}(${item.serial_number}); showActionToast('Loading lyrics...', 'info')"
+      class="btn btn-sm btn-outline"
+      title="View lyrics"
+      aria-label="View lyrics">
+      <i class="bi bi-file-text"></i>
+    </button>
+    
+    <!-- Copy Link Button -->
+    <button 
+      onclick="${copyFunction}(${item.serial_number})"
+      class="btn btn-sm btn-outline"
+      title="Copy link"
+      aria-label="Copy link to clipboard">
+      <i class="bi bi-link-45deg"></i>
+    </button>
+    
+    <!-- Open in New Tab Button -->
+    ${item.url ? `
       <button 
-        onclick="openInNewTab('${url}')" 
-        class="card-action-btn"
-        title="Open in new tab"
-        aria-label="Open ${item.title} in new tab">
+        onclick="openInNewTab('${item.url}'); showActionToast('Opening in new tab...', 'info')"
+        class="btn btn-sm btn-outline"
+        title="Open in YouTube"
+        aria-label="Open video in new tab">
         <i class="bi bi-box-arrow-up-right"></i>
       </button>
-    `);
-  }
-  
-  // Favorite button (placeholder for future implementation)
-  if (settings.showFavorite) {
-    const isFavorite = checkIfFavorite(item.serial_number, type);
-    const heartIcon = isFavorite ? 'bi-heart-fill' : 'bi-heart';
-    const heartColor = isFavorite ? 'text-red-500' : '';
+    ` : ''}
     
-    actions.push(`
-      <button 
-        onclick="toggleFavorite(${item.serial_number}, '${type}')" 
-        class="card-action-btn ${heartColor}"
-        title="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}"
-        aria-label="${isFavorite ? 'Remove from favorites' : 'Add to favorites'}">
-        <i class="bi ${heartIcon}"></i>
-      </button>
-    `);
-  }
-  
-  return actions.join('');
-}
-
-/**
- * Play item by serial number (wrapper function)
- * @param {number} serialNumber - Item serial number
- * @param {string} type - 'song' or 'hymn'
- */
-function playItemBySerial(serialNumber, type) {
-  console.log(`[DEBUG] Playing ${type} #${serialNumber}`);
-  console.log('[DEBUG] window.songsData:', window.songsData);
-  console.log('[DEBUG] window.hymnsData:', window.hymnsData);
-  
-  if (type === 'song') {
-    // Get song from songsData
-    if (!window.songsData) {
-      console.error('[DEBUG] window.songsData is not defined');
-      if (window.showToast) showToast('Songs data not loaded yet', 'error');
-      return;
-    }
-    
-    if (!window.songsData.allSongs) {
-      console.error('[DEBUG] window.songsData.allSongs is not defined');
-      if (window.showToast) showToast('Songs list not loaded yet', 'error');
-      return;
-    }
-    
-    const song = window.songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
-    
-    if (!song) {
-      console.error('[DEBUG] Song not found:', serialNumber);
-      if (window.showToast) showToast('Song not found', 'error');
-      return;
-    }
-    
-    console.log('[DEBUG] Found song:', song.title);
-    
-    if (!window.playSongEmbedded) {
-      console.error('[DEBUG] window.playSongEmbedded is not defined');
-      if (window.showToast) showToast('Player function not loaded', 'error');
-      return;
-    }
-    
-    console.log('[DEBUG] Calling playSongEmbedded with song:', song);
-    window.playSongEmbedded(song);
-    
-  } else if (type === 'hymn') {
-    // Get hymn from hymnsData
-    if (!window.hymnsData) {
-      console.error('[DEBUG] window.hymnsData is not defined');
-      if (window.showToast) showToast('Hymns data not loaded yet', 'error');
-      return;
-    }
-    
-    if (!window.hymnsData.allHymns) {
-      console.error('[DEBUG] window.hymnsData.allHymns is not defined');
-      if (window.showToast) showToast('Hymns list not loaded yet', 'error');
-      return;
-    }
-    
-    const hymn = window.hymnsData.allHymns.find(h => h.serial_number === parseInt(serialNumber));
-    
-    if (!hymn) {
-      console.error('[DEBUG] Hymn not found:', serialNumber);
-      if (window.showToast) showToast('Hymn not found', 'error');
-      return;
-    }
-    
-    console.log('[DEBUG] Found hymn:', hymn.title);
-    
-    if (!window.playHymnEmbedded) {
-      console.error('[DEBUG] window.playHymnEmbedded is not defined');
-      if (window.showToast) showToast('Player function not loaded', 'error');
-      return;
-    }
-    
-    console.log('[DEBUG] Calling playHymnEmbedded with hymn:', hymn);
-    window.playHymnEmbedded(hymn);
-  }
+    <!-- Favorite Button -->
+    <button 
+      onclick="${favoriteFunction}(${item.serial_number})"
+      class="btn btn-sm ${isFavorited ? 'btn-favorite-active' : 'btn-outline'}"
+      title="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+      aria-label="${isFavorited ? 'Remove from favorites' : 'Add to favorites'}"
+      id="favorite-btn-${type}-${item.serial_number}">
+      <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i>
+    </button>
+  `;
 }
 
 /**
@@ -194,81 +79,166 @@ function playItemBySerial(serialNumber, type) {
  * @param {string} url - URL to open
  */
 function openInNewTab(url) {
-  console.log('[DEBUG] Opening in new tab:', url);
+  if (!url) {
+    console.error('[DEBUG] No URL provided to openInNewTab');
+    if (window.showToast) {
+      showToast('No video URL available', 'error');
+    }
+    return;
+  }
+  
   window.open(url, '_blank', 'noopener,noreferrer');
 }
 
 /**
- * Check if item is favorited (placeholder)
+ * Check if item is favorited
  * @param {number} serialNumber - Item serial number
  * @param {string} type - 'song' or 'hymn'
- * @returns {boolean}
+ * @returns {boolean} True if favorited
  */
-function checkIfFavorite(serialNumber, type) {
-  // Get favorites from localStorage
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '{"songs":[],"hymns":[]}');
-  const favoritesList = type === 'song' ? favorites.songs : favorites.hymns;
-  return favoritesList.includes(serialNumber);
+function checkIfFavorited(serialNumber, type) {
+  const storageKey = type === 'hymn' ? 'favoritedHymns' : 'favoritedSongs';
+  const favorites = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  return favorites.includes(serialNumber);
 }
 
 /**
- * Toggle favorite status (placeholder for future implementation)
- * @param {number} serialNumber - Item serial number
- * @param {string} type - 'song' or 'hymn'
+ * Toggle song favorite status
+ * @param {number} serialNumber - Song serial number
  */
-function toggleFavorite(serialNumber, type) {
-  console.log(`[DEBUG] Toggle favorite: ${type} #${serialNumber}`);
+function toggleSongFavorite(serialNumber) {
+  const storageKey = 'favoritedSongs';
+  let favorites = JSON.parse(localStorage.getItem(storageKey) || '[]');
   
-  // Get current favorites
-  const favorites = JSON.parse(localStorage.getItem('favorites') || '{"songs":[],"hymns":[]}');
-  const favoritesList = type === 'song' ? favorites.songs : favorites.hymns;
+  const index = favorites.indexOf(serialNumber);
+  let message = '';
+  let isFavorited = false;
   
-  // Toggle favorite
-  const index = favoritesList.indexOf(serialNumber);
   if (index > -1) {
-    favoritesList.splice(index, 1);
-    showToast(`Removed from favorites`, 'info');
+    // Remove from favorites
+    favorites.splice(index, 1);
+    message = 'Removed from favorites';
+    isFavorited = false;
   } else {
-    favoritesList.push(serialNumber);
-    showToast(`Added to favorites`, 'success');
+    // Add to favorites
+    favorites.push(serialNumber);
+    message = 'Added to favorites';
+    isFavorited = true;
   }
   
-  // Save back to localStorage
-  if (type === 'song') {
-    favorites.songs = favoritesList;
-  } else {
-    favorites.hymns = favoritesList;
-  }
-  localStorage.setItem('favorites', JSON.stringify(favorites));
+  localStorage.setItem(storageKey, JSON.stringify(favorites));
   
-  // Re-render current view to update heart icon
-  if (window.renderAppUI) {
-    window.renderAppUI();
+  // Update button appearance
+  const btn = document.getElementById(`favorite-btn-song-${serialNumber}`);
+  if (btn) {
+    const icon = btn.querySelector('i');
+    if (isFavorited) {
+      btn.classList.add('btn-favorite-active');
+      btn.classList.remove('btn-outline');
+      icon.classList.remove('bi-heart');
+      icon.classList.add('bi-heart-fill');
+      btn.title = 'Remove from favorites';
+    } else {
+      btn.classList.remove('btn-favorite-active');
+      btn.classList.add('btn-outline');
+      icon.classList.remove('bi-heart-fill');
+      icon.classList.add('bi-heart');
+      btn.title = 'Add to favorites';
+    }
   }
+  
+  if (window.showToast) {
+    showToast(message, 'success');
+  }
+  
+  console.log('[DEBUG] Song favorite toggled:', serialNumber, isFavorited);
 }
 
 /**
- * Generate compact action buttons for smaller cards
- * @param {Object} item - Song or hymn object
- * @param {string} type - 'song' or 'hymn'
- * @returns {string} HTML string for compact action buttons
+ * Toggle hymn favorite status
+ * @param {number} serialNumber - Hymn serial number
  */
-function generateCompactCardActions(item, type = 'song') {
-  return generateCardActions(item, type, {
-    showPlay: true,
-    showLyrics: true,
-    showCopyLink: false,
-    showOpenNew: false,
-    showFavorite: true
-  });
+function toggleHymnFavorite(serialNumber) {
+  const storageKey = 'favoritedHymns';
+  let favorites = JSON.parse(localStorage.getItem(storageKey) || '[]');
+  
+  const index = favorites.indexOf(serialNumber);
+  let message = '';
+  let isFavorited = false;
+  
+  if (index > -1) {
+    // Remove from favorites
+    favorites.splice(index, 1);
+    message = 'Removed from favorites';
+    isFavorited = false;
+  } else {
+    // Add to favorites
+    favorites.push(serialNumber);
+    message = 'Added to favorites';
+    isFavorited = true;
+  }
+  
+  localStorage.setItem(storageKey, JSON.stringify(favorites));
+  
+  // Update button appearance
+  const btn = document.getElementById(`favorite-btn-hymn-${serialNumber}`);
+  if (btn) {
+    const icon = btn.querySelector('i');
+    if (isFavorited) {
+      btn.classList.add('btn-favorite-active');
+      btn.classList.remove('btn-outline');
+      icon.classList.remove('bi-heart');
+      icon.classList.add('bi-heart-fill');
+      btn.title = 'Remove from favorites';
+    } else {
+      btn.classList.remove('btn-favorite-active');
+      btn.classList.add('btn-outline');
+      icon.classList.remove('bi-heart-fill');
+      icon.classList.add('bi-heart');
+      btn.title = 'Add to favorites';
+    }
+  }
+  
+  if (window.showToast) {
+    showToast(message, 'success');
+  }
+  
+  console.log('[DEBUG] Hymn favorite toggled:', serialNumber, isFavorited);
 }
 
-// Export functions to window
-window.generateCardActions = generateCardActions;
-window.generateCompactCardActions = generateCompactCardActions;
-window.playItemBySerial = playItemBySerial;
-window.openInNewTab = openInNewTab;
-window.toggleFavorite = toggleFavorite;
-window.checkIfFavorite = checkIfFavorite;
+/**
+ * Escape HTML to prevent XSS
+ * @param {string} text - Text to escape
+ * @returns {string} Escaped text
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
 
-console.log("[DEBUG] Card actions utility functions exported to window");
+/**
+ * Show action toast message
+ * @param {string} message - Message to display
+ * @param {string} type - Toast type: 'success', 'error', 'info', 'warning'
+ */
+function showActionToast(message, type = 'info') {
+  // Use the global showToast function if available
+  if (window.showToast) {
+    window.showToast(message, type);
+  } else {
+    // Fallback to console if toast not available
+    console.log(`[${type.toUpperCase()}] ${message}`);
+  }
+}
+
+// Export to window
+window.generateCardActions = generateCardActions;
+window.openInNewTab = openInNewTab;
+window.checkIfFavorited = checkIfFavorited;
+window.toggleSongFavorite = toggleSongFavorite;
+window.toggleHymnFavorite = toggleHymnFavorite;
+window.escapeHtml = escapeHtml;
+window.showActionToast = showActionToast;
+
+console.log("[DEBUG] card-actions.js loaded");

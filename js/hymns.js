@@ -181,7 +181,7 @@ function renderHymnsGrid() {
 
 // Render hymn lyrics view
 function renderHymnLyricsView(hymn) {
-  return window.renderLyricsView(hymn, 'hymn', 'backToHymnsList', 'copyHymnLinkBySerial');
+  return window.renderLyricsView(hymn, 'hymn', 'backToHymnsList');
 }
 
 // View hymn details
@@ -252,6 +252,9 @@ function copyHymnLinkBySerial(serialNumber) {
   
   if (!hymn) {
     console.error("[DEBUG] Hymn not found for copy:", serialNumber);
+    if (window.showToast) {
+      showToast("Hymn not found", "error");
+    }
     return;
   }
   
@@ -267,7 +270,7 @@ function copyHymnLinkBySerial(serialNumber) {
   navigator.clipboard.writeText(url).then(() => {
     console.log("[DEBUG] Hymn link copied:", url);
     if (window.showToast) {
-      showToast("Link copied to clipboard!", "success");
+      showToast(`Link copied: ${hymn.title}`, "success");
     }
   }).catch(err => {
     console.error("[DEBUG] Failed to copy link:", err);
@@ -292,6 +295,7 @@ function playHymnEmbedded(hymn) {
   // Show the shared player with this hymn
   if (window.showSharedPlayer) {
     window.showSharedPlayer(hymn, 'hymn');
+    // Toast is already shown in card-actions.js onclick
   } else {
     console.error('[DEBUG] showSharedPlayer not available');
     if (window.showToast) {
@@ -436,32 +440,6 @@ console.log("[DEBUG] Auto-initializing Hymns module on load");
 initHymnsTab();
 
 console.log("[DEBUG] hymns.js module fully loaded");
-
-// Add event listeners for better mobile support
-window.addEventListener('load', () => {
-  console.log("[DEBUG] Window loaded, checking for pending hymn parameters");
-  setTimeout(() => {
-    checkPendingHymnUrlParameters();
-  }, 500);
-});
-
-// Handle browser back/forward navigation
-window.addEventListener('popstate', () => {
-  console.log("[DEBUG] Popstate event, checking URL parameters");
-  // Reset the processing flag for new navigation
-  hymnsData.urlParametersProcessed = false;
-  
-  if (hymnsData.isLoaded) {
-    handleHymnUrlParameters();
-  } else {
-    // If hymns aren't loaded yet, store the hymn ID for later
-    const urlParams = new URLSearchParams(window.location.search);
-    const hymnId = urlParams.get('hymn');
-    if (hymnId) {
-      sessionStorage.setItem('pendingHymnId', hymnId);
-    }
-  }
-});
 
 // Print hymn lyrics
 function printHymnLyrics() {

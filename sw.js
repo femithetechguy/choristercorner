@@ -6,8 +6,8 @@ self.addEventListener('message', (event) => {
 });
 
 // Update cache name with timestamp to force update
-const CACHE_NAME = 'chorister-corner-v1.1.18'; // Increment version
-const DATA_CACHE_NAME = 'chorister-corner-data-v1.1.18'; // Increment version
+const CACHE_NAME = 'chorister-corner-v1.1.33'; // Updated version
+const DATA_CACHE_NAME = 'chorister-corner-data-v1.1.33'; // Updated version
 
 // Static assets to cache
 const urlsToCache = [
@@ -15,6 +15,7 @@ const urlsToCache = [
   '/index.html',
   '/manifest.json',
   '/css/styles.css',
+  '/css/shared.css',           // Add this
   '/css/home.css',
   '/css/songs.css',
   '/css/hymns.css',
@@ -34,7 +35,10 @@ const urlsToCache = [
   '/js/playlist-updater.js',
   '/js/lyrics-utils.js',
   '/js/meta-tags.js',
-  '/js/card-actions.js'     // Add this line
+  '/js/card-actions.js',
+  '/js/view-toggle.js',        // Add this
+  '/js/content-renderer.js',   // Add this
+  '/js/extras.js'               // Add this if you have it
 ];
 
 // Dynamic content URLs (API-like calls)

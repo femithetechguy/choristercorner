@@ -194,16 +194,12 @@ function renderContentRow(item, type) {
  * @param {Object} item - Song or hymn object
  * @param {string} type - 'song' or 'hymn'
  * @param {Function} backFunction - Function name to call for back button
- * @param {Function} copyFunction - Function name to call for copy link
  * @returns {string} HTML for lyrics header
  */
-function renderLyricsHeader(item, type, backFunction, copyFunction) {
+function renderLyricsHeader(item, type, backFunction) {
   const isHymn = type === 'hymn';
   const primaryInfo = isHymn ? item.author : item.channel;
   const secondaryInfo = isHymn ? item.category : item.duration;
-  const playAction = isHymn 
-    ? `playHymnEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`
-    : `playSongEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`;
   
   return `
     <div class="lyrics-view-container">
@@ -234,24 +230,9 @@ function renderLyricsHeader(item, type, backFunction, copyFunction) {
             ` : ''}
           </div>
           
-          <!-- Action Buttons -->
-          <div class="flex flex-wrap gap-3">
-            ${item.url ? `
-              <button 
-                onclick='${playAction}'
-                class="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200"
-                title="Play ${type}">
-                <i class="bi bi-play-circle-fill text-xl mr-2"></i>
-                <span>Play</span>
-              </button>
-            ` : ''}
-            <button 
-              onclick="${copyFunction}(${item.serial_number})" 
-              class="inline-flex items-center justify-center px-6 py-3 bg-white hover:bg-gray-50 text-gray-700 font-semibold rounded-lg border-2 border-gray-300 hover:border-purple-400 shadow-sm hover:shadow-md transform hover:scale-105 transition-all duration-200"
-              title="Copy link to clipboard">
-              <i class="bi bi-link-45deg text-xl mr-2"></i>
-              <span>Copy Link</span>
-            </button>
+          <!-- Action Buttons - Use Shared Card Actions -->
+          <div class="flex flex-wrap gap-2">
+            ${window.generateCardActions ? window.generateCardActions(item, type) : ''}
           </div>
         </div>
       </div>
@@ -299,12 +280,11 @@ function renderLyricsContent(lyrics, type) {
  * @param {Object} item - Song or hymn object
  * @param {string} type - 'song' or 'hymn'
  * @param {Function} backFunction - Function name for back button
- * @param {Function} copyFunction - Function name for copy link
  * @returns {string} Complete HTML for lyrics view
  */
-function renderLyricsView(item, type, backFunction, copyFunction) {
+function renderLyricsView(item, type, backFunction) {
   return `
-    ${renderLyricsHeader(item, type, backFunction, copyFunction)}
+    ${renderLyricsHeader(item, type, backFunction)}
     ${renderLyricsContent(item.lyrics, type)}
   `;
 }
