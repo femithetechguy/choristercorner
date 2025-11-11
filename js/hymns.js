@@ -99,25 +99,106 @@ function getUniqueAuthors() {
   return [...new Set(authors)].sort();
 }
 
-// Search hymns
-function searchHymns(query) {
-  console.log("[DEBUG] Searching hymns with query:", query);
-  
+/**
+ * Search hymns by lyrics content
+ * @param {string} query - Search query
+ * @returns {Array} - Array of hymns matching the lyrics search
+ */
+function searchHymnsByLyrics(query) {
   if (!query || query.trim() === '') {
-    hymnsData.filteredHymns = hymnsData.allHymns;
-  } else {
-    const searchTerm = query.toLowerCase().trim();
-    hymnsData.filteredHymns = hymnsData.allHymns.filter(hymn => {
-      return (
-        hymn.title?.toLowerCase().includes(searchTerm) ||
-        hymn.author?.toLowerCase().includes(searchTerm) ||
-        hymn.category?.toLowerCase().includes(searchTerm)
-      );
-    });
+    return [];
   }
   
-  hymnsData.filteredHymnsCount = hymnsData.filteredHymns.length;
+  const searchTerm = query.toLowerCase().trim();
+  
+  return hymnsData.allHymns.filter(hymn => {
+    // Check if hymn has lyrics
+    if (!hymn.lyrics || hymn.lyrics.length === 0) {
+      return false;
+    }
+    
+    // Search through all lyrics verses
+    return hymn.lyrics.some(verse => {
+      if (typeof verse === 'string') {
+        return verse.toLowerCase().includes(searchTerm);
+      }
+      return false;
+    });
+  });
+}
+
+/**
+ * Search hymns by metadata (title, author, number)
+ * @param {string} query - Search query
+ * @returns {Array} - Array of hymns matching metadata search
+ */
+function searchHymnsByMetadata(query) {
+  if (!query || query.trim() === '') {
+    return [];
+  }
+  
+  const searchTerm = query.toLowerCase().trim();
+  
+  return hymnsData.allHymns.filter(hymn => {
+    return (
+      hymn.title?.toLowerCase().includes(searchTerm) ||
+      hymn.author?.toLowerCase().includes(searchTerm) ||
+      hymn.number?.toString().includes(searchTerm)
+    );
+  });
+}
+
+/**
+ * Comprehensive search - searches both metadata and lyrics
+ * @param {string} query - Search query
+ */
+function searchHymns(query) {
+  if (!query || query.trim() === '') {
+    hymnsData.filteredHymns = hymnsData.allHymns;
+    hymnsData.filteredHymnsCount = hymnsData.allHymns.length;
+    updateHymnsDisplay();
+    return;
+  }
+  
+  const searchTerm = query.toLowerCase().trim();
+  
+  // First, search by metadata (title, author, number)
+  const metadataResults = searchHymnsByMetadata(searchTerm);
+  
+  // Then, search by lyrics
+  const lyricsResults = searchHymnsByLyrics(searchTerm);
+  
+  // Combine results (remove duplicates)
+  const combinedResults = [...metadataResults];
+  
+  // Add lyrics results that aren't already in metadata results
+  lyricsResults.forEach(lyricsMatch => {
+    const alreadyIncluded = metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+    
+    if (!alreadyIncluded) {
+      combinedResults.push(lyricsMatch);
+    }
+  });
+  
+  // Sort combined results by serial number for consistency
+  combinedResults.sort((a, b) => a.serial_number - b.serial_number);
+  
+  hymnsData.filteredHymns = combinedResults;
+  hymnsData.filteredHymnsCount = combinedResults.length;
   updateHymnsDisplay();
+  
+  // Simple console log for debugging (no toast)
+  const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
+    return !metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+  }).length;
+  
+  if (lyricsOnlyCount > 0) {
+    console.log(`Found ${lyricsOnlyCount} additional hymn(s) in lyrics`);
+  }
 }
 
 // Filter hymns by category
@@ -354,12 +435,16 @@ function updateHymnsDisplay() {
   
   hymnsGrid.innerHTML = renderHymnsGrid();
   
-  // Update count display
+  // Update count display with subtle lyrics indicator
   const countDisplay = document.querySelector('.text-sm.text-gray-600');
   if (countDisplay) {
+    const searchInput = document.getElementById('hymns-search');
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    
     countDisplay.innerHTML = `
       Showing <span class="font-semibold">${hymnsData.filteredHymnsCount}</span> of 
       <span class="font-semibold">${hymnsData.allHymnsCount}</span> hymns
+      ${hasSearch ? '<span class="text-xs text-gray-500 ml-2">(includes lyrics matches)</span>' : ''}
     `;
   }
 }
@@ -369,7 +454,7 @@ function renderHymnsTab() {
   console.log("[DEBUG] Rendering Hymns tab");
   
   if (!hymnsData.isLoaded) {
-    return window.renderLoadingState('Loading traditional hymns...');
+    return window.renderLoadingState ? window.renderLoadingState('Loading hymns...') : '<div>Loading...</div>';
   }
   
   if (hymnsData.showLyrics && hymnsData.selectedHymn) {
@@ -378,24 +463,18 @@ function renderHymnsTab() {
   
   return `
     <div class="hymns-container">
-      ${window.renderContentHeader({
+      ${window.renderContentHeader ? window.renderContentHeader({
         icon: 'bi-book',
-        title: 'Hymns Library',
-        description: 'Explore our collection of {count} traditional hymns',
+        title: 'Hymns Collection',
+        description: 'Browse our collection of {count} traditional hymns',
         count: hymnsData.allHymnsCount
-      })}
+      }) : ''}
 
-      ${window.renderSearchControls({
+      ${window.renderSearchControls ? window.renderSearchControls({
         searchId: 'hymns-search',
-        searchPlaceholder: 'Search hymns by title, author, or category...',
+        searchPlaceholder: 'Search hymns by title, author, number, or lyrics...', // Updated placeholder
         searchFunction: 'searchHymns',
         filters: [
-          {
-            id: 'hymns-category',
-            placeholder: 'All Categories',
-            options: getUniqueCategories(),
-            onChangeFunction: 'filterHymnsByCategory'
-          },
           {
             id: 'hymns-author',
             placeholder: 'All Authors',
@@ -408,7 +487,7 @@ function renderHymnsTab() {
         resultsCount: hymnsData.filteredHymnsCount,
         totalCount: hymnsData.allHymnsCount,
         itemType: 'hymns'
-      })}
+      }) : ''}
 
       <div id="hymns-grid">
         ${renderHymnsGrid()}

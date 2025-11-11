@@ -90,22 +90,106 @@ function parseDuration(duration) {
   return 0;
 }
 
-// Search songs
+/**
+ * Search songs by lyrics content
+ * @param {string} query - Search query
+ * @returns {Array} - Array of songs matching the lyrics search
+ */
+function searchSongsByLyrics(query) {
+  if (!query || query.trim() === '') {
+    return [];
+  }
+  
+  const searchTerm = query.toLowerCase().trim();
+  
+  return songsData.allSongs.filter(song => {
+    // Check if song has lyrics
+    if (!song.lyrics || song.lyrics.length === 0) {
+      return false;
+    }
+    
+    // Search through all lyrics verses
+    return song.lyrics.some(verse => {
+      if (typeof verse === 'string') {
+        return verse.toLowerCase().includes(searchTerm);
+      }
+      return false;
+    });
+  });
+}
+
+/**
+ * Search songs by metadata (title, channel)
+ * @param {string} query - Search query
+ * @returns {Array} - Array of songs matching metadata search
+ */
+function searchSongsByMetadata(query) {
+  if (!query || query.trim() === '') {
+    return [];
+  }
+  
+  const searchTerm = query.toLowerCase().trim();
+  
+  return songsData.allSongs.filter(song => {
+    return (
+      song.title?.toLowerCase().includes(searchTerm) ||
+      song.channel?.toLowerCase().includes(searchTerm)
+    );
+  });
+}
+
+/**
+ * Comprehensive search - searches both metadata and lyrics
+ * @param {string} query - Search query
+ */
 function searchSongs(query) {
   if (!query || query.trim() === '') {
     songsData.filteredSongs = songsData.allSongs;
-  } else {
-    const searchTerm = query.toLowerCase().trim();
-    songsData.filteredSongs = songsData.allSongs.filter(song => {
-      return (
-        song.title?.toLowerCase().includes(searchTerm) ||
-        song.channel?.toLowerCase().includes(searchTerm)
-      );
-    });
+    songsData.filteredSongsCount = songsData.allSongs.length;
+    updateSongsDisplay();
+    return;
   }
   
-  songsData.filteredSongsCount = songsData.filteredSongs.length;
+  const searchTerm = query.toLowerCase().trim();
+  
+  // First, search by metadata (title, channel)
+  const metadataResults = searchSongsByMetadata(searchTerm);
+  
+  // Then, search by lyrics
+  const lyricsResults = searchSongsByLyrics(searchTerm);
+  
+  // Combine results (remove duplicates using Set with serial_number)
+  const combinedResults = [...metadataResults];
+  
+  // Add lyrics results that aren't already in metadata results
+  lyricsResults.forEach(lyricsMatch => {
+    const alreadyIncluded = metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+    
+    if (!alreadyIncluded) {
+      combinedResults.push(lyricsMatch);
+    }
+  });
+  
+  // Sort combined results by serial number for consistency
+  combinedResults.sort((a, b) => a.serial_number - b.serial_number);
+  
+  songsData.filteredSongs = combinedResults;
+  songsData.filteredSongsCount = combinedResults.length;
   updateSongsDisplay();
+  
+  // REMOVED: Distracting toast notification
+  // Simple console log instead for debugging
+  const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
+    return !metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+  }).length;
+  
+  if (lyricsOnlyCount > 0) {
+    console.log(`Found ${lyricsOnlyCount} additional song(s) in lyrics`);
+  }
 }
 
 // Filter songs by channel
@@ -305,12 +389,16 @@ function updateSongsDisplay() {
   
   songsGrid.innerHTML = renderSongsGrid();
   
-  // Update count display
+  // Update count display with subtle lyrics indicator
   const countDisplay = document.querySelector('.text-sm.text-gray-600');
   if (countDisplay) {
+    const searchInput = document.getElementById('songs-search');
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    
     countDisplay.innerHTML = `
       Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
       <span class="font-semibold">${songsData.allSongsCount}</span> songs
+      ${hasSearch ? '<span class="text-xs text-gray-500 ml-2">(includes lyrics matches)</span>' : ''}
     `;
   }
 }
@@ -336,7 +424,7 @@ function renderSongsTab() {
 
       ${window.renderSearchControls ? window.renderSearchControls({
         searchId: 'songs-search',
-        searchPlaceholder: 'Search songs...',
+        searchPlaceholder: 'Search songs by title, artist, or lyrics...', // Updated placeholder
         searchFunction: 'searchSongs',
         filters: [
           {
