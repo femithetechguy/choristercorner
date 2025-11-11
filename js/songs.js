@@ -3,29 +3,17 @@
  * Handles song library, search, filtering, and lyrics display
  */
 
-console.log("[DEBUG] Songs tab module loaded");
+console.log("[DEBUG] songs.js loading...");
 
-// Songs tab data and state
+// Songs data store
 let songsData = {
   allSongs: [],
   filteredSongs: [],
-  currentView: 'grid', // 'grid' or 'list'
-  searchTerm: '',
-  sortBy: 'title', // 'title', 'channel', 'duration', 'serial_number'
-  sortOrder: 'asc', // 'asc' or 'desc'
-  selectedSong: null,
   showLyrics: false,
+  selectedSong: null,
   isLoaded: false,
-  // Video player state
-  currentPlayingSong: null,
-  isVideoPlayerVisible: false,
-  videoPlayerContainer: null,
-  // Player collapse state
-  isPlayerCollapsed: false,
-  // Playlist updater state
-  showPlaylistUpdater: false,
-  // URL handling state to prevent duplicate processing
-  urlParametersProcessed: false
+  allSongsCount: 0,
+  filteredSongsCount: 0
 };
 
 // Fetch and process songs data
@@ -44,311 +32,138 @@ async function loadSongsData() {
     // Store all songs
     songsData.allSongs = data;
     songsData.filteredSongs = data;
+    songsData.allSongsCount = data.length;
+    songsData.filteredSongsCount = data.length;
+    songsData.isLoaded = true;
     
     // Export to window for global access
     window.songsData = songsData;
     
     console.log("[DEBUG] songsData exported to window:", window.songsData);
     
-    // Update display
-    updateSongsDisplay();
+    // Update display if on songs tab
+    if (window.selectedTabIdx === 1) {
+      updateSongsDisplay();
+    }
     
     return data;
   } catch (error) {
     console.error("[DEBUG] Error loading songs data:", error);
-    showToast("Failed to load songs data", "error");
+    if (window.showToast) {
+      showToast("Failed to load songs data", "error");
+    }
+    songsData.isLoaded = false;
+    window.songsData = songsData;
     return [];
   }
 }
 
-// Handle URL parameters for direct song links
-function handleSongUrlParameters() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const songId = urlParams.get('song');
+// Get unique channels for filter dropdown
+function getUniqueChannels() {
+  if (!songsData.allSongs || songsData.allSongs.length === 0) return [];
   
-  // Only process if there's a song ID in the URL and we haven't processed this specific URL yet
-  if (!songId) {
-    console.log("[DEBUG] No song ID in URL, skipping URL parameter processing");
-    return;
-  }
+  const channels = songsData.allSongs
+    .map(song => song.channel)
+    .filter(channel => channel && channel.trim() !== '');
   
-  // Prevent processing the same URL parameters multiple times
-  const currentUrl = window.location.href;
-  if (songsData.urlParametersProcessed && songsData.lastProcessedUrl === currentUrl) {
-    console.log("[DEBUG] URL parameters already processed for this URL, skipping");
-    return;
-  }
-  
-  console.log("[DEBUG] Direct song link detected:", songId);
-  songsData.urlParametersProcessed = true; // Mark as processed
-  songsData.lastProcessedUrl = currentUrl; // Store the processed URL
-    
-    const song = songsData.allSongs.find(s => s.serial_number === parseInt(songId));
-    
-    if (song) {
-      // Store the song ID for later use if app isn't fully loaded yet
-      sessionStorage.setItem('pendingSongId', songId);
-      
-      // Switch to Songs tab if not already there
-      if (typeof window.switchToTab === 'function') {
-        window.switchToTab('Songs');
-      }
-      
-      // Show the song lyrics with multiple retry attempts for mobile
-      let retryCount = 0;
-      const maxRetries = 50; // Maximum 5 seconds of retries
-      const showSong = () => {
-        console.log("[DEBUG] Attempting to show song:", song.title, `(attempt ${retryCount + 1}/${maxRetries})`);
-        
-        // Check if the app UI is ready
-        if ((document.getElementById('app-root') || document.getElementById('app')) && typeof viewSongLyrics === 'function') {
-          viewSongLyrics(song.serial_number);
-          updatePageTitle(song);
-          // Clear the pending song ID since we successfully showed it
-          sessionStorage.removeItem('pendingSongId');
-          console.log("[DEBUG] Successfully showed song:", song.title);
-        } else if (retryCount < maxRetries) {
-          retryCount++;
-          console.log("[DEBUG] App not ready yet, retrying in 100ms");
-          setTimeout(showSong, 100);
-        } else {
-          console.error("[DEBUG] Failed to show song after maximum retries:", song.title);
-          sessionStorage.removeItem('pendingSongId');
-        }
-      };
-      
-      // Start showing the song with a small delay to ensure everything is loaded
-      setTimeout(showSong, 300);
-    } else {
-      console.warn("[DEBUG] Song not found for ID:", songId);
-      // Clear any pending song ID if song doesn't exist
-      sessionStorage.removeItem('pendingSongId');
-    }
+  return [...new Set(channels)].sort();
 }
 
-// Check for pending song URL parameters (for mobile reliability)
-function checkPendingSongUrlParameters() {
-  // Don't process if we already handled URL parameters
-  if (songsData.urlParametersProcessed) {
-    console.log("[DEBUG] URL parameters already processed, skipping pending check");
-    return;
-  }
+// Search songs
+function searchSongs(query) {
+  console.log("[DEBUG] Searching songs with query:", query);
   
-  const pendingSongId = sessionStorage.getItem('pendingSongId');
-  
-  if (pendingSongId && songsData.allSongs.length > 0) {
-    console.log("[DEBUG] Processing pending song ID:", pendingSongId);
-    const song = songsData.allSongs.find(s => s.serial_number === parseInt(pendingSongId));
-    
-    if (song) {
-      // Ensure we're on the Songs tab
-      if (typeof window.switchToTab === 'function') {
-        window.switchToTab('Songs');
-      }
-      
-      // Show the song with retry logic to ensure mobile is ready
-      let retryCount = 0;
-      const maxRetries = 30; // Maximum 3 seconds of retries
-      const showPendingSong = () => {
-        if ((document.getElementById('app-root') || document.getElementById('app')) && typeof viewSongLyrics === 'function') {
-          viewSongLyrics(song.serial_number);
-          updatePageTitle(song);
-          sessionStorage.removeItem('pendingSongId');
-          console.log("[DEBUG] Successfully showed pending song:", song.title);
-        } else if (retryCount < maxRetries) {
-          retryCount++;
-          setTimeout(showPendingSong, 100);
-        } else {
-          console.error("[DEBUG] Failed to show pending song after maximum retries:", song.title);
-          sessionStorage.removeItem('pendingSongId');
-        }
-      };
-      
-      setTimeout(showPendingSong, 300);
-    } else {
-      // Clear invalid pending song ID
-      sessionStorage.removeItem('pendingSongId');
-    }
-  }
-}
-
-// Update page title for shared song links
-function updatePageTitle(song) {
-  if (song && song.title) {
-    // Use SEO helper if available
-    if (window.seoHelper) {
-      window.seoHelper.updateSongSEO(song);
-    } else {
-      // Fallback to basic title update
-      const originalTitle = document.title;
-      document.title = `${song.title} - ${song.channel || 'Unknown Artist'} | ChoristerCorner`;
-      
-      // Store the restore function for later use
-      window.restorePageTitle = () => {
-        document.title = originalTitle;
-        // Reset SEO to default if helper is available
-        if (window.seoHelper) {
-          window.seoHelper.resetToDefault();
-        }
-      };
-    }
-  }
-}
-
-// Render the Songs tab content
-window.renderSongsTab = function(tab) {
-  console.log("[DEBUG] Rendering Songs tab");
-  
-  if (!songsData.isLoaded) {
-    loadSongsData();
+  if (!query || query.trim() === '') {
+    songsData.filteredSongs = songsData.allSongs;
   } else {
-    // Only check for pending song parameters on first load or if there are actual URL parameters
-    // Don't re-process if we're just switching tabs
-    const urlParams = new URLSearchParams(window.location.search);
-    const songId = urlParams.get('song');
-    
-    if (songId && !songsData.urlParametersProcessed) {
-      setTimeout(() => {
-        checkPendingSongUrlParameters();
-      }, 100);
+    const searchTerm = query.toLowerCase().trim();
+    songsData.filteredSongs = songsData.allSongs.filter(song => {
+      return (
+        song.title?.toLowerCase().includes(searchTerm) ||
+        song.channel?.toLowerCase().includes(searchTerm)
+      );
+    });
+  }
+  
+  songsData.filteredSongsCount = songsData.filteredSongs.length;
+  updateSongsDisplay();
+}
+
+// Filter songs by channel
+function filterSongsByChannel(channel) {
+  console.log("[DEBUG] Filtering songs by channel:", channel);
+  
+  if (!channel || channel === '') {
+    songsData.filteredSongs = songsData.allSongs;
+  } else {
+    songsData.filteredSongs = songsData.allSongs.filter(song => 
+      song.channel === channel
+    );
+  }
+  
+  songsData.filteredSongsCount = songsData.filteredSongs.length;
+  updateSongsDisplay();
+}
+
+// Sort songs
+function sortSongs(sortBy) {
+  console.log("[DEBUG] Sorting songs by:", sortBy);
+  
+  songsData.filteredSongs = [...songsData.filteredSongs].sort((a, b) => {
+    switch (sortBy) {
+      case 'title-asc':
+        return (a.title || '').localeCompare(b.title || '');
+      case 'title-desc':
+        return (b.title || '').localeCompare(a.title || '');
+      case 'duration-asc':
+        return parseDuration(a.duration) - parseDuration(b.duration);
+      case 'duration-desc':
+        return parseDuration(b.duration) - parseDuration(a.duration);
+      case 'serial-asc':
+        return a.serial_number - b.serial_number;
+      case 'serial-desc':
+        return b.serial_number - a.serial_number;
+      default:
+        return 0;
+    }
+  });
+  
+  updateSongsDisplay();
+}
+
+// Helper: Parse duration string to seconds
+function parseDuration(duration) {
+  if (!duration) return 0;
+  const parts = duration.split(':').map(Number);
+  if (parts.length === 2) {
+    return parts[0] * 60 + parts[1];
+  }
+  return 0;
+}
+
+// Extract video ID from YouTube URL
+function extractVideoId(url) {
+  if (!url) return null;
+  console.log('[DEBUG] Extracting video ID from URL:', url);
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /^([a-zA-Z0-9_-]{11})$/
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match && match[1]) {
+      console.log('[DEBUG] Extracted video ID:', match[1]);
+      return match[1];
     }
   }
   
-  if (songsData.showLyrics && songsData.selectedSong) {
-    return renderSongLyricsView();
-  }
-  
-  return `
-    <div class="fade-in">
-      <!-- Songs Header -->
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
-        <div>
-          <h1 class="text-3xl font-bold text-gray-900 flex items-center mb-2">
-            <i class="bi bi-music-note-list text-purple-600 mr-3"></i>
-            Song Library
-          </h1>
-          <p class="text-gray-600">Discover and explore our collection of worship songs</p>
-        </div>
-        <div class="flex items-center space-x-3 mt-4 md:mt-0">
-          <button onclick="togglePlaylistUpdater()" class="btn btn-outline btn-sm">
-            <i class="bi bi-collection-play mr-1"></i>
-            Add from Playlist
-          </button>
-          <span id="song-count-display" class="text-sm text-gray-500">${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs</span>
-        </div>
-      </div>
-
-      <!-- Search and Filters -->
-      <div class="card mb-6">
-        <div class="card-body">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Search Bar -->
-            <div class="lg:col-span-2">
-              <div class="relative">
-                <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                <input 
-                  type="text" 
-                  id="song-search"
-                  class="form-input pl-10 w-full" 
-                  placeholder="Search songs, artists, channels, or lyrics..."
-                  value="${songsData.searchTerm}"
-                  oninput="handleSearch(this.value)"
-                >
-              </div>
-            </div>
-            
-            <!-- Sort By -->
-            <div>
-              <select id="sort-by" class="form-select w-full" onchange="handleSort(this.value)">
-                <option value="title" ${songsData.sortBy === 'title' ? 'selected' : ''}>Sort by Title</option>
-                <option value="channel" ${songsData.sortBy === 'channel' ? 'selected' : ''}>Sort by Artist</option>
-                <option value="duration" ${songsData.sortBy === 'duration' ? 'selected' : ''}>Sort by Duration</option>
-                <option value="serial_number" ${songsData.sortBy === 'serial_number' ? 'selected' : ''}>Sort by ID</option>
-              </select>
-            </div>
-            
-            <!-- View Toggle -->
-            <div class="flex rounded-md border border-gray-300">
-              <button 
-                onclick="toggleView('grid')" 
-                class="flex-1 py-2 px-3 text-sm ${songsData.currentView === 'grid' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-50'} rounded-l-md border-r border-gray-300"
-              >
-                <i class="bi bi-grid"></i> Grid
-              </button>
-              <button 
-                onclick="toggleView('list')" 
-                class="flex-1 py-2 px-3 text-sm ${songsData.currentView === 'list' ? 'bg-purple-100 text-purple-700' : 'text-gray-700 hover:bg-gray-50'} rounded-r-md"
-              >
-                <i class="bi bi-list"></i> List
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Playlist Updater Section -->
-      ${songsData.showPlaylistUpdater ? `
-        <div class="mb-6">
-          <div id="playlist-updater-container">
-            ${window.PlaylistUpdater ? window.PlaylistUpdater.createUI() : `
-              <div class="card">
-                <div class="card-body text-center">
-                  <i class="bi bi-exclamation-triangle text-yellow-500 text-4xl mb-4"></i>
-                  <h4 class="font-semibold text-gray-900 mb-2">Playlist Updater Not Available</h4>
-                  <p class="text-gray-600 mb-4">The playlist updater module is not loaded.</p>
-                  <button onclick="togglePlaylistUpdater()" class="btn btn-outline">Close</button>
-                </div>
-              </div>
-            `}
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- Songs Grid/List -->
-      <div id="songs-container">
-        ${renderSongsContainer()}
-      </div>
-
-      <!-- Embedded Video Player with Lyrics (only render if not already present) -->
-      ${document.getElementById('video-player-section') ? '' : renderEmbeddedVideoPlayer()}
-    </div>
-  `;
-};
-
-// Render songs container based on current view
-function renderSongsContainer() {
-  if (!songsData.filteredSongs.length) {
-    return `
-      <div class="card">
-        <div class="card-body text-center py-12">
-          <i class="bi bi-music-note text-6xl text-gray-400 mb-4"></i>
-          <h3 class="text-xl font-semibold text-gray-900 mb-2">No songs found</h3>
-          <p class="text-gray-600">Try adjusting your search or filters</p>
-        </div>
-      </div>
-    `;
-  }
-
-  if (songsData.currentView === 'grid') {
-    return `
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        ${songsData.filteredSongs.map(song => renderSongCard(song)).join('')}
-      </div>
-    `;
-  } else {
-    return `
-      <div class="card">
-        <div class="card-body p-0">
-          <div class="divide-y divide-gray-200">
-            ${songsData.filteredSongs.map(song => renderSongListItem(song)).join('')}
-          </div>
-        </div>
-      </div>
-    `;
-  }
+  console.warn('[DEBUG] Could not extract video ID from:', url);
+  return null;
 }
 
-// Render individual song card (grid view)
+// Render song card
 function renderSongCard(song) {
   return `
     <div class="song-card bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
@@ -404,789 +219,142 @@ function renderSongCard(song) {
   `;
 }
 
-// Render individual song list item (list view)
-function renderSongListItem(song) {
-  return `
-    <div class="p-4 hover:bg-gray-50 transition-colors">
-      <div class="flex items-center justify-between">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center space-x-3">
-            <span class="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">#${song.serial_number}</span>
-            <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-gray-900 truncate">${song.title || 'Untitled'}</h3>
-              <p class="text-sm text-gray-600 flex items-center">
-                <i class="bi bi-person-circle mr-1"></i>
-                ${song.channel || 'Unknown Artist'}
-                <span class="mx-2">•</span>
-                <i class="bi bi-clock mr-1"></i>
-                ${song.duration || 'N/A'}
-              </p>
-            </div>
-          </div>
-        </div>
-        
-        <div class="flex items-center space-x-2 ml-4">
-          <button 
-            onclick="playSong('${song.url}')" 
-            class="btn btn-primary btn-sm"
-            ${!song.url ? 'disabled' : ''}
-            title="Listen on YouTube"
-          >
-            <i class="bi bi-play-fill"></i>
-          </button>
-          <button 
-            onclick="viewSongLyrics(${song.serial_number})" 
-            class="btn btn-outline btn-sm"
-            title="View lyrics"
-          >
-            <i class="bi bi-file-text"></i>
-          </button>
-          <button 
-            onclick="copySongLinkBySerial(${song.serial_number})" 
-            class="btn btn-ghost btn-sm"
-            title="Copy page link"
-          >
-            <i class="bi bi-link-45deg"></i>
-          </button>
-          <button 
-            onclick="toggleFavorite(${song.serial_number})" 
-            class="btn btn-ghost btn-sm"
-            title="Add to favorites"
-          >
-            <i class="bi bi-heart"></i>
-          </button>
-        </div>
+// Render songs grid
+function renderSongsGrid() {
+  if (!songsData.filteredSongs || songsData.filteredSongs.length === 0) {
+    return `
+      <div class="col-span-full text-center py-12">
+        <i class="bi bi-search text-6xl text-gray-300 mb-4"></i>
+        <p class="text-gray-500 text-lg">No songs found</p>
+        <p class="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
       </div>
-    </div>
-  `;
+    `;
+  }
+  
+  return songsData.filteredSongs.map(song => renderSongCard(song)).join('');
 }
 
 // Render song lyrics view
-function renderSongLyricsView() {
-  const song = songsData.selectedSong;
-  if (!song) return '';
-
+function renderSongLyricsView(song) {
+  const videoId = extractVideoId(song.url);
+  
   return `
-    <div class="fade-in">
-      <!-- Lyrics Header -->
-      <div class="flex items-center justify-between mb-6">
-        <button onclick="closeLyricsView()" class="btn btn-ghost">
-          <i class="bi bi-arrow-left"></i>
-          <span>Back to Songs</span>
-        </button>
-        <div class="flex items-center space-x-2">
-          <button onclick="playSong('${song.url}')" class="btn btn-primary" ${!song.url ? 'disabled' : ''}>
-            <i class="bi bi-play-fill"></i>
-            <span>Listen</span>
-          </button>
-          <button onclick="printSongLyrics()" class="btn btn-outline">
-            <i class="bi bi-printer"></i>
-            <span>Print</span>
-          </button>
-          <button onclick="copySongLinkBySerial(${song.serial_number})" class="btn btn-outline">
-            <i class="bi bi-link-45deg"></i>
-            <span>Copy Page Link</span>
-          </button>
-          <button onclick="toggleFavorite(${song.serial_number})" class="btn btn-outline">
-            <i class="bi bi-heart"></i>
-          </button>
-        </div>
-      </div>
+    <div class="song-lyrics-view">
+      <!-- Back Button -->
+      <button 
+        onclick="backToSongsList()" 
+        class="mb-6 inline-flex items-center text-purple-600 hover:text-purple-700 font-medium"
+      >
+        <i class="bi bi-arrow-left mr-2"></i>
+        Back to Songs
+      </button>
 
-      <!-- Song Details -->
-      <div class="card mb-6">
-        <div class="card-body">
-          <div class="flex items-start justify-between">
-            <div>
-              <span class="text-sm font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded mb-2 inline-block">#${song.serial_number}</span>
-              <h1 class="text-3xl font-bold text-gray-900 mb-2">${song.title || 'Untitled'}</h1>
-              <p class="text-lg text-gray-600 flex items-center mb-2">
-                <i class="bi bi-person-circle mr-2"></i>
-                ${song.channel || 'Unknown Artist'}
-              </p>
-              <p class="text-gray-500 flex items-center">
-                <i class="bi bi-clock mr-2"></i>
-                ${song.duration || 'Duration not available'}
-              </p>
-            </div>
+      <!-- Song Header -->
+      <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div class="flex justify-between items-start mb-4">
+          <div class="flex-1">
+            <span class="text-sm font-semibold text-purple-600 bg-purple-100 px-3 py-1 rounded">
+              Song #${song.serial_number}
+            </span>
+            <h1 class="text-3xl font-bold text-gray-900 mt-3 mb-2">${song.title}</h1>
+            <p class="text-lg text-gray-600">
+              <i class="bi bi-person-circle mr-2"></i>${song.channel || 'Unknown Artist'}
+            </p>
+            <p class="text-sm text-gray-500 mt-1">
+              <i class="bi bi-clock mr-2"></i>${song.duration}
+            </p>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="flex gap-2">
+            ${song.url ? `
+              <button 
+                onclick="playSongEmbedded(${JSON.stringify(song).replace(/"/g, '&quot;')})" 
+                class="btn-primary"
+                title="Play song">
+                <i class="bi bi-play-fill mr-2"></i>Play
+              </button>
+            ` : ''}
+            <button 
+              onclick="copySongLinkBySerial(${song.serial_number})" 
+              class="btn-secondary"
+              title="Copy link">
+              <i class="bi bi-link-45deg"></i>
+            </button>
           </div>
         </div>
       </div>
 
-      <!-- Lyrics Content -->
-      <div class="card">
-        <div class="card-header">
-          <h2 class="text-xl font-semibold text-gray-900 flex items-center">
-            <i class="bi bi-file-text mr-2"></i>
-            Lyrics
-          </h2>
-        </div>
-        <div class="card-body">
-          ${renderLyricsContent(song)}
-        </div>
+      <!-- Lyrics Section -->
+      <div class="bg-white rounded-lg shadow-lg p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 flex items-center">
+          <i class="bi bi-music-note-list text-purple-600 mr-3"></i>
+          Lyrics
+        </h2>
+        
+        ${song.lyrics && song.lyrics.length > 0 ? `
+          <div class="lyrics-content space-y-6">
+            ${song.lyrics.map((paragraph, idx) => `
+              <div class="lyrics-paragraph" key="${idx}">
+                <p class="text-gray-700 leading-relaxed whitespace-pre-wrap">${paragraph}</p>
+              </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div class="text-center py-8">
+            <i class="bi bi-file-text text-4xl text-gray-300 mb-3"></i>
+            <p class="text-gray-500">No lyrics available for this song</p>
+          </div>
+        `}
       </div>
     </div>
   `;
 }
 
-// Render embedded video player (now using shared player system)
-function renderEmbeddedVideoPlayer() {
-  // Return empty string since we now use the shared player system
-  return '';
-}
-
-// Extract YouTube video ID from various YouTube URL formats (moved to shared-player.js)
-function extractYouTubeVideoId(url) {
-  return extractVideoId(url);
-}
-
-// Play song in embedded player
-function playSongEmbedded(song) {
-  console.log("[DEBUG] Playing song in shared player:", song.title);
+// View song lyrics
+function viewSongLyrics(serialNumber) {
+  console.log("[DEBUG] Viewing song lyrics:", serialNumber);
   
-  // Use the shared player instead of song-specific player
-  showSharedPlayer(song, 'song');
-}
-
-// Close video player (now uses shared player)
-function closeVideoPlayer() {
-  console.log("[DEBUG] Closing video player (using shared player)");
-  closeSharedPlayer();
-}
-
-// Close song player (alias for closeVideoPlayer for compatibility)
-function closeSongPlayer() {
-  closeVideoPlayer();
-}
-
-// Toggle player size (now uses shared player)
-function togglePlayerSize() {
-  console.log("[DEBUG] Toggling player size (using shared player)");
-  toggleSharedPlayerCollapse();
-}
-
-// Toggle lyrics section size
-function toggleLyricsSize() {
-  console.log("[DEBUG] Toggling lyrics size");
-  
-  const lyricsContainer = document.querySelector('.lyrics-container');
-  if (lyricsContainer) {
-    const currentHeight = lyricsContainer.style.maxHeight;
-    
-    if (currentHeight === '250px' || !currentHeight) {
-      lyricsContainer.style.maxHeight = '500px';
-    } else {
-      lyricsContainer.style.maxHeight = '250px';
-    }
-  }
-}
-
-// Render lyrics content
-function renderLyricsContent(song) {
-  if (!song.lyrics || !Array.isArray(song.lyrics) || song.lyrics.length === 0) {
-    return `
-      <div class="text-center py-8">
-        <i class="bi bi-file-text text-4xl text-gray-400 mb-4"></i>
-        <p class="text-gray-500">Lyrics not available for this song.</p>
-      </div>
-    `;
-  }
-
-  // Use the shared lyrics rendering utility
-  if (window.renderLyrics) {
-    return `<div id="lyrics-display">${window.renderLyrics(song.lyrics, false)}</div>`;
-  } else {
-    // Fallback if utility not loaded yet
-    console.warn('[DEBUG] Lyrics utility not loaded, using fallback rendering');
-    return `
-      <div class="text-center py-8">
-        <i class="bi bi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
-        <p class="text-gray-600 mb-2">Lyrics utility not loaded</p>
-        <p class="text-gray-500 text-sm">Please refresh the page</p>
-      </div>
-    `;
-  }
-}
-
-// Toggle player collapse/expand
-function togglePlayerCollapse() {
-  console.log("[DEBUG] Toggling player collapse");
-  songsData.isPlayerCollapsed = !songsData.isPlayerCollapsed;
-  updateVideoPlayerDisplay();
-}
-
-// Toggle playlist updater
-function togglePlaylistUpdater() {
-  console.log("[DEBUG] Toggling playlist updater");
-  songsData.showPlaylistUpdater = !songsData.showPlaylistUpdater;
-  updateSongsDisplay();
-  
-  // Initialize playlist updater when shown
-  if (songsData.showPlaylistUpdater && window.PlaylistUpdater) {
-    // Use a more robust initialization with multiple retries
-    let retryCount = 0;
-    const maxRetries = 5;
-    const retryDelay = 250;
-    
-    const tryInitialize = () => {
-      const processButton = document.getElementById('process-playlist');
-      if (processButton) {
-        console.log("[DEBUG] Playlist updater elements found, initializing...");
-        const success = window.PlaylistUpdater.initialize();
-        if (success) {
-          console.log("[DEBUG] Playlist updater successfully initialized");
-        } else {
-          console.error("[DEBUG] Playlist updater initialization failed");
-        }
-      } else if (retryCount < maxRetries) {
-        retryCount++;
-        console.log(`[DEBUG] Playlist updater elements not ready, retry ${retryCount}/${maxRetries}...`);
-        setTimeout(tryInitialize, retryDelay);
-      } else {
-        console.error("[DEBUG] Failed to initialize playlist updater after maximum retries");
-      }
-    };
-    
-    // Start the initialization process
-    setTimeout(tryInitialize, 100);
-  }
-}
-
-// Search functionality
-function handleSearch(searchTerm) {
-  console.log("[DEBUG] Handling search:", searchTerm);
-  songsData.searchTerm = searchTerm.toLowerCase();
-  filterSongs();
-  
-  // Update only the songs list, preserve video player state
-  updateSongsListOnly();
-}
-
-// Sort functionality
-function handleSort(sortBy) {
-  console.log("[DEBUG] Handling sort:", sortBy);
-  songsData.sortBy = sortBy;
-  sortSongs();
-  
-  // Update only the songs list, preserve video player state
-  updateSongsListOnly();
-}
-
-// Filter songs based on search term
-function filterSongs() {
-  if (!songsData.searchTerm) {
-    songsData.filteredSongs = [...songsData.allSongs];
-    return;
-  }
-
-  console.log("[DEBUG] Filtering songs with search term:", songsData.searchTerm);
-  
-  songsData.filteredSongs = songsData.allSongs.filter(song => {
-    const title = (song.title || '').toLowerCase();
-    const channel = (song.channel || '').toLowerCase();
-    const searchTerm = songsData.searchTerm;
-    
-    // Check title and channel
-    const titleMatch = title.includes(searchTerm);
-    const channelMatch = channel.includes(searchTerm);
-    
-    // Check lyrics if available
-    let lyricsMatch = false;
-    if (song.lyrics && Array.isArray(song.lyrics)) {
-      lyricsMatch = song.lyrics.some(verse => 
-        (verse || '').toLowerCase().includes(searchTerm)
-      );
-    }
-    
-    const isMatch = titleMatch || channelMatch || lyricsMatch;
-    
-    // Debug log matches
-    if (isMatch) {
-      const matchTypes = [];
-      if (titleMatch) matchTypes.push('title');
-      if (channelMatch) matchTypes.push('channel');
-      if (lyricsMatch) matchTypes.push('lyrics');
-      console.log(`[DEBUG] Match found in ${song.title} - matched in: ${matchTypes.join(', ')}`);
-    }
-    
-    return isMatch;
-  });
-  
-  console.log("[DEBUG] Filtered results:", songsData.filteredSongs.length, "songs");
-}
-
-// Sort songs
-function sortSongs() {
-  songsData.filteredSongs.sort((a, b) => {
-    let aVal, bVal;
-    
-    switch (songsData.sortBy) {
-      case 'title':
-        aVal = (a.title || '').toLowerCase();
-        bVal = (b.title || '').toLowerCase();
-        break;
-      case 'channel':
-        aVal = (a.channel || '').toLowerCase();
-        bVal = (b.channel || '').toLowerCase();
-        break;
-      case 'duration':
-        // Extract minutes for sorting
-        aVal = extractMinutes(a.duration);
-        bVal = extractMinutes(b.duration);
-        break;
-      case 'serial_number':
-        aVal = a.serial_number || 0;
-        bVal = b.serial_number || 0;
-        break;
-      default:
-        return 0;
-    }
-    
-    if (aVal < bVal) return songsData.sortOrder === 'asc' ? -1 : 1;
-    if (aVal > bVal) return songsData.sortOrder === 'asc' ? 1 : -1;
-    return 0;
-  });
-}
-
-// Extract minutes from duration string for sorting
-function extractMinutes(duration) {
-  if (!duration) return 0;
-  const match = duration.match(/(\d+)\s*minutes?/);
-  return match ? parseInt(match[1]) : 0;
-}
-
-// Toggle view between grid and list
-function toggleView(view) {
-  console.log("[DEBUG] Toggling view to:", view);
-  songsData.currentView = view;
-  
-  // Update only the songs list, preserve video player state
-  updateSongsListOnly();
-}
-
-// Update songs display
-function updateSongsDisplay() {
-  console.log("[DEBUG] Updating songs display");
-  
-  updateSongsListOnly();
-  
-  // Update video player if it's visible
-  updateVideoPlayerDisplay();
-}
-
-// Update only the songs list without affecting video player
-function updateSongsListOnly() {
-  console.log("[DEBUG] Updating songs list only");
-  
-  // Preserve search input focus and cursor position
-  const searchInput = document.getElementById('song-search');
-  const wasSearchFocused = searchInput && document.activeElement === searchInput;
-  const cursorPosition = wasSearchFocused ? searchInput.selectionStart : null;
-  
-  const container = document.getElementById('songs-container');
-  if (container) {
-    container.innerHTML = renderSongsContainer();
-  }
-  
-  // Update the song count display in the header
-  updateSongCountDisplay();
-  
-  // Restore search input focus and cursor position if it was focused
-  if (wasSearchFocused) {
-    setTimeout(() => {
-      const newSearchInput = document.getElementById('song-search');
-      if (newSearchInput) {
-        newSearchInput.focus();
-        if (cursorPosition !== null) {
-          newSearchInput.setSelectionRange(cursorPosition, cursorPosition);
-        }
-      }
-    }, 0);
-  }
-}
-
-// Update song count in the header
-function updateSongCountDisplay() {
-  const countElement = document.getElementById('song-count-display');
-  if (countElement) {
-    countElement.textContent = `${songsData.filteredSongs.length} of ${songsData.allSongs.length} songs`;
-  }
-}
-
-// Update search input placeholder based on video player state
-function updateSearchPlaceholder() {
-  const searchInput = document.getElementById('song-search');
-  const searchContainer = searchInput?.parentElement;
-  
-  if (searchInput && searchContainer) {
-    if (songsData.isVideoPlayerVisible && songsData.currentPlayingSong) {
-      searchInput.placeholder = 'Search while playing (current song preserved)...';
-      // Add a visual indicator that a song is playing
-      if (!searchContainer.querySelector('.playing-indicator')) {
-        const playingIcon = document.createElement('i');
-        playingIcon.className = 'bi bi-play-circle playing-indicator absolute right-3 top-1/2 transform -translate-y-1/2 text-green-500 text-sm';
-        playingIcon.title = 'Song currently playing - search won\'t interrupt playback';
-        searchContainer.appendChild(playingIcon);
-      }
-    } else {
-      searchInput.placeholder = 'Search songs, artists, channels, or lyrics...';
-      // Remove the playing indicator
-      const playingIcon = searchContainer.querySelector('.playing-indicator');
-      if (playingIcon) {
-        playingIcon.remove();
-      }
-    }
-  }
-}
-
-// Update video player display
-function updateVideoPlayerDisplay() {
-  const existingPlayer = document.getElementById('video-player-section');
-  
-  if (songsData.isVideoPlayerVisible && songsData.currentPlayingSong) {
-    // Add body classes for spacing
-    document.body.classList.add('video-player-active');
-    if (songsData.isPlayerCollapsed) {
-      document.body.classList.add('player-collapsed');
-    } else {
-      document.body.classList.remove('player-collapsed');
-    }
-    
-    // If player should be visible but doesn't exist, add it
-    if (!existingPlayer) {
-      const playerHTML = renderEmbeddedVideoPlayer();
-      document.body.insertAdjacentHTML('beforeend', playerHTML);
-    } else {
-      // Only update if the song has actually changed
-      const currentSongSerial = existingPlayer.querySelector('[title*="Copy page link"]')?.getAttribute('onclick')?.match(/\d+/)?.[0];
-      if (currentSongSerial !== String(songsData.currentPlayingSong.serial_number)) {
-        console.log("[DEBUG] Song changed, updating video player");
-        existingPlayer.outerHTML = renderEmbeddedVideoPlayer();
-      } else {
-        console.log("[DEBUG] Same song playing, keeping existing video player");
-      }
-    }
-  } else {
-    // Remove body classes and player
-    document.body.classList.remove('video-player-active', 'player-collapsed');
-    if (existingPlayer) {
-      existingPlayer.remove();
-    }
-  }
-  
-  // Update search placeholder to reflect video player state
-  updateSearchPlaceholder();
-}
-
-// Song action functions
-
-// Generate custom song page URL
-function generateSongPageUrl(song) {
-  const baseUrl = window.location.origin + window.location.pathname;
-  const songSlug = encodeURIComponent(song.title?.toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-') || 'untitled');
-  return `${baseUrl}?song=${song.serial_number}&title=${songSlug}`;
-}
-
-// Copy song link functionality (custom page link, not YouTube)
-function copySongLink(song, showNotification = true) {
-  console.log("[DEBUG] Copying custom song page link:", song.title);
-  
-  if (!song || !song.serial_number) {
-    if (showNotification) {
-      showCopyNotification('Unable to generate link for this song', 'error');
-    }
-    return false;
-  }
-  
-  try {
-    const customUrl = generateSongPageUrl(song);
-    
-    // Use the Clipboard API if available
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(customUrl).then(() => {
-        if (showNotification) {
-          showCopyNotification(`Page link copied: ${song.title}`, 'success');
-        }
-      }).catch(() => {
-        fallbackCopyToClipboard(customUrl, song.title, showNotification);
-      });
-    } else {
-      // Fallback for older browsers or non-secure contexts
-      fallbackCopyToClipboard(customUrl, song.title, showNotification);
-    }
-    return true;
-  } catch (error) {
-    console.error("[DEBUG] Failed to copy song page link:", error);
-    if (showNotification) {
-      showCopyNotification('Failed to copy link', 'error');
-    }
-    return false;
-  }
-}
-
-// Copy YouTube link functionality (separate function)
-function copyYouTubeLink(song, showNotification = true) {
-  console.log("[DEBUG] Copying YouTube link:", song.title);
-  
-  if (!song.url) {
-    if (showNotification) {
-      showCopyNotification('YouTube link not available for this song', 'error');
-    }
-    return false;
-  }
-  
-  try {
-    // Use the Clipboard API if available
-    if (navigator.clipboard && window.isSecureContext) {
-      navigator.clipboard.writeText(song.url).then(() => {
-        if (showNotification) {
-          showCopyNotification(`YouTube link copied: ${song.title}`, 'success');
-        }
-      }).catch(() => {
-        fallbackCopyToClipboard(song.url, song.title, showNotification);
-      });
-    } else {
-      // Fallback for older browsers or non-secure contexts
-      fallbackCopyToClipboard(song.url, song.title, showNotification);
-    }
-    return true;
-  } catch (error) {
-    console.error("[DEBUG] Failed to copy YouTube link:", error);
-    if (showNotification) {
-      showCopyNotification('Failed to copy YouTube link', 'error');
-    }
-    return false;
-  }
-}
-
-// Fallback copy method for older browsers
-function fallbackCopyToClipboard(text, songTitle, showNotification) {
-  try {
-    const textArea = document.createElement('textarea');
-    textArea.value = text;
-    textArea.style.position = 'fixed';
-    textArea.style.left = '-999999px';
-    textArea.style.top = '-999999px';
-    document.body.appendChild(textArea);
-    textArea.focus();
-    textArea.select();
-    
-    const successful = document.execCommand('copy');
-    document.body.removeChild(textArea);
-    
-    if (successful && showNotification) {
-      showCopyNotification(`Link copied: ${songTitle}`, 'success');
-    } else if (!successful && showNotification) {
-      showCopyNotification('Failed to copy link', 'error');
-    }
-    
-    return successful;
-  } catch (error) {
-    console.error("[DEBUG] Fallback copy failed:", error);
-    if (showNotification) {
-      showCopyNotification('Failed to copy link', 'error');
-    }
-    return false;
-  }
-}
-
-// Show copy notification
-function showCopyNotification(message, type = 'success') {
-  // Remove any existing notifications
-  const existingNotification = document.getElementById('copy-notification');
-  if (existingNotification) {
-    existingNotification.remove();
-  }
-  
-  // Create notification element
-  const notification = document.createElement('div');
-  notification.id = 'copy-notification';
-  notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg text-white text-sm font-medium transform transition-all duration-300 ${
-    type === 'success' ? 'bg-green-500' : 'bg-red-500'
-  }`;
-  notification.innerHTML = `
-    <div class="flex items-center space-x-2">
-      <i class="bi ${type === 'success' ? 'bi-check-circle' : 'bi-exclamation-circle'}"></i>
-      <span>${message}</span>
-    </div>
-  `;
-  
-  // Add to page
-  document.body.appendChild(notification);
-  
-  // Animate in
-  setTimeout(() => {
-    notification.style.transform = 'translateX(0)';
-  }, 10);
-  
-  // Remove after delay
-  setTimeout(() => {
-    notification.style.transform = 'translateX(100%)';
-    setTimeout(() => {
-      if (notification.parentNode) {
-        notification.remove();
-      }
-    }, 300);
-  }, 3000);
-}
-
-// Copy song link by serial number (for onclick handlers)
-function copySongLinkBySerial(serialNumber) {
   const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
   
   if (!song) {
-    console.error('[DEBUG] Song not found for serial:', serialNumber);
-    showToast('Song not found', 'error');
+    console.error("[DEBUG] Song not found:", serialNumber);
+    if (window.showToast) {
+      showToast("Song not found", "error");
+    }
     return;
   }
   
-  // Create URL-friendly title
+  // Update state
+  songsData.showLyrics = true;
+  songsData.selectedSong = song;
+  
+  // Update meta tags
+  if (window.updateMetaTags) {
+    window.updateMetaTags(song.title, `View lyrics for ${song.title} by ${song.channel}`);
+  }
+  
+  // Update URL
   const urlTitle = song.title
     .toLowerCase()
-    .replace(/[^\w\s-]/g, '') // Remove special characters
-    .replace(/\s+/g, '-')      // Replace spaces with hyphens
-    .replace(/-+/g, '-')       // Replace multiple hyphens with single
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
     .trim();
   
-  // Create the link with title for SEO
-  const link = `${window.location.origin}${window.location.pathname}?song=${serialNumber}&title=${urlTitle}`;
+  const newUrl = `${window.location.pathname}?song=${song.serial_number}&title=${urlTitle}`;
+  window.history.pushState({ song: song.serial_number }, '', newUrl);
   
-  // Copy to clipboard
-  navigator.clipboard.writeText(link).then(() => {
-    console.log('[DEBUG] Song link copied:', link);
-    showToast('Song link copied to clipboard!', 'success');
-  }).catch(err => {
-    console.error('[DEBUG] Failed to copy link:', err);
-    showToast('Failed to copy link', 'error');
-  });
-}
-
-// Copy YouTube link by serial number (for onclick handlers)
-function copyYouTubeLinkBySerial(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
-  if (song) {
-    copyYouTubeLink(song);
-  } else {
-    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
-    showCopyNotification('Song not found', 'error');
-  }
-}
-
-function playSong(url) {
-  console.log("[DEBUG] Playing song with URL:", url);
-  
-  if (!url || url === 'undefined') {
-    alert('Song URL not available');
-    return;
-  }
-  
-  // Find the song object by URL for embedded player
-  const song = songsData.allSongs.find(s => s.url === url);
-  if (song) {
-    playSongEmbedded(song);
-  } else {
-    console.warn("[DEBUG] Song not found for URL:", url);
-    // Fallback to opening in new tab
-    window.open(url, '_blank');
-  }
-}
-
-function viewSongLyrics(serialNumber) {
-  console.log("[DEBUG] Viewing lyrics for song:", serialNumber);
-  const song = songsData.allSongs.find(s => s.serial_number === serialNumber);
-  if (song) {
-    songsData.selectedSong = song;
-    songsData.showLyrics = true;
-    
-    // Update page title for direct links
-    updatePageTitle(song);
-    
-    // Re-render the tab content
-    if (typeof window.renderAppUI === 'function') {
-      window.renderAppUI();
-      if (typeof setupEventListeners === 'function') {
-        setupEventListeners();
-      }
-    } else {
-      // Fallback: try again after a delay if renderAppUI isn't available
-      console.log("[DEBUG] renderAppUI not available, retrying...");
-      setTimeout(() => {
-        if (typeof window.renderAppUI === 'function') {
-          window.renderAppUI();
-          if (typeof setupEventListeners === 'function') {
-            setupEventListeners();
-          }
-        }
-      }, 200);
-    }
-  } else {
-    console.warn("[DEBUG] Song not found for serial number:", serialNumber);
-  }
-}
-
-function closeLyricsView() {
-  console.log("[DEBUG] Closing lyrics view");
-  songsData.showLyrics = false;
-  songsData.selectedSong = null;
-  
-  // Restore original page title if it was changed
-  if (typeof window.restorePageTitle === 'function') {
-    window.restorePageTitle();
-  } else if (window.seoHelper) {
-    // Use SEO helper to reset to default
-    window.seoHelper.resetToDefault();
-  }
-  
-  // Clean up URL parameters
-  const url = new URL(window.location);
-  url.searchParams.delete('song');
-  url.searchParams.delete('title');
-  window.history.replaceState({}, '', url);
-  
-  // Re-render the tab content
-  if (typeof window.renderAppUI === 'function') {
+  // Re-render
+  if (window.renderAppUI) {
     window.renderAppUI();
-    if (typeof setupEventListeners === 'function') {
-      setupEventListeners();
-    }
   }
-}
-
-function toggleFavorite(serialNumber) {
-  console.log("[DEBUG] Toggling favorite for song:", serialNumber);
-  // TODO: Implement favorites functionality
-  alert('Favorites feature coming soon!');
-}
-
-// View song details
-function viewSongDetails(serialNumber) {
-  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
-  
-  if (!song) {
-    console.error('[DEBUG] Song not found:', serialNumber);
-    return;
-  }
-  
-  console.log('[DEBUG] Viewing song details:', song.title);
-  songsData.selectedSong = song;
-  songsData.showLyrics = true;
-  
-  // Update meta tags for social sharing
-  if (window.updateMetaTags) {
-    window.updateMetaTags(song, 'song');
-  }
-  
-  // Update URL without page reload
-  const newUrl = `${window.location.pathname}?song=${serialNumber}`;
-  window.history.pushState({ song: serialNumber }, '', newUrl);
-  
-  // Update display
-  updateSongsDisplay();
 }
 
 // Back to songs list
 function backToSongsList() {
-  console.log('[DEBUG] Returning to songs list');
+  console.log("[DEBUG] Returning to songs list");
+  
   songsData.showLyrics = false;
   songsData.selectedSong = null;
   
@@ -1196,34 +364,238 @@ function backToSongsList() {
   }
   
   // Update URL
-  window.history.pushState({}, '', window.location.pathname);
+  const newUrl = window.location.pathname;
+  window.history.pushState({}, '', newUrl);
   
-  updateSongsDisplay();
+  // Re-render
+  if (window.renderAppUI) {
+    window.renderAppUI();
+  }
+}
+
+// Copy song link
+function copySongLinkBySerial(serialNumber) {
+  const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
+  
+  if (!song) {
+    console.error("[DEBUG] Song not found for copy:", serialNumber);
+    return;
+  }
+  
+  const urlTitle = song.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  
+  const url = `${window.location.origin}${window.location.pathname}?song=${song.serial_number}&title=${urlTitle}`;
+  
+  navigator.clipboard.writeText(url).then(() => {
+    console.log("[DEBUG] Song link copied:", url);
+    if (window.showToast) {
+      showToast("Link copied to clipboard!", "success");
+    }
+  }).catch(err => {
+    console.error("[DEBUG] Failed to copy link:", err);
+    if (window.showToast) {
+      showToast("Failed to copy link", "error");
+    }
+  });
+}
+
+// Play song in embedded player
+function playSongEmbedded(song) {
+  console.log('[DEBUG] Playing song in embedded player:', song.title);
+  
+  if (!song || !song.url) {
+    console.error('[DEBUG] Invalid song or missing URL');
+    if (window.showToast) {
+      showToast('Cannot play song - missing video URL', 'error');
+    }
+    return;
+  }
+  
+  // Show the shared player with this song
+  if (window.showSharedPlayer) {
+    window.showSharedPlayer(song, 'song');
+  } else {
+    console.error('[DEBUG] showSharedPlayer not available');
+    if (window.showToast) {
+      showToast('Media player not loaded', 'error');
+    }
+  }
+}
+
+// Update songs display
+function updateSongsDisplay() {
+  console.log("[DEBUG] Updating songs display");
+  
+  if (!songsData.isLoaded) {
+    console.log("[DEBUG] Songs not loaded yet, will update when loaded");
+    return;
+  }
+  
+  const songsGrid = document.getElementById("songs-grid");
+  if (!songsGrid) {
+    console.warn("[DEBUG] Songs grid element not found");
+    return;
+  }
+  
+  songsGrid.innerHTML = renderSongsGrid();
+  
+  // Update count display
+  const countDisplay = document.querySelector('.text-sm.text-gray-600');
+  if (countDisplay) {
+    countDisplay.innerHTML = `
+      Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
+      <span class="font-semibold">${songsData.allSongsCount}</span> songs
+    `;
+  }
+}
+
+// Render songs tab
+function renderSongsTab() {
+  console.log("[DEBUG] Rendering Songs tab");
+  
+  // If data not loaded yet, show loading state
+  if (!songsData.isLoaded) {
+    return `
+      <div class="songs-container">
+        <div class="songs-header">
+          <h2 class="text-3xl font-bold text-gray-900 mb-2">
+            <i class="bi bi-music-note-list text-purple-600 mr-2"></i>
+            Songs Library
+          </h2>
+          <p class="text-gray-600 mb-6">Loading worship songs...</p>
+        </div>
+        
+        <div class="flex items-center justify-center py-20">
+          <div class="text-center">
+            <div class="loading-spinner mx-auto mb-4"></div>
+            <p class="text-gray-600">Loading songs data...</p>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  // Show lyrics view if selected
+  if (songsData.showLyrics && songsData.selectedSong) {
+    return renderSongLyricsView(songsData.selectedSong);
+  }
+  
+  // Show main songs list
+  return `
+    <div class="songs-container">
+      <!-- Header Section -->
+      <div class="songs-header">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">
+          <i class="bi bi-music-note-list text-purple-600 mr-2"></i>
+          Songs Library
+        </h2>
+        <p class="text-gray-600 mb-6">
+          Explore our collection of ${songsData.allSongsCount} worship songs
+        </p>
+      </div>
+
+      <!-- Search and Filter Section -->
+      <div class="songs-controls mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Search -->
+          <div class="relative">
+            <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
+            <input
+              type="text"
+              id="songs-search"
+              placeholder="Search songs..."
+              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              oninput="searchSongs(this.value)"
+            />
+          </div>
+
+          <!-- Channel Filter -->
+          <select
+            id="songs-channel"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            onchange="filterSongsByChannel(this.value)"
+          >
+            <option value="">All Channels</option>
+            ${getUniqueChannels().map(channel => `<option value="${channel}">${channel}</option>`).join('')}
+          </select>
+
+          <!-- Sort -->
+          <select
+            id="songs-sort"
+            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            onchange="sortSongs(this.value)"
+          >
+            <option value="serial-asc">Serial Number (Low to High)</option>
+            <option value="serial-desc">Serial Number (High to Low)</option>
+            <option value="title-asc">Title (A-Z)</option>
+            <option value="title-desc">Title (Z-A)</option>
+            <option value="duration-asc">Duration (Shortest)</option>
+            <option value="duration-desc">Duration (Longest)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div class="mb-4">
+        <p class="text-sm text-gray-600">
+          Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
+          <span class="font-semibold">${songsData.allSongsCount}</span> songs
+        </p>
+      </div>
+
+      <!-- Songs Grid -->
+      <div id="songs-grid" class="songs-grid">
+        ${renderSongsGrid()}
+      </div>
+    </div>
+  `;
 }
 
 // Initialize songs tab
 function initSongsTab() {
   console.log("[DEBUG] Initializing Songs Tab");
   
-  // Load songs data
-  loadSongsData();
-  
-  // Export songsData to window immediately (even if empty)
+  // Export songsData to window immediately
   window.songsData = songsData;
   
-  // Export functions to window
+  // Export all functions to window (AFTER they're defined)
   window.renderSongsTab = renderSongsTab;
   window.updateSongsDisplay = updateSongsDisplay;
   window.viewSongLyrics = viewSongLyrics;
   window.backToSongsList = backToSongsList;
   window.copySongLinkBySerial = copySongLinkBySerial;
   window.playSongEmbedded = playSongEmbedded;
+  window.searchSongs = searchSongs;
+  window.filterSongsByChannel = filterSongsByChannel;
+  window.sortSongs = sortSongs;
+  window.getUniqueChannels = getUniqueChannels;
+  window.renderSongCard = renderSongCard;
+  window.renderSongLyricsView = renderSongLyricsView;
+  window.extractVideoId = extractVideoId;
+  window.initSongsTab = initSongsTab;
   
-  console.log("[DEBUG] Songs tab initialized and functions exported");
+  console.log("[DEBUG] Songs tab functions exported to window");
+  
+  // Load songs data immediately
+  console.log("[DEBUG] Starting songs data load...");
+  loadSongsData().then(() => {
+    console.log("[DEBUG] Songs data load complete. isLoaded:", songsData.isLoaded);
+    console.log("[DEBUG] Loaded", songsData.allSongs.length, "songs");
+  }).catch(err => {
+    console.error("[DEBUG] Error loading songs data:", err);
+  });
 }
 
-// Initialize songs data when the module loads
-loadSongsData();
+// **AUTO-CALL INITIALIZATION WHEN MODULE LOADS**
+console.log("[DEBUG] Auto-initializing Songs module on load");
+initSongsTab();
+
+console.log("[DEBUG] songs.js module fully loaded");
 
 // Add event listeners for better mobile support
 window.addEventListener('load', () => {
