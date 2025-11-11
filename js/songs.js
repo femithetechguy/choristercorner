@@ -13,8 +13,24 @@ let songsData = {
   selectedSong: null,
   isLoaded: false,
   allSongsCount: 0,
-  filteredSongsCount: 0
+  filteredSongsCount: 0,
+  viewMode: 'grid' // Will be updated in init
 };
+
+// Get default view mode based on device
+function getDefaultViewMode() {
+  // Check if mobile device
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  
+  // Check localStorage first
+  const savedMode = localStorage.getItem('songsViewMode');
+  if (savedMode) {
+    return savedMode;
+  }
+  
+  // Default to list on mobile, grid on desktop
+  return isMobile ? 'list' : 'grid';
+}
 
 // Fetch and process songs data
 async function loadSongsData() {
@@ -163,7 +179,7 @@ function extractVideoId(url) {
   return null;
 }
 
-// Render song card
+// Render song card for grid view
 function renderSongCard(song) {
   return `
     <div class="song-card bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
@@ -219,19 +235,80 @@ function renderSongCard(song) {
   `;
 }
 
-// Render songs grid
-function renderSongsGrid() {
-  if (!songsData.filteredSongs || songsData.filteredSongs.length === 0) {
-    return `
-      <div class="col-span-full text-center py-12">
-        <i class="bi bi-search text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-500 text-lg">No songs found</p>
-        <p class="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
-      </div>
-    `;
-  }
+// Render song row for list view
+function renderSongRow(song) {
+  const videoId = extractVideoId(song.url);
   
-  return songsData.filteredSongs.map(song => renderSongCard(song)).join('');
+  return `
+    <div class="song-row bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+      <div class="flex items-center p-4 gap-4">
+        <!-- Thumbnail -->
+        <div class="flex-shrink-0 cursor-pointer" onclick="playSongEmbedded({
+          serial_number: ${song.serial_number},
+          title: '${song.title?.replace(/'/g, "\\'")}',
+          channel: '${song.channel?.replace(/'/g, "\\'")}',
+          duration: '${song.duration}',
+          url: '${song.url}',
+          lyrics: ${JSON.stringify(song.lyrics || []).replace(/'/g, "\\'")}
+        })">
+          ${song.url ? `
+            <div class="relative group">
+              <img 
+                src="https://img.youtube.com/vi/${videoId}/default.jpg" 
+                alt="${song.title}"
+                class="w-20 h-14 object-cover rounded"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded flex items-center justify-center">
+                <i class="bi bi-play-circle-fill text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+              </div>
+            </div>
+          ` : `
+            <div class="w-20 h-14 bg-gradient-to-br from-purple-400 to-blue-500 rounded flex items-center justify-center">
+              <i class="bi bi-music-note text-2xl text-white opacity-50"></i>
+            </div>
+          `}
+        </div>
+        
+        <!-- Song Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-0.5 rounded">
+              #${song.serial_number}
+            </span>
+            <h3 class="font-semibold text-gray-900 truncate" title="${song.title}">
+              ${song.title || 'Untitled Song'}
+            </h3>
+          </div>
+          <div class="flex items-center gap-3 text-sm text-gray-600">
+            <span class="truncate" title="${song.channel}">
+              <i class="bi bi-person-circle mr-1"></i>${song.channel || 'Unknown Artist'}
+            </span>
+            <span class="flex-shrink-0">
+              <i class="bi bi-clock mr-1"></i>${song.duration}
+            </span>
+          </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex-shrink-0">
+          <div class="flex gap-2">
+            ${window.generateCardActions ? window.generateCardActions(song, 'song') : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render songs grid using shared utility
+function renderSongsGrid() {
+  return window.renderViewContent(
+    songsData.viewMode,
+    songsData.filteredSongs,
+    renderSongCard,
+    renderSongRow
+  );
 }
 
 // Render song lyrics view
@@ -427,6 +504,14 @@ function playSongEmbedded(song) {
   }
 }
 
+// Toggle view mode
+function toggleSongsViewMode(mode) {
+  console.log("[DEBUG] Toggling songs view mode to:", mode);
+  songsData.viewMode = mode;
+  window.setViewMode('songs', mode);
+  updateSongsDisplay();
+}
+
 // Update songs display
 function updateSongsDisplay() {
   console.log("[DEBUG] Updating songs display");
@@ -501,8 +586,8 @@ function renderSongsTab() {
 
       <!-- Search and Filter Section -->
       <div class="songs-controls mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Search -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+          <!-- Search, Channel, Sort inputs stay the same -->
           <div class="relative">
             <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
             <input
@@ -514,7 +599,6 @@ function renderSongsTab() {
             />
           </div>
 
-          <!-- Channel Filter -->
           <select
             id="songs-channel"
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -524,7 +608,6 @@ function renderSongsTab() {
             ${getUniqueChannels().map(channel => `<option value="${channel}">${channel}</option>`).join('')}
           </select>
 
-          <!-- Sort -->
           <select
             id="songs-sort"
             class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
@@ -538,18 +621,21 @@ function renderSongsTab() {
             <option value="duration-desc">Duration (Longest)</option>
           </select>
         </div>
+        
+        <!-- View Mode Toggle and Results Count -->
+        <div class="flex items-center justify-between">
+          <p class="text-sm text-gray-600">
+            Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
+            <span class="font-semibold">${songsData.allSongsCount}</span> songs
+          </p>
+          
+          <!-- Use shared view toggle component -->
+          ${window.renderViewToggle ? window.renderViewToggle(songsData.viewMode, 'toggleSongsViewMode') : ''}
+        </div>
       </div>
 
-      <!-- Results Count -->
-      <div class="mb-4">
-        <p class="text-sm text-gray-600">
-          Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
-          <span class="font-semibold">${songsData.allSongsCount}</span> songs
-        </p>
-      </div>
-
-      <!-- Songs Grid -->
-      <div id="songs-grid" class="songs-grid">
+      <!-- Songs Grid/List -->
+      <div id="songs-grid">
         ${renderSongsGrid()}
       </div>
     </div>
@@ -560,10 +646,14 @@ function renderSongsTab() {
 function initSongsTab() {
   console.log("[DEBUG] Initializing Songs Tab");
   
+  // Use shared utility to get view mode
+  songsData.viewMode = window.getViewMode ? window.getViewMode('songs') : 'grid';
+  console.log("[DEBUG] Initial view mode:", songsData.viewMode);
+  
   // Export songsData to window immediately
   window.songsData = songsData;
   
-  // Export all functions to window (AFTER they're defined)
+  // Export all functions to window
   window.renderSongsTab = renderSongsTab;
   window.updateSongsDisplay = updateSongsDisplay;
   window.viewSongLyrics = viewSongLyrics;
@@ -573,11 +663,14 @@ function initSongsTab() {
   window.searchSongs = searchSongs;
   window.filterSongsByChannel = filterSongsByChannel;
   window.sortSongs = sortSongs;
+  window.toggleSongsViewMode = toggleSongsViewMode;
   window.getUniqueChannels = getUniqueChannels;
   window.renderSongCard = renderSongCard;
+  window.renderSongRow = renderSongRow;
   window.renderSongLyricsView = renderSongLyricsView;
   window.extractVideoId = extractVideoId;
   window.initSongsTab = initSongsTab;
+  window.printSongLyrics = printSongLyrics;
   
   console.log("[DEBUG] Songs tab functions exported to window");
   

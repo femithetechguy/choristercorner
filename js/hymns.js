@@ -8,7 +8,8 @@ let hymnsData = {
   selectedHymn: null,
   isLoaded: false,
   allHymnsCount: 0,
-  filteredHymnsCount: 0
+  filteredHymnsCount: 0,
+  viewMode: 'grid' // Will be updated in init
 };
 
 // Fetch and process hymns data
@@ -236,19 +237,82 @@ function renderHymnCard(hymn) {
   `;
 }
 
-// Render hymns grid
-function renderHymnsGrid() {
-  if (!hymnsData.filteredHymns || hymnsData.filteredHymns.length === 0) {
-    return `
-      <div class="col-span-full text-center py-12">
-        <i class="bi bi-search text-6xl text-gray-300 mb-4"></i>
-        <p class="text-gray-500 text-lg">No hymns found</p>
-        <p class="text-gray-400 text-sm mt-2">Try adjusting your search or filters</p>
-      </div>
-    `;
-  }
+// Render hymn row for list view (NEW FUNCTION)
+function renderHymnRow(hymn) {
+  const videoId = extractVideoId(hymn.url);
   
-  return hymnsData.filteredHymns.map(hymn => renderHymnCard(hymn)).join('');
+  return `
+    <div class="hymn-row bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
+      <div class="flex items-center p-4 gap-4">
+        <!-- Thumbnail -->
+        <div class="flex-shrink-0 cursor-pointer" onclick="playHymnEmbedded({
+          serial_number: ${hymn.serial_number},
+          title: '${hymn.title?.replace(/'/g, "\\'")}',
+          author: '${hymn.author?.replace(/'/g, "\\'")}',
+          category: '${hymn.category?.replace(/'/g, "\\'")}',
+          url: '${hymn.url}',
+          lyrics: ${JSON.stringify(hymn.lyrics || []).replace(/'/g, "\\'")}
+        })">
+          ${hymn.url ? `
+            <div class="relative group">
+              <img 
+                src="https://img.youtube.com/vi/${videoId}/default.jpg" 
+                alt="${hymn.title}"
+                class="w-20 h-14 object-cover rounded"
+                loading="lazy"
+              />
+              <div class="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all rounded flex items-center justify-center">
+                <i class="bi bi-play-circle-fill text-3xl text-white opacity-0 group-hover:opacity-100 transition-opacity"></i>
+              </div>
+            </div>
+          ` : `
+            <div class="w-20 h-14 bg-gradient-to-br from-blue-400 to-purple-500 rounded flex items-center justify-center">
+              <i class="bi bi-book text-2xl text-white opacity-50"></i>
+            </div>
+          `}
+        </div>
+        
+        <!-- Hymn Info -->
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-0.5 rounded">
+              #${hymn.serial_number}
+            </span>
+            <h3 class="font-semibold text-gray-900 truncate" title="${hymn.title}">
+              ${hymn.title || 'Untitled Hymn'}
+            </h3>
+          </div>
+          <div class="flex items-center gap-3 text-sm text-gray-600">
+            <span class="truncate" title="${hymn.author}">
+              <i class="bi bi-person-circle mr-1"></i>${hymn.author || 'Unknown Author'}
+            </span>
+            ${hymn.category ? `
+              <span class="flex-shrink-0">
+                <i class="bi bi-tag mr-1"></i>${hymn.category}
+              </span>
+            ` : ''}
+          </div>
+        </div>
+        
+        <!-- Actions -->
+        <div class="flex-shrink-0">
+          <div class="flex gap-2">
+            ${window.generateCardActions ? window.generateCardActions(hymn, 'hymn') : ''}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Render hymns grid using shared utility
+function renderHymnsGrid() {
+  return window.renderViewContent(
+    hymnsData.viewMode,
+    hymnsData.filteredHymns,
+    renderHymnCard,
+    renderHymnRow
+  );
 }
 
 // Render hymn lyrics view
@@ -446,6 +510,14 @@ function playHymnEmbedded(hymn) {
   }
 }
 
+// Toggle view mode
+function toggleHymnsViewMode(mode) {
+  console.log("[DEBUG] Toggling hymns view mode to:", mode);
+  hymnsData.viewMode = mode;
+  window.setViewMode('hymns', mode);
+  updateHymnsDisplay();
+}
+
 // Update hymns display
 function updateHymnsDisplay() {
   console.log("[DEBUG] Updating hymns display");
@@ -480,20 +552,10 @@ function renderHymnsTab() {
   // If data not loaded yet, show loading state
   if (!hymnsData.isLoaded) {
     return `
-      <div class="hymns-container">
-        <div class="hymns-header">
-          <h2 class="text-3xl font-bold text-gray-900 mb-2">
-            <i class="bi bi-book text-purple-600 mr-2"></i>
-            Hymns Library
-          </h2>
-          <p class="text-gray-600 mb-6">Loading traditional hymns...</p>
-        </div>
-        
-        <div class="flex items-center justify-center py-20">
-          <div class="text-center">
-            <div class="loading-spinner mx-auto mb-4"></div>
-            <p class="text-gray-600">Loading hymns data...</p>
-          </div>
+      <div class="flex items-center justify-center py-20">
+        <div class="text-center">
+          <div class="loading-spinner mx-auto mb-4"></div>
+          <p class="text-gray-600">Loading hymns data...</p>
         </div>
       </div>
     `;
@@ -506,65 +568,68 @@ function renderHymnsTab() {
   
   // Show main hymns list
   return `
-    <div class="hymns-container">
+    <div class="fade-in">
       <!-- Header Section -->
-      <div class="hymns-header">
-        <h2 class="text-3xl font-bold text-gray-900 mb-2">
-          <i class="bi bi-book text-purple-600 mr-2"></i>
+      <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2 flex items-center">
+          <i class="bi bi-book text-purple-600 mr-3"></i>
           Hymns Library
-        </h2>
-        <p class="text-gray-600 mb-6">
+        </h1>
+        <p class="text-gray-600">
           Explore our collection of ${hymnsData.allHymnsCount} traditional hymns
         </p>
       </div>
 
       <!-- Search and Filter Section -->
-      <div class="hymns-controls mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <!-- Search -->
-          <div class="relative">
-            <i class="bi bi-search absolute left-3 top-3 text-gray-400"></i>
-            <input
-              type="text"
-              id="hymns-search"
-              placeholder="Search hymns..."
-              class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              oninput="searchHymns(this.value)"
-            />
+      <div class="card mb-6">
+        <div class="card-body">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <!-- Search, Category, Author inputs -->
+            <div class="relative">
+              <i class="bi bi-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+              <input
+                type="text"
+                id="hymns-search"
+                placeholder="Search hymns..."
+                class="form-input pl-10 w-full"
+                oninput="searchHymns(this.value)"
+              />
+            </div>
+
+            <select
+              id="hymns-category"
+              class="form-select w-full"
+              onchange="filterHymnsByCategory(this.value)"
+            >
+              <option value="">All Categories</option>
+              ${getUniqueCategories().map(cat => `<option value="${cat}">${cat}</option>`).join('')}
+            </select>
+
+            <select
+              id="hymns-author"
+              class="form-select w-full"
+              onchange="filterHymnsByAuthor(this.value)"
+            >
+              <option value="">All Authors</option>
+              ${getUniqueAuthors().map(author => `<option value="${author}">${author}</option>`).join('')}
+            </select>
           </div>
-
-          <!-- Category Filter -->
-          <select
-            id="hymns-category"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            onchange="filterHymnsByCategory(this.value)"
-          >
-            <option value="">All Categories</option>
-            ${getUniqueCategories().map(cat => `<option value="${cat}">${cat}</option>`).join('')}
-          </select>
-
-          <!-- Author Filter -->
-          <select
-            id="hymns-author"
-            class="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-            onchange="filterHymnsByAuthor(this.value)"
-          >
-            <option value="">All Authors</option>
-            ${getUniqueAuthors().map(author => `<option value="${author}">${author}</option>`).join('')}
-          </select>
+          
+          <!-- Results Count and View Toggle -->
+          <div class="flex justify-between items-center">
+            <p class="text-sm text-gray-600">
+              Showing <span class="font-semibold">${hymnsData.filteredHymnsCount}</span> of 
+              <span class="font-semibold">${hymnsData.allHymnsCount}</span> hymns
+            </p>
+            
+            <!-- Use shared view toggle component -->
+            ${window.renderViewToggle ? window.renderViewToggle(hymnsData.viewMode, 'toggleHymnsViewMode') : ''}
+          </div>
         </div>
       </div>
 
-      <!-- Results Count -->
-      <div class="mb-4">
-        <p class="text-sm text-gray-600">
-          Showing <span class="font-semibold">${hymnsData.filteredHymnsCount}</span> of 
-          <span class="font-semibold">${hymnsData.allHymnsCount}</span> hymns
-        </p>
-      </div>
-
-      <!-- Hymns Grid -->
-      <div id="hymns-grid" class="hymns-grid">
+      <!-- Hymns Grid/List -->
+      <div id="hymns-grid">
         ${renderHymnsGrid()}
       </div>
     </div>
@@ -575,10 +640,14 @@ function renderHymnsTab() {
 function initHymnsTab() {
   console.log("[DEBUG] Initializing Hymns Tab");
   
+  // Use shared utility to get view mode
+  hymnsData.viewMode = window.getViewMode ? window.getViewMode('hymns') : 'grid';
+  console.log("[DEBUG] Initial hymns view mode:", hymnsData.viewMode);
+  
   // Export hymnsData to window immediately
   window.hymnsData = hymnsData;
   
-  // Export all functions to window (AFTER they're defined)
+  // Export all functions to window
   window.renderHymnsTab = renderHymnsTab;
   window.updateHymnsDisplay = updateHymnsDisplay;
   window.viewHymnDetails = viewHymnDetails;
@@ -589,22 +658,16 @@ function initHymnsTab() {
   window.filterHymnsByCategory = filterHymnsByCategory;
   window.filterHymnsByAuthor = filterHymnsByAuthor;
   window.sortHymns = sortHymns;
+  window.toggleHymnsViewMode = toggleHymnsViewMode;
   window.getUniqueCategories = getUniqueCategories;
   window.getUniqueAuthors = getUniqueAuthors;
   window.renderHymnCard = renderHymnCard;
+  window.renderHymnRow = renderHymnRow;
   window.renderHymnLyricsView = renderHymnLyricsView;
   window.initHymnsTab = initHymnsTab;
   
-  console.log("[DEBUG] Hymns tab functions exported to window");
-  
-  // Load hymns data immediately
-  console.log("[DEBUG] Starting hymns data load...");
-  loadHymnsData().then(() => {
-    console.log("[DEBUG] Hymns data load complete. isLoaded:", hymnsData.isLoaded);
-    console.log("[DEBUG] Loaded", hymnsData.allHymns.length, "hymns");
-  }).catch(err => {
-    console.error("[DEBUG] Error loading hymns data:", err);
-  });
+  // Load hymns data
+  loadHymnsData();
 }
 
 // **AUTO-CALL INITIALIZATION WHEN MODULE LOADS**
