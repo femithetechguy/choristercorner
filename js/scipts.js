@@ -11,6 +11,7 @@ function loadUtilityModules() {
   const modules = [
     'js/lyrics-utils.js',
     'js/meta-tags.js',
+    'js/card-actions.js',     // Add this line
     'js/shared-player.js',
     'js/home.js',
     'js/songs.js',

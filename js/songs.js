@@ -28,30 +28,36 @@ let songsData = {
   urlParametersProcessed: false
 };
 
-// Load songs data
+// Fetch and process songs data
 async function loadSongsData() {
+  console.log("[DEBUG] Loading songs data from JSON...");
+  
   try {
-    console.log("[DEBUG] Loading songs data");
-    const response = await fetch('json/songs.json');
-    const data = await response.json();
-    
-    if (Array.isArray(data)) {
-      songsData.allSongs = data;
-      songsData.filteredSongs = [...data];
-      songsData.isLoaded = true;
-      console.log("[DEBUG] Songs data loaded successfully:", data.length, "songs");
-      
-      // Check if we need to show a specific song from URL parameters
-      handleSongUrlParameters();
-      
-      // Also check for pending song parameters (mobile reliability)
-      setTimeout(() => {
-        checkPendingSongUrlParameters();
-      }, 200);
+    const response = await fetch("json/songs.json");
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
+    
+    const data = await response.json();
+    console.log("[DEBUG] Songs data loaded:", data.length, "songs");
+    
+    // Store all songs
+    songsData.allSongs = data;
+    songsData.filteredSongs = data;
+    
+    // Export to window for global access
+    window.songsData = songsData;
+    
+    console.log("[DEBUG] songsData exported to window:", window.songsData);
+    
+    // Update display
+    updateSongsDisplay();
+    
+    return data;
   } catch (error) {
-    console.error("[DEBUG] Failed to load songs data:", error);
-    songsData.isLoaded = false;
+    console.error("[DEBUG] Error loading songs data:", error);
+    showToast("Failed to load songs data", "error");
+    return [];
   }
 }
 
@@ -345,57 +351,53 @@ function renderSongsContainer() {
 // Render individual song card (grid view)
 function renderSongCard(song) {
   return `
-    <div class="card hover:shadow-lg transition-shadow">
-      <div class="card-body">
-        <div class="flex items-center justify-between mb-3">
-          <span class="text-xs font-medium text-purple-600 bg-purple-100 px-2 py-1 rounded">#${song.serial_number}</span>
-          <span class="text-sm text-gray-500">${song.duration || 'N/A'}</span>
+    <div class="song-card bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+      <!-- Thumbnail -->
+      <div class="song-thumbnail" onclick="playSongEmbedded({
+        serial_number: ${song.serial_number},
+        title: '${song.title?.replace(/'/g, "\\'")}',
+        channel: '${song.channel?.replace(/'/g, "\\'")}',
+        duration: '${song.duration}',
+        url: '${song.url}',
+        lyrics: ${JSON.stringify(song.lyrics || []).replace(/'/g, "\\'")}
+      })">
+        ${song.url ? `
+          <img 
+            src="https://img.youtube.com/vi/${extractVideoId(song.url)}/mqdefault.jpg" 
+            alt="${song.title}" 
+            class="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            loading="lazy"
+          />
+          <div class="play-overlay">
+            <i class="bi bi-play-circle-fill text-6xl text-white opacity-90"></i>
+          </div>
+        ` : `
+          <div class="w-full h-48 bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+            <i class="bi bi-music-note text-6xl text-white opacity-50"></i>
+          </div>
+        `}
+      </div>
+      
+      <!-- Content -->
+      <div class="p-4">
+        <div class="flex justify-between items-start mb-2">
+          <span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded">
+            #${song.serial_number}
+          </span>
+          <span class="text-xs text-gray-500">${song.duration}</span>
         </div>
         
-        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-2">${song.title || 'Untitled'}</h3>
-        <p class="text-sm text-gray-600 mb-4 flex items-center">
-          <i class="bi bi-person-circle mr-1"></i>
+        <h3 class="font-semibold text-lg text-gray-900 mb-2 line-clamp-2" title="${song.title}">
+          ${song.title || 'Untitled Song'}
+        </h3>
+        
+        <p class="text-sm text-gray-600 mb-4 line-clamp-1" title="${song.channel}">
           ${song.channel || 'Unknown Artist'}
         </p>
         
-        <!-- Lyrics Preview -->
-        ${song.lyrics && song.lyrics.length > 0 ? `
-          <div class="mb-4 p-2 bg-gray-50 rounded text-xs text-gray-600 line-clamp-2">
-            ${song.lyrics[0] || 'No lyrics preview available'}
-          </div>
-        ` : ''}
-        
-        <div class="flex space-x-2">
-          <button 
-            onclick="playSong('${song.url}')" 
-            class="flex-1 btn btn-primary btn-sm"
-            ${!song.url ? 'disabled' : ''}
-            title="Listen on YouTube"
-          >
-            <i class="bi bi-play-fill"></i>
-            <span>Listen</span>
-          </button>
-          <button 
-            onclick="viewSongLyrics(${song.serial_number})" 
-            class="btn btn-outline btn-sm"
-            title="View lyrics"
-          >
-            <i class="bi bi-file-text"></i>
-          </button>
-          <button 
-            onclick="copySongLinkBySerial(${song.serial_number})" 
-            class="btn btn-ghost btn-sm"
-            title="Copy page link"
-          >
-            <i class="bi bi-link-45deg"></i>
-          </button>
-          <button 
-            onclick="toggleFavorite(${song.serial_number})" 
-            class="btn btn-ghost btn-sm"
-            title="Add to favorites"
-          >
-            <i class="bi bi-heart"></i>
-          </button>
+        <!-- Action Buttons -->
+        <div class="card-actions">
+          ${window.generateCardActions ? window.generateCardActions(song, 'song') : ''}
         </div>
       </div>
     </div>
@@ -1197,6 +1199,27 @@ function backToSongsList() {
   window.history.pushState({}, '', window.location.pathname);
   
   updateSongsDisplay();
+}
+
+// Initialize songs tab
+function initSongsTab() {
+  console.log("[DEBUG] Initializing Songs Tab");
+  
+  // Load songs data
+  loadSongsData();
+  
+  // Export songsData to window immediately (even if empty)
+  window.songsData = songsData;
+  
+  // Export functions to window
+  window.renderSongsTab = renderSongsTab;
+  window.updateSongsDisplay = updateSongsDisplay;
+  window.viewSongLyrics = viewSongLyrics;
+  window.backToSongsList = backToSongsList;
+  window.copySongLinkBySerial = copySongLinkBySerial;
+  window.playSongEmbedded = playSongEmbedded;
+  
+  console.log("[DEBUG] Songs tab initialized and functions exported");
 }
 
 // Initialize songs data when the module loads

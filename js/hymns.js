@@ -24,10 +24,10 @@ const hymnsData = {
 
 // Load hymns data from JSON file
 async function loadHymnsData() {
+  console.log("[DEBUG] Loading hymns data from JSON...");
+  
   try {
-    console.log("[DEBUG] Loading hymns data...");
-    const response = await fetch('json/hymns.json');
-    
+    const response = await fetch("json/hymns.json");
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -35,57 +35,23 @@ async function loadHymnsData() {
     const data = await response.json();
     console.log("[DEBUG] Hymns data loaded:", data.length, "hymns");
     
-    // Validate and clean the data
-    const validatedData = data.map((hymn, index) => {
-      // Ensure required fields exist
-      if (!hymn.serial_number) {
-        console.warn("[DEBUG] Hymn missing serial_number, assigning:", index + 1);
-        hymn.serial_number = index + 1;
-      }
-      
-      // Ensure lyrics is an array
-      if (!Array.isArray(hymn.lyrics)) {
-        hymn.lyrics = [];
-      }
-      
-      return hymn;
-    });
+    // Store all hymns
+    hymnsData.allHymns = data;
+    hymnsData.filteredHymns = data;
     
-    hymnsData.allHymns = validatedData;
-    hymnsData.filteredHymns = [...validatedData];
-    hymnsData.isLoaded = true;
+    // Export to window for global access
+    window.hymnsData = hymnsData;
     
-    // Update the hymns display
+    console.log("[DEBUG] hymnsData exported to window:", window.hymnsData);
+    
+    // Update display
     updateHymnsDisplay();
     
-    // Populate filter dropdowns
-    populateFilterDropdowns();
-    
-    // Check for pending hymn URL parameters after data is loaded
-    setTimeout(() => {
-      checkPendingHymnUrlParameters();
-    }, 100);
-    
+    return data;
   } catch (error) {
-    console.error("[ERROR] Failed to load hymns data:", error);
-    
-    // Show error message to user
-    const container = document.getElementById('hymns-container');
-    if (container) {
-      container.innerHTML = `
-        <div class="card">
-          <div class="card-body text-center py-12">
-            <i class="bi bi-exclamation-triangle text-6xl text-red-400 mb-4"></i>
-            <h3 class="text-xl font-semibold text-gray-900 mb-2">Failed to load hymns</h3>
-            <p class="text-gray-600 mb-4">There was an error loading the hymns library.</p>
-            <button onclick="loadHymnsData()" class="btn btn-primary">
-              <i class="bi bi-arrow-clockwise mr-2"></i>
-              Try Again
-            </button>
-          </div>
-        </div>
-      `;
-    }
+    console.error("[DEBUG] Error loading hymns data:", error);
+    showToast("Failed to load hymns data", "error");
+    return [];
   }
 }
 
@@ -373,85 +339,68 @@ function renderHymnsContainer() {
   }
 }
 
-// Render individual hymn card
+// Render hymn card
 function renderHymnCard(hymn) {
-  try {
-    // Ensure we have required fields
-    const safeHymn = {
-      serial_number: hymn.serial_number || 0,
-      title: hymn.title || 'Untitled',
-      author: hymn.author || 'Unknown Author',
-      year: hymn.year || null,
-      meter: hymn.meter || '',
-      category: hymn.category || '',
-      channel: hymn.channel || 'Unknown Artist',
-      duration: hymn.duration || 'N/A',
-      url: hymn.url || '',
-      lyrics: hymn.lyrics || []
-    };
-
-    // Safe string escaping function
-    const escapeString = (str) => {
-      if (!str) return '';
-      return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
-    };
-
-    return `
-      <div class="hymn-card">
-        <div class="hymn-card-header">
-          <div class="hymn-number">#${safeHymn.serial_number}</div>
-          <h3 class="hymn-title">${safeHymn.title}</h3>
-          <p class="hymn-author">by ${safeHymn.author}</p>
-          <p class="hymn-details">
-            <span class="hymn-year">${safeHymn.year || 'Year Unknown'}</span>
-            ${safeHymn.meter ? ` • ${safeHymn.meter}` : ''}
-            ${safeHymn.category ? ` • ${safeHymn.category}` : ''}
-          </p>
-          <p class="hymn-channel">${safeHymn.channel} • ${safeHymn.duration}</p>
-        </div>
-        <div class="hymn-card-body">
-          <div class="hymn-lyrics-preview">
-            ${safeHymn.lyrics.length > 0 ? safeHymn.lyrics[0].substring(0, 100) + '...' : 'Lyrics available when you select this hymn.'}
+  return `
+    <div class="hymn-card bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300 overflow-hidden">
+      <!-- Thumbnail -->
+      <div class="hymn-thumbnail" onclick="playHymnEmbedded({
+        serial_number: ${hymn.serial_number},
+        title: '${hymn.title?.replace(/'/g, "\\'")}',
+        author: '${hymn.author?.replace(/'/g, "\\'")}',
+        meter: '${hymn.meter?.replace(/'/g, "\\'")}',
+        category: '${hymn.category?.replace(/'/g, "\\'")}',
+        year: ${hymn.year || 'null'},
+        channel: '${hymn.channel?.replace(/'/g, "\\'")}',
+        duration: '${hymn.duration}',
+        url: '${hymn.url}',
+        lyrics: ${JSON.stringify(hymn.lyrics || []).replace(/'/g, "\\'")}
+      })">
+        ${hymn.url ? `
+          <img 
+            src="https://img.youtube.com/vi/${extractVideoId(hymn.url)}/mqdefault.jpg" 
+            alt="${hymn.title}" 
+            class="w-full h-48 object-cover cursor-pointer hover:opacity-90 transition-opacity"
+            loading="lazy"
+          />
+          <div class="play-overlay">
+            <i class="bi bi-play-circle-fill text-6xl text-white opacity-90"></i>
           </div>
+        ` : `
+          <div class="w-full h-48 bg-gradient-to-br from-purple-400 to-blue-500 flex items-center justify-center">
+            <i class="bi bi-music-note text-6xl text-white opacity-50"></i>
+          </div>
+        `}
+      </div>
+      
+      <!-- Content -->
+      <div class="p-4">
+        <div class="flex justify-between items-start mb-2">
+          <span class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded">
+            #${hymn.serial_number}
+          </span>
+          <span class="text-xs text-gray-500">${hymn.duration}</span>
         </div>
-        <div class="hymn-card-actions">
-          <button onclick="playHymnBySerial(${safeHymn.serial_number})" class="btn btn-primary btn-sm" ${!safeHymn.url ? 'disabled' : ''}>
-            <i class="bi bi-play-fill mr-1"></i>
-            Play
-          </button>
-          <button onclick="viewHymnLyrics(${safeHymn.serial_number})" class="btn btn-outline btn-sm">
-            <i class="bi bi-file-text mr-1"></i>
-            Lyrics
-          </button>
-          <button onclick="copyHymnLinkBySerial(${safeHymn.serial_number})" class="btn btn-ghost btn-sm" title="Copy hymn link">
-            <i class="bi bi-link-45deg"></i>
-          </button>
+        
+        <h3 class="font-semibold text-lg text-gray-900 mb-2 line-clamp-2" title="${hymn.title}">
+          ${hymn.title || 'Untitled Hymn'}
+        </h3>
+        
+        <p class="text-sm text-gray-600 mb-1" title="${hymn.author}">
+          <i class="bi bi-person text-gray-400"></i> ${hymn.author || 'Unknown Author'}
+        </p>
+        
+        <p class="text-sm text-gray-500 mb-4">
+          ${hymn.year || 'Year Unknown'} ${hymn.meter ? `• ${hymn.meter}` : ''}
+        </p>
+        
+        <!-- Action Buttons -->
+        <div class="card-actions">
+          ${window.generateCardActions ? window.generateCardActions(hymn, 'hymn') : ''}
         </div>
       </div>
-    `;
-  } catch (error) {
-    console.error("[ERROR] Failed to render hymn card:", error, hymn);
-    return `
-      <div class="hymn-card">
-        <div class="hymn-card-header">
-          <div class="hymn-number">#${hymn.serial_number || '?'}</div>
-          <h3 class="hymn-title">Error loading hymn</h3>
-          <p class="hymn-author">Data error</p>
-        </div>
-        <div class="hymn-card-body">
-          <div class="hymn-lyrics-preview text-red-500">
-            Unable to load hymn data. Please refresh the page.
-          </div>
-        </div>
-        <div class="hymn-card-actions">
-          <button class="btn btn-outline btn-sm" disabled>
-            <i class="bi bi-exclamation-triangle mr-1"></i>
-            Error
-          </button>
-        </div>
-      </div>
-    `;
-  }
+    </div>
+  `;
 }
 
 // Render individual hymn list item (list view)
@@ -1335,4 +1284,25 @@ function displayHymnLyrics(lyrics) {
   } else {
     lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available</p>';
   }
+}
+
+// Initialize hymns tab
+function initHymnsTab() {
+  console.log("[DEBUG] Initializing Hymns Tab");
+  
+  // Load hymns data
+  loadHymnsData();
+  
+  // Export hymnsData to window immediately (even if empty)
+  window.hymnsData = hymnsData;
+  
+  // Export functions to window
+  window.renderHymnsTab = renderHymnsTab;
+  window.updateHymnsDisplay = updateHymnsDisplay;
+  window.viewHymnDetails = viewHymnDetails;
+  window.backToHymnsList = backToHymnsList;
+  window.copyHymnLinkBySerial = copyHymnLinkBySerial;
+  window.playHymnEmbedded = playHymnEmbedded;
+  
+  console.log("[DEBUG] Hymns tab initialized and functions exported");
 }
