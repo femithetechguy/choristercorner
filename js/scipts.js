@@ -544,9 +544,166 @@ function goToHome() {
   renderAppUI();
 }
 
-window.goToHome = goToHome;
+// Add this function with extensive debugging
+function updatePageTitleFromUrl() {
+  console.log('[DEBUG] ========== updatePageTitleFromUrl START ==========');
+  
+  const urlParams = new URLSearchParams(window.location.search);
+  const songId = urlParams.get('song');
+  const hymnId = urlParams.get('hymn');
+  
+  console.log('[DEBUG] URL Parameters:', {
+    songId: songId,
+    hymnId: hymnId,
+    currentTitle: document.title,
+    currentUrl: window.location.href
+  });
+  
+  if (songId) {
+    console.log('[DEBUG] Processing SONG ID:', songId);
+    console.log('[DEBUG] window.songsData exists:', !!window.songsData);
+    console.log('[DEBUG] window.songsData.allSongs exists:', !!(window.songsData && window.songsData.allSongs));
+    console.log('[DEBUG] window.songsData.allSongs.length:', window.songsData?.allSongs?.length || 0);
+    console.log('[DEBUG] window.songsData.isLoaded:', window.songsData?.isLoaded);
+    
+    if (window.songsData && window.songsData.allSongs && window.songsData.allSongs.length > 0) {
+      const song = window.songsData.allSongs.find(s => s.serial_number === parseInt(songId));
+      console.log('[DEBUG] Found song:', song ? {
+        serial: song.serial_number,
+        title: song.title,
+        channel: song.channel
+      } : 'NOT FOUND');
+      
+      if (song) {
+        const newTitle = `${song.title} - ${song.channel} | ChoristerCorner`;
+        const oldTitle = document.title;
+        document.title = newTitle;
+        
+        console.log('[DEBUG] ✅ Title updated!');
+        console.log('[DEBUG] Old title:', oldTitle);
+        console.log('[DEBUG] New title:', newTitle);
+        console.log('[DEBUG] ========== updatePageTitleFromUrl END (SUCCESS) ==========');
+        return true;
+      } else {
+        console.log('[DEBUG] ❌ Song not found in array');
+        console.log('[DEBUG] Available serial numbers:', window.songsData.allSongs.map(s => s.serial_number).slice(0, 10));
+      }
+    } else {
+      console.log('[DEBUG] ⏳ Songs data not ready yet, scheduling retry...');
+      setTimeout(() => {
+        console.log('[DEBUG] 🔄 Retrying updatePageTitleFromUrl after 500ms...');
+        updatePageTitleFromUrl();
+      }, 500);
+      console.log('[DEBUG] ========== updatePageTitleFromUrl END (RETRY SCHEDULED) ==========');
+      return false;
+    }
+  } else if (hymnId) {
+    console.log('[DEBUG] Processing HYMN ID:', hymnId);
+    console.log('[DEBUG] window.hymnsData exists:', !!window.hymnsData);
+    console.log('[DEBUG] window.hymnsData.allHymns exists:', !!(window.hymnsData && window.hymnsData.allHymns));
+    console.log('[DEBUG] window.hymnsData.allHymns.length:', window.hymnsData?.allHymns?.length || 0);
+    console.log('[DEBUG] window.hymnsData.isLoaded:', window.hymnsData?.isLoaded);
+    
+    if (window.hymnsData && window.hymnsData.allHymns && window.hymnsData.allHymns.length > 0) {
+      const hymn = window.hymnsData.allHymns.find(h => h.serial_number === parseInt(hymnId));
+      console.log('[DEBUG] Found hymn:', hymn ? {
+        serial: hymn.serial_number,
+        title: hymn.title,
+        author: hymn.author
+      } : 'NOT FOUND');
+      
+      if (hymn) {
+        const newTitle = `${hymn.title} - ${hymn.author} | ChoristerCorner`;
+        const oldTitle = document.title;
+        document.title = newTitle;
+        
+        console.log('[DEBUG] ✅ Title updated!');
+        console.log('[DEBUG] Old title:', oldTitle);
+        console.log('[DEBUG] New title:', newTitle);
+        console.log('[DEBUG] ========== updatePageTitleFromUrl END (SUCCESS) ==========');
+        return true;
+      } else {
+        console.log('[DEBUG] ❌ Hymn not found in array');
+        console.log('[DEBUG] Available serial numbers:', window.hymnsData.allHymns.map(h => h.serial_number).slice(0, 10));
+      }
+    } else {
+      console.log('[DEBUG] ⏳ Hymns data not ready yet, scheduling retry...');
+      setTimeout(() => {
+        console.log('[DEBUG] 🔄 Retrying updatePageTitleFromUrl after 500ms...');
+        updatePageTitleFromUrl();
+      }, 500);
+      console.log('[DEBUG] ========== updatePageTitleFromUrl END (RETRY SCHEDULED) ==========');
+      return false;
+    }
+  } else {
+    console.log('[DEBUG] ℹ️ No song or hymn ID in URL');
+  }
+  
+  console.log('[DEBUG] ========== updatePageTitleFromUrl END (NO ACTION) ==========');
+  return false;
+}
 
-// Main UI rendering function
+// Export to window
+window.updatePageTitleFromUrl = updatePageTitleFromUrl;
+
+// Update initApp function
+function initApp() {
+  console.log("[DEBUG] ========== initApp START ==========");
+  console.log("[DEBUG] Current URL:", window.location.href);
+
+  // Load app.json to verify version and data availability
+  loadAppConfig()
+    .then(() => {
+      console.log("[DEBUG] App config loaded successfully");
+      renderAppUI();
+      
+      console.log("[DEBUG] Calling updatePageTitleFromUrl from initApp...");
+      updatePageTitleFromUrl();
+      
+      renderToastContainer();
+      checkForUpdate();
+    })
+    .catch((error) => {
+      console.error("[DEBUG] Failed to load app config:", error);
+      renderAppUI();
+      renderToastContainer();
+    });
+
+  setupEventListeners();
+  console.log("[DEBUG] ========== initApp END ==========");
+}
+
+// Add popstate listener for browser back/forward with debug
+window.addEventListener('popstate', function(event) {
+  console.log('[DEBUG] ========== POPSTATE EVENT ==========');
+  console.log('[DEBUG] New URL:', window.location.href);
+  console.log('[DEBUG] Event state:', event.state);
+  
+  updatePageTitleFromUrl();
+  
+  if (window.renderAppUI) {
+    window.renderAppUI();
+  }
+  
+  console.log('[DEBUG] ========== POPSTATE EVENT END ==========');
+});
+
+// Add load event listener with debug
+window.addEventListener('load', function() {
+  console.log('[DEBUG] ========== WINDOW LOAD EVENT ==========');
+  console.log('[DEBUG] Checking for URL parameters after load...');
+  
+  setTimeout(() => {
+    console.log('[DEBUG] Delayed check after load (1 second)...');
+    updatePageTitleFromUrl();
+  }, 1000);
+  
+  console.log('[DEBUG] ========== WINDOW LOAD EVENT END ==========');
+});
+
+/**
+ * Main UI rendering function
+ */
 async function renderAppUI() {
   if (window.selectedTabIdx !== undefined && window.selectedTabIdx !== selectedTabIdx) {
     console.log('[DEBUG] Syncing selectedTabIdx from global:', window.selectedTabIdx);
@@ -689,5 +846,3 @@ function renderDefaultTabContent(tab) {
     </div>
   `;
 }
-
-console.log("[DEBUG] Scripts.js initialization complete");

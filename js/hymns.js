@@ -42,6 +42,24 @@ async function loadHymnsData() {
     
     console.log("[DEBUG] hymnsData exported to window:", window.hymnsData);
     
+    // Check if we need to display a specific hymn from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const hymnId = urlParams.get('hymn');
+    
+    if (hymnId) {
+      console.log('[DEBUG] Hymn ID detected in URL:', hymnId);
+      // Update title
+      if (window.updatePageTitleFromUrl) {
+        window.updatePageTitleFromUrl();
+      }
+      // Navigate to that hymn if we're on hymns tab
+      const hymn = data.find(h => h.serial_number === parseInt(hymnId));
+      if (hymn && window.selectedTabIdx === 2) {
+        console.log('[DEBUG] Auto-displaying hymn from URL:', hymn.title);
+        viewHymnDetails(parseInt(hymnId));
+      }
+    }
+    
     // Update display if on hymns tab
     if (window.selectedTabIdx === 2) {
       updateHymnsDisplay();
@@ -202,9 +220,13 @@ function viewHymnDetails(serialNumber) {
   hymnsData.showLyrics = true;
   hymnsData.selectedHymn = hymn;
   
-  // Update meta tags
-  if (window.updateMetaTags) {
-    window.updateMetaTags(hymn.title, `View ${hymn.title} by ${hymn.author}`);
+  // Update page title immediately
+  document.title = `${hymn.title} - ${hymn.author} | ChoristerCorner`;
+  
+  // Update meta tags with hymn-specific OG image
+  if (window.generateHymnMetaTags && window.updateMetaTags) {
+    const metaTags = window.generateHymnMetaTags(hymn);
+    window.updateMetaTags(metaTags.title, metaTags.description, metaTags.image, metaTags.url);
   }
   
   // Update URL
@@ -230,6 +252,9 @@ function backToHymnsList() {
   
   hymnsData.showLyrics = false;
   hymnsData.selectedHymn = null;
+  
+  // Reset page title
+  document.title = "ChoristerCorner - Your Ultimate Worship Companion";
   
   // Reset meta tags
   if (window.resetMetaTags) {

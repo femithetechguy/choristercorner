@@ -3,8 +3,6 @@
  * Handles song library, search, filtering, and lyrics display
  */
 
-console.log("[DEBUG] songs.js loading...");
-
 // Songs data store
 let songsData = {
   allSongs: [],
@@ -19,8 +17,6 @@ let songsData = {
 
 // Fetch and process songs data
 async function loadSongsData() {
-  console.log("[DEBUG] Loading songs data from JSON...");
-  
   try {
     const response = await fetch("json/songs.json");
     if (!response.ok) {
@@ -28,7 +24,6 @@ async function loadSongsData() {
     }
     
     const data = await response.json();
-    console.log("[DEBUG] Songs data loaded:", data.length, "songs");
     
     // Store all songs
     songsData.allSongs = data;
@@ -40,7 +35,22 @@ async function loadSongsData() {
     // Export to window for global access
     window.songsData = songsData;
     
-    console.log("[DEBUG] songsData exported to window:", window.songsData);
+    // Check if we need to display a specific song from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const songId = urlParams.get('song');
+    
+    if (songId) {
+      // Update title
+      if (window.updatePageTitleFromUrl) {
+        window.updatePageTitleFromUrl();
+      }
+      
+      // Navigate to that song if we're on songs tab
+      const song = data.find(s => s.serial_number === parseInt(songId));
+      if (song && window.selectedTabIdx === 1) {
+        viewSongLyrics(parseInt(songId));
+      }
+    }
     
     // Update display if on songs tab
     if (window.selectedTabIdx === 1) {
@@ -49,7 +59,7 @@ async function loadSongsData() {
     
     return data;
   } catch (error) {
-    console.error("[DEBUG] Error loading songs data:", error);
+    console.error("Error loading songs data:", error);
     if (window.showToast) {
       showToast("Failed to load songs data", "error");
     }
@@ -82,8 +92,6 @@ function parseDuration(duration) {
 
 // Search songs
 function searchSongs(query) {
-  console.log("[DEBUG] Searching songs with query:", query);
-  
   if (!query || query.trim() === '') {
     songsData.filteredSongs = songsData.allSongs;
   } else {
@@ -102,8 +110,6 @@ function searchSongs(query) {
 
 // Filter songs by channel
 function filterSongsByChannel(channel) {
-  console.log("[DEBUG] Filtering songs by channel:", channel);
-  
   if (!channel || channel === '') {
     songsData.filteredSongs = songsData.allSongs;
   } else {
@@ -118,8 +124,6 @@ function filterSongsByChannel(channel) {
 
 // Sort songs
 function sortSongs(sortBy) {
-  console.log("[DEBUG] Sorting songs by:", sortBy);
-  
   songsData.filteredSongs = [...songsData.filteredSongs].sort((a, b) => {
     switch (sortBy) {
       case 'title-asc':
@@ -168,12 +172,9 @@ function renderSongLyricsView(song) {
 
 // View song lyrics
 function viewSongLyrics(serialNumber) {
-  console.log("[DEBUG] Viewing song lyrics:", serialNumber);
-  
   const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
   
   if (!song) {
-    console.error("[DEBUG] Song not found:", serialNumber);
     if (window.showToast) {
       showToast("Song not found", "error");
     }
@@ -184,9 +185,13 @@ function viewSongLyrics(serialNumber) {
   songsData.showLyrics = true;
   songsData.selectedSong = song;
   
-  // Update meta tags
-  if (window.updateMetaTags) {
-    window.updateMetaTags(song.title, `View lyrics for ${song.title} by ${song.channel}`);
+  // Update page title immediately
+  document.title = `${song.title} - ${song.channel} | ChoristerCorner`;
+  
+  // Update meta tags with song-specific OG image
+  if (window.generateSongMetaTags && window.updateMetaTags) {
+    const metaTags = window.generateSongMetaTags(song);
+    window.updateMetaTags(metaTags.title, metaTags.description, metaTags.image, metaTags.url);
   }
   
   // Update URL
@@ -208,10 +213,11 @@ function viewSongLyrics(serialNumber) {
 
 // Back to songs list
 function backToSongsList() {
-  console.log("[DEBUG] Returning to songs list");
-  
   songsData.showLyrics = false;
   songsData.selectedSong = null;
+  
+  // Reset page title
+  document.title = "ChoristerCorner - Your Ultimate Worship Companion";
   
   // Reset meta tags
   if (window.resetMetaTags) {
@@ -233,7 +239,6 @@ function copySongLinkBySerial(serialNumber) {
   const song = songsData.allSongs.find(s => s.serial_number === parseInt(serialNumber));
   
   if (!song) {
-    console.error("[DEBUG] Song not found for copy:", serialNumber);
     if (window.showToast) {
       showToast("Song not found", "error");
     }
@@ -250,12 +255,11 @@ function copySongLinkBySerial(serialNumber) {
   const url = `${window.location.origin}${window.location.pathname}?song=${song.serial_number}&title=${urlTitle}`;
   
   navigator.clipboard.writeText(url).then(() => {
-    console.log("[DEBUG] Song link copied:", url);
     if (window.showToast) {
       showToast(`Link copied: ${song.title}`, "success");
     }
   }).catch(err => {
-    console.error("[DEBUG] Failed to copy link:", err);
+    console.error("Failed to copy link:", err);
     if (window.showToast) {
       showToast("Failed to copy link", "error");
     }
@@ -264,10 +268,7 @@ function copySongLinkBySerial(serialNumber) {
 
 // Play song in embedded player
 function playSongEmbedded(song) {
-  console.log('[DEBUG] Playing song in embedded player:', song.title);
-  
   if (!song || !song.url) {
-    console.error('[DEBUG] Invalid song or missing URL');
     if (window.showToast) {
       showToast('Cannot play song - missing video URL', 'error');
     }
@@ -278,7 +279,6 @@ function playSongEmbedded(song) {
   if (window.showSharedPlayer) {
     window.showSharedPlayer(song, 'song');
   } else {
-    console.error('[DEBUG] showSharedPlayer not available');
     if (window.showToast) {
       showToast('Media player not loaded', 'error');
     }
@@ -287,7 +287,6 @@ function playSongEmbedded(song) {
 
 // Toggle view mode
 function toggleSongsViewMode(mode) {
-  console.log("[DEBUG] Toggling songs view mode to:", mode);
   songsData.viewMode = mode;
   window.setViewMode('songs', mode);
   updateSongsDisplay();
@@ -295,16 +294,12 @@ function toggleSongsViewMode(mode) {
 
 // Update songs display
 function updateSongsDisplay() {
-  console.log("[DEBUG] Updating songs display");
-  
   if (!songsData.isLoaded) {
-    console.log("[DEBUG] Songs not loaded yet, will update when loaded");
     return;
   }
   
   const songsGrid = document.getElementById("songs-grid");
   if (!songsGrid) {
-    console.warn("[DEBUG] Songs grid element not found");
     return;
   }
   
@@ -322,8 +317,6 @@ function updateSongsDisplay() {
 
 // Render songs tab
 function renderSongsTab() {
-  console.log("[DEBUG] Rendering Songs tab");
-  
   if (!songsData.isLoaded) {
     return window.renderLoadingState ? window.renderLoadingState('Loading worship songs...') : '<div>Loading...</div>';
   }
@@ -438,13 +431,22 @@ function printSongLyrics() {
   };
 }
 
+// Display lyrics in the lyrics container
+function displayLyrics(lyrics) {
+  const lyricsContainer = document.getElementById('lyrics-display');
+  if (!lyricsContainer) return;
+  
+  if (lyrics && lyrics.length > 0) {
+    lyricsContainer.innerHTML = window.renderLyrics(lyrics, false);
+  } else {
+    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available</p>';
+  }
+}
+
 // Initialize songs tab
 function initSongsTab() {
-  console.log("[DEBUG] Initializing Songs Tab");
-  
   // Use shared utility to get view mode
   songsData.viewMode = window.getViewMode ? window.getViewMode('songs') : 'grid';
-  console.log("[DEBUG] Initial view mode:", songsData.viewMode);
   
   // Export songsData to window immediately
   window.songsData = songsData;
@@ -467,65 +469,9 @@ function initSongsTab() {
   window.initSongsTab = initSongsTab;
   window.printSongLyrics = printSongLyrics;
   
-  console.log("[DEBUG] Songs tab functions exported to window");
-  
   // Load songs data immediately
-  console.log("[DEBUG] Starting songs data load...");
-  loadSongsData().then(() => {
-    console.log("[DEBUG] Songs data load complete. isLoaded:", songsData.isLoaded);
-    console.log("[DEBUG] Loaded", songsData.allSongs.length, "songs");
-  }).catch(err => {
-    console.error("[DEBUG] Error loading songs data:", err);
-  });
+  loadSongsData();
 }
 
-// **AUTO-CALL INITIALIZATION WHEN MODULE LOADS**
-console.log("[DEBUG] Auto-initializing Songs module on load");
+// Auto-initialize when module loads
 initSongsTab();
-
-console.log("[DEBUG] songs.js module fully loaded");
-
-// Add event listeners for better mobile support
-window.addEventListener('load', () => {
-  console.log("[DEBUG] Window loaded, checking for pending song parameters");
-  setTimeout(() => {
-    checkPendingSongUrlParameters();
-  }, 500);
-});
-
-// Handle browser back/forward navigation
-window.addEventListener('popstate', () => {
-  console.log("[DEBUG] Popstate event, checking URL parameters");
-  // Reset the processing flag for new navigation
-  songsData.urlParametersProcessed = false;
-  
-  if (songsData.isLoaded) {
-    handleSongUrlParameters();
-  } else {
-    // If songs aren't loaded yet, store the song ID for later
-    const urlParams = new URLSearchParams(window.location.search);
-    const songId = urlParams.get('song');
-    if (songId) {
-      sessionStorage.setItem('pendingSongId', songId);
-    }
-  }
-});
-
-// Display lyrics in the lyrics container
-function displayLyrics(lyrics) {
-  const lyricsContainer = document.getElementById('lyrics-display');
-  if (!lyricsContainer) {
-    console.log('[DEBUG] Lyrics display container not found');
-    return;
-  }
-  
-  if (lyrics && lyrics.length > 0) {
-    console.log('[DEBUG] Rendering full lyrics view with utility function');
-    // Use the shared lyrics rendering function for full view (not media player)
-    lyricsContainer.innerHTML = window.renderLyrics(lyrics, false);
-  } else {
-    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available</p>';
-  }
-}
-
-console.log("[DEBUG] Songs tab module initialization complete");
