@@ -338,6 +338,87 @@ a:hover {
   background-color: var(--color-gray-50);
 }
 
+/* Card Action Buttons */
+.card-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 0.5rem;
+  background-color: #f3f4f6;
+  color: #6b7280;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 1.125rem;
+}
+
+.card-action-btn:hover {
+  background-color: #7c3aed;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card-action-btn:active {
+  transform: translateY(0);
+}
+
+.card-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background-color: #e5e7eb;
+}
+
+.card-action-btn:disabled:hover {
+  transform: none;
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+/* Primary Play Button */
+.card-action-btn-primary {
+  background-color: #7c3aed;
+  color: white;
+  font-size: 1.25rem;
+}
+
+.card-action-btn-primary:hover {
+  background-color: #6d28d9;
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 6px 12px rgba(124, 58, 237, 0.3);
+}
+
+.card-action-btn-primary:disabled {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+}
+
+.card-action-btn-primary:disabled:hover {
+  background-color: #e5e7eb;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Favorite Heart Color */
+.card-action-btn.text-red-500 {
+  color: #ef4444;
+}
+
+.card-action-btn.text-red-500:hover {
+  background-color: #ef4444;
+  color: white;
+}
+
+/* Card Actions Container */
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 /* === FORM STYLES === */
 .form-group {
   margin-bottom: var(--spacing-lg);
