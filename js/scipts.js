@@ -12,7 +12,8 @@ function loadUtilityModules() {
     'js/lyrics-utils.js',
     'js/meta-tags.js',
     'js/card-actions.js',
-    'js/view-toggle.js',        // Add this line
+    'js/view-toggle.js',
+    'js/content-renderer.js',  // Add this
     'js/shared-player.js',
     'js/home.js',
     'js/songs.js',
