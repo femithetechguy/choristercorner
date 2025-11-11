@@ -41,12 +41,8 @@ function renderThumbnail(item, type) {
     ? 'from-blue-400 to-purple-500' 
     : 'from-purple-400 to-blue-500';
   
-  const playAction = type === 'hymn' 
-    ? `playHymnEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`
-    : `playSongEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`;;
-  
   return `
-    <div class="thumbnail-container cursor-pointer" onclick="${playAction}">
+    <div class="thumbnail-container cursor-pointer" onclick="playItemBySerial(${item.serial_number}, '${type}')">
       ${item.url ? `
         <img 
           src="https://img.youtube.com/vi/${videoId}/mqdefault.jpg" 
@@ -125,10 +121,6 @@ function renderContentRow(item, type) {
     ? 'from-blue-400 to-purple-500' 
     : 'from-purple-400 to-blue-500';
   
-  const playAction = isHymn 
-    ? `playHymnEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`
-    : `playSongEmbedded(${JSON.stringify(item).replace(/'/g, "\\'")})`;
-  
   const primaryInfo = isHymn ? item.author : item.channel;
   const secondaryInfo = isHymn ? item.category : item.duration;
   
@@ -136,7 +128,7 @@ function renderContentRow(item, type) {
     <div class="content-row bg-white border-b border-gray-200 hover:bg-gray-50 transition-colors">
       <div class="flex items-center p-4 gap-4">
         <!-- Thumbnail -->
-        <div class="flex-shrink-0 cursor-pointer" onclick="${playAction}">
+        <div class="flex-shrink-0 cursor-pointer" onclick="playItemBySerial(${item.serial_number}, '${type}')">
           ${item.url ? `
             <div class="relative group">
               <img 

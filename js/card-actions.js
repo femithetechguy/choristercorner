@@ -9,14 +9,13 @@ console.log("[DEBUG] card-actions.js loading...");
  * Generate action buttons for song/hymn cards
  * @param {Object} item - Song or hymn object
  * @param {string} type - 'song' or 'hymn'
- * @param {string} context - 'card' or 'lyrics'
+ * @param {string} context - 'card' or 'lyrics' (default: 'card')
  * @returns {string} HTML for action buttons
  */
 function generateCardActions(item, type, context = 'card') {
-  // context can be 'card' or 'lyrics'
-  
   const isHymn = type === 'hymn';
   const isLyricsView = context === 'lyrics';
+  
   const playFunction = isHymn ? 'playHymnEmbedded' : 'playSongEmbedded';
   const copyFunction = isHymn ? 'copyHymnLinkBySerial' : 'copySongLinkBySerial';
   const viewFunction = isHymn ? 'viewHymnDetails' : 'viewSongLyrics';
@@ -29,7 +28,7 @@ function generateCardActions(item, type, context = 'card') {
     <!-- Play Button -->
     ${item.url ? `
       <button 
-        onclick="${playFunction}(${JSON.stringify(item).replace(/'/g, "\\'")}); showActionToast('Playing ${escapeHtml(item.title)}', 'info')"
+        onclick="playItemBySerial(${item.serial_number}, '${type}')"
         class="btn btn-sm btn-primary"
         title="Play ${type}"
         aria-label="Play ${type}">
@@ -40,7 +39,7 @@ function generateCardActions(item, type, context = 'card') {
     <!-- View Lyrics Button - Hide in lyrics view -->
     ${!isLyricsView ? `
       <button 
-        onclick="${viewFunction}(${item.serial_number}); showActionToast('Loading lyrics...', 'info')"
+        onclick="${viewFunction}(${item.serial_number})"
         class="btn btn-sm btn-outline"
         title="View lyrics"
         aria-label="View lyrics">
@@ -48,7 +47,7 @@ function generateCardActions(item, type, context = 'card') {
       </button>
     ` : ''}
     
-    <!-- Copy Link Button - Always show -->
+    <!-- Copy Link Button -->
     <button 
       onclick="${copyFunction}(${item.serial_number})"
       class="btn btn-sm btn-outline"
@@ -60,7 +59,7 @@ function generateCardActions(item, type, context = 'card') {
     <!-- Open in New Tab Button - Hide in lyrics view -->
     ${item.url && !isLyricsView ? `
       <button 
-        onclick="openInNewTab('${item.url}'); showActionToast('Opening in new tab...', 'info')"
+        onclick="openInNewTab('${item.url}')"
         class="btn btn-sm btn-outline"
         title="Open in YouTube"
         aria-label="Open video in new tab">
@@ -68,7 +67,7 @@ function generateCardActions(item, type, context = 'card') {
       </button>
     ` : ''}
     
-    <!-- Favorite Button - Always show -->
+    <!-- Favorite Button -->
     <button 
       onclick="${favoriteFunction}(${item.serial_number})"
       class="btn btn-sm ${isFavorited ? 'btn-favorite-active' : 'btn-outline'}"
@@ -78,6 +77,41 @@ function generateCardActions(item, type, context = 'card') {
       <i class="bi ${isFavorited ? 'bi-heart-fill' : 'bi-heart'}"></i>
     </button>
   `;
+}
+
+/**
+ * Play item by serial number and type
+ * @param {number} serialNumber - Item serial number
+ * @param {string} type - 'song' or 'hymn'
+ */
+function playItemBySerial(serialNumber, type) {
+  const isHymn = type === 'hymn';
+  const dataSource = isHymn ? window.hymnsData : window.songsData;
+  
+  if (!dataSource || !dataSource.allSongs && !dataSource.allHymns) {
+    console.error('[DEBUG] Data source not available');
+    if (window.showToast) {
+      showToast('Data not loaded yet', 'error');
+    }
+    return;
+  }
+  
+  const items = isHymn ? dataSource.allHymns : dataSource.allSongs;
+  const item = items.find(i => i.serial_number === parseInt(serialNumber));
+  
+  if (!item) {
+    console.error('[DEBUG] Item not found:', serialNumber);
+    if (window.showToast) {
+      showToast(`${isHymn ? 'Hymn' : 'Song'} not found`, 'error');
+    }
+    return;
+  }
+  
+  if (isHymn) {
+    window.playHymnEmbedded(item);
+  } else {
+    window.playSongEmbedded(item);
+  }
 }
 
 /**
@@ -94,6 +128,10 @@ function openInNewTab(url) {
   }
   
   window.open(url, '_blank', 'noopener,noreferrer');
+  
+  if (window.showToast) {
+    showToast('Opening in new tab...', 'info');
+  }
 }
 
 /**
@@ -212,39 +250,12 @@ function toggleHymnFavorite(serialNumber) {
   console.log('[DEBUG] Hymn favorite toggled:', serialNumber, isFavorited);
 }
 
-/**
- * Escape HTML to prevent XSS
- * @param {string} text - Text to escape
- * @returns {string} Escaped text
- */
-function escapeHtml(text) {
-  const div = document.createElement('div');
-  div.textContent = text;
-  return div.innerHTML;
-}
-
-/**
- * Show action toast message
- * @param {string} message - Message to display
- * @param {string} type - Toast type: 'success', 'error', 'info', 'warning'
- */
-function showActionToast(message, type = 'info') {
-  // Use the global showToast function if available
-  if (window.showToast) {
-    window.showToast(message, type);
-  } else {
-    // Fallback to console if toast not available
-    console.log(`[${type.toUpperCase()}] ${message}`);
-  }
-}
-
 // Export to window
 window.generateCardActions = generateCardActions;
+window.playItemBySerial = playItemBySerial;
 window.openInNewTab = openInNewTab;
 window.checkIfFavorited = checkIfFavorited;
 window.toggleSongFavorite = toggleSongFavorite;
 window.toggleHymnFavorite = toggleHymnFavorite;
-window.escapeHtml = escapeHtml;
-window.showActionToast = showActionToast;
 
 console.log("[DEBUG] card-actions.js loaded");
