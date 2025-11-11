@@ -230,9 +230,9 @@ function renderLyricsHeader(item, type, backFunction) {
             ` : ''}
           </div>
           
-          <!-- Action Buttons - Use Shared Card Actions -->
+          <!-- Action Buttons - Pass 'lyrics' context -->
           <div class="flex flex-wrap gap-2">
-            ${window.generateCardActions ? window.generateCardActions(item, type) : ''}
+            ${window.generateCardActions ? window.generateCardActions(item, type, 'lyrics') : ''}
           </div>
         </div>
       </div>

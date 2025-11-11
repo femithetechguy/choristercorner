@@ -9,10 +9,14 @@ console.log("[DEBUG] card-actions.js loading...");
  * Generate action buttons for song/hymn cards
  * @param {Object} item - Song or hymn object
  * @param {string} type - 'song' or 'hymn'
+ * @param {string} context - 'card' or 'lyrics'
  * @returns {string} HTML for action buttons
  */
-function generateCardActions(item, type) {
+function generateCardActions(item, type, context = 'card') {
+  // context can be 'card' or 'lyrics'
+  
   const isHymn = type === 'hymn';
+  const isLyricsView = context === 'lyrics';
   const playFunction = isHymn ? 'playHymnEmbedded' : 'playSongEmbedded';
   const copyFunction = isHymn ? 'copyHymnLinkBySerial' : 'copySongLinkBySerial';
   const viewFunction = isHymn ? 'viewHymnDetails' : 'viewSongLyrics';
@@ -33,16 +37,18 @@ function generateCardActions(item, type) {
       </button>
     ` : ''}
     
-    <!-- View Lyrics Button -->
-    <button 
-      onclick="${viewFunction}(${item.serial_number}); showActionToast('Loading lyrics...', 'info')"
-      class="btn btn-sm btn-outline"
-      title="View lyrics"
-      aria-label="View lyrics">
-      <i class="bi bi-file-text"></i>
-    </button>
+    <!-- View Lyrics Button - Hide in lyrics view -->
+    ${!isLyricsView ? `
+      <button 
+        onclick="${viewFunction}(${item.serial_number}); showActionToast('Loading lyrics...', 'info')"
+        class="btn btn-sm btn-outline"
+        title="View lyrics"
+        aria-label="View lyrics">
+        <i class="bi bi-file-text"></i>
+      </button>
+    ` : ''}
     
-    <!-- Copy Link Button -->
+    <!-- Copy Link Button - Always show -->
     <button 
       onclick="${copyFunction}(${item.serial_number})"
       class="btn btn-sm btn-outline"
@@ -51,8 +57,8 @@ function generateCardActions(item, type) {
       <i class="bi bi-link-45deg"></i>
     </button>
     
-    <!-- Open in New Tab Button -->
-    ${item.url ? `
+    <!-- Open in New Tab Button - Hide in lyrics view -->
+    ${item.url && !isLyricsView ? `
       <button 
         onclick="openInNewTab('${item.url}'); showActionToast('Opening in new tab...', 'info')"
         class="btn btn-sm btn-outline"
@@ -62,7 +68,7 @@ function generateCardActions(item, type) {
       </button>
     ` : ''}
     
-    <!-- Favorite Button -->
+    <!-- Favorite Button - Always show -->
     <button 
       onclick="${favoriteFunction}(${item.serial_number})"
       class="btn btn-sm ${isFavorited ? 'btn-favorite-active' : 'btn-outline'}"
