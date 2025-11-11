@@ -388,22 +388,17 @@ function copyHymnLinkBySerial(serialNumber) {
 
 // Play hymn in embedded player
 function playHymnEmbedded(hymn) {
-  console.log('[DEBUG] Playing hymn in embedded player:', hymn.title);
-  
   if (!hymn || !hymn.url) {
-    console.error('[DEBUG] Invalid hymn or missing URL');
     if (window.showToast) {
       showToast('Cannot play hymn - missing video URL', 'error');
     }
     return;
   }
   
-  // Show the shared player with this hymn
+  // Show the shared player (it will handle title/URL updates)
   if (window.showSharedPlayer) {
     window.showSharedPlayer(hymn, 'hymn');
-    // Toast is already shown in card-actions.js onclick
   } else {
-    console.error('[DEBUG] showSharedPlayer not available');
     if (window.showToast) {
       showToast('Media player not loaded', 'error');
     }

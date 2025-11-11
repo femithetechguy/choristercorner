@@ -359,7 +359,7 @@ function playSongEmbedded(song) {
     return;
   }
   
-  // Show the shared player with this song
+  // Show the shared player (it will handle title/URL updates)
   if (window.showSharedPlayer) {
     window.showSharedPlayer(song, 'song');
   } else {

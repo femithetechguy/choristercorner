@@ -14,38 +14,64 @@ const sharedPlayer = {
 // Show the shared player
 function showSharedPlayer(item, type) {
   console.log("[DEBUG] Showing shared player for:", item?.title, "Type:", type);
-  console.log("[DEBUG] Item object:", item);
-  console.log("[DEBUG] Item URL:", item?.url);
   
   // Validate input parameters
   if (!item || typeof item !== 'object') {
     console.error("[DEBUG] Invalid item passed to showSharedPlayer:", item);
-    alert('Unable to play - invalid item data');
+    if (window.showToast) {
+      showToast('Unable to play - invalid item data', 'error');
+    }
     return;
   }
   
   if (!item.url || typeof item.url !== 'string') {
     console.error("[DEBUG] Invalid URL in item:", item.url);
-    alert('Unable to play - invalid URL');
+    if (window.showToast) {
+      showToast('Unable to play - invalid URL', 'error');
+    }
     return;
   }
   
-  // Close any existing players first
-  closeSharedPlayer();
+  // Update page title based on content type
+  if (type === 'song') {
+    document.title = `${item.title} - ${item.channel} | ChoristerCorner`;
+  } else if (type === 'hymn') {
+    document.title = `${item.title} - ${item.author} | ChoristerCorner`;
+  }
   
-  sharedPlayer.currentItem = item;
-  sharedPlayer.type = type;
-  sharedPlayer.isVisible = true;
-  sharedPlayer.isCollapsed = false;
+  // Update meta tags
+  if (type === 'song' && window.generateSongMetaTags && window.updateMetaTags) {
+    const metaTags = window.generateSongMetaTags(item);
+    window.updateMetaTags(metaTags.title, metaTags.description, metaTags.image, metaTags.url);
+  } else if (type === 'hymn' && window.generateHymnMetaTags && window.updateMetaTags) {
+    const metaTags = window.generateHymnMetaTags(item);
+    window.updateMetaTags(metaTags.title, metaTags.description, metaTags.image, metaTags.url);
+  }
   
-  // Add player to DOM
-  const playerHTML = renderSharedPlayer();
-  if (playerHTML) {
-    document.body.insertAdjacentHTML('beforeend', playerHTML);
+  // Update URL
+  const urlTitle = item.title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+  
+  const paramName = type === 'song' ? 'song' : 'hymn';
+  const newUrl = `${window.location.pathname}?${paramName}=${item.serial_number}&title=${urlTitle}`;
+  window.history.pushState({ [paramName]: item.serial_number }, '', newUrl);
+  
+  // Check if player already exists
+  const existingPlayer = document.getElementById('shared-player-section');
+  
+  if (existingPlayer && sharedPlayer.isVisible) {
+    // Update existing player instead of creating new one
+    console.log("[DEBUG] Updating existing player with new content");
+    sharedPlayer.currentItem = item;
+    sharedPlayer.type = type;
     
-    // Add body class for spacing
-    document.body.classList.add('audio-player-active');
-    document.body.classList.remove('player-collapsed');
+    // Replace the player content
+    const playerHTML = renderSharedPlayer();
+    existingPlayer.outerHTML = playerHTML;
     
     // Scroll to show the player
     setTimeout(() => {
@@ -55,12 +81,39 @@ function showSharedPlayer(item, type) {
       }
     }, 100);
   } else {
-    console.error("[DEBUG] Failed to render player HTML");
-    alert('Unable to display player');
+    // Create new player
+    console.log("[DEBUG] Creating new player");
+    sharedPlayer.currentItem = item;
+    sharedPlayer.type = type;
+    sharedPlayer.isVisible = true;
+    sharedPlayer.isCollapsed = false;
+    
+    // Add player to DOM
+    const playerHTML = renderSharedPlayer();
+    if (playerHTML) {
+      document.body.insertAdjacentHTML('beforeend', playerHTML);
+      
+      // Add body class for spacing
+      document.body.classList.add('audio-player-active');
+      document.body.classList.remove('player-collapsed');
+      
+      // Scroll to show the player
+      setTimeout(() => {
+        const playerSection = document.getElementById('shared-player-section');
+        if (playerSection) {
+          playerSection.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      }, 100);
+    } else {
+      console.error("[DEBUG] Failed to render player HTML");
+      if (window.showToast) {
+        showToast('Unable to display player', 'error');
+      }
+    }
   }
 }
 
-// Close the shared player
+// Close the shared player (single implementation)
 function closeSharedPlayer() {
   console.log("[DEBUG] Closing shared player");
   
@@ -72,9 +125,22 @@ function closeSharedPlayer() {
   // Remove body classes
   document.body.classList.remove('audio-player-active', 'player-collapsed');
   
+  // Reset player state
   sharedPlayer.isVisible = false;
   sharedPlayer.currentItem = null;
   sharedPlayer.type = null;
+  
+  // Reset page title
+  document.title = "ChoristerCorner - Your Ultimate Worship Companion";
+  
+  // Reset meta tags
+  if (window.resetMetaTags) {
+    window.resetMetaTags();
+  }
+  
+  // Reset URL
+  const newUrl = window.location.pathname;
+  window.history.pushState({}, '', newUrl);
 }
 
 // Toggle player collapse
@@ -159,7 +225,6 @@ function renderSharedPlayer() {
     if (window.renderLyrics) {
       lyricsHTML = window.renderLyrics(item.lyrics, true);
     } else {
-      // Fallback if utility not loaded
       console.warn('[DEBUG] Lyrics utility not loaded in renderSharedPlayer');
       lyricsHTML = `
         <div class="text-center py-8">
@@ -188,7 +253,7 @@ function renderSharedPlayer() {
           </span>
           <div>
             <h3 class="font-semibold text-gray-900 text-sm line-clamp-1">${item.title || 'Untitled'}</h3>
-            <p class="text-xs text-gray-600">${item.channel || 'Unknown Artist'}</p>
+            <p class="text-xs text-gray-600">${item.channel || item.author || 'Unknown Artist'}</p>
           </div>
         </div>
         <div class="flex items-center space-x-2">
@@ -239,7 +304,7 @@ function renderSharedPlayer() {
                   ${item.category ? ` • ${item.category}` : ''}
                 </p>
               ` : ''}
-              <p class="text-sm text-gray-700 font-medium">${item.channel} • ${item.duration}</p>
+              <p class="text-sm text-gray-700 font-medium">${item.channel || item.author || 'Unknown'} • ${item.duration || 'Duration Unknown'}</p>
             </div>
             
             <div id="player-lyrics-content" class="space-y-4">
@@ -250,52 +315,6 @@ function renderSharedPlayer() {
       </div>
     </div>
   `;
-}
-
-// Update Lyrics Display
-function updateLyricsDisplay(song) {
-  const lyricsContainer = document.getElementById('player-lyrics-content');
-  if (!lyricsContainer) {
-    console.log('[DEBUG] Lyrics container not found');
-    return;
-  }
-  
-  if (song && song.lyrics && song.lyrics.length > 0) {
-    console.log('[DEBUG] Rendering lyrics with utility function for media player');
-    
-    // Check if the lyrics utility is available
-    if (window.renderLyrics) {
-      // Use the shared lyrics rendering function with media player styling (true parameter)
-      lyricsContainer.innerHTML = window.renderLyrics(song.lyrics, true);
-    } else {
-      // Fallback if utility hasn't loaded yet
-      console.warn('[DEBUG] Lyrics utility not loaded, trying manual rendering');
-      
-      // Try to wait for it to load
-      let retryCount = 0;
-      const maxRetries = 10;
-      const waitForUtility = setInterval(() => {
-        if (window.renderLyrics) {
-          clearInterval(waitForUtility);
-          lyricsContainer.innerHTML = window.renderLyrics(song.lyrics, true);
-          console.log('[DEBUG] Lyrics utility loaded, rendered successfully');
-        } else if (retryCount >= maxRetries) {
-          clearInterval(waitForUtility);
-          console.error('[DEBUG] Lyrics utility failed to load after retries');
-          lyricsContainer.innerHTML = `
-            <div class="text-center py-8">
-              <i class="bi bi-exclamation-triangle text-4xl text-yellow-500 mb-4"></i>
-              <p class="text-gray-600 mb-2">Lyrics utility not loaded</p>
-              <p class="text-gray-500 text-sm">Please refresh the page</p>
-            </div>
-          `;
-        }
-        retryCount++;
-      }, 200);
-    }
-  } else {
-    lyricsContainer.innerHTML = '<p class="text-gray-500 italic text-center py-8">No lyrics available for this song</p>';
-  }
 }
 
 // Check if shared player is currently visible
