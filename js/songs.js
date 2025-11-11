@@ -179,17 +179,16 @@ function searchSongs(query) {
   songsData.filteredSongsCount = combinedResults.length;
   updateSongsDisplay();
   
-  // Show a message if search found results in lyrics
-  if (lyricsResults.length > 0 && window.showToast) {
-    const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
-      return !metadataResults.some(
-        metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
-      );
-    }).length;
-    
-    if (lyricsOnlyCount > 0) {
-      showToast(`Found ${lyricsOnlyCount} song(s) matching in lyrics`, "info");
-    }
+  // REMOVED: Distracting toast notification
+  // Simple console log instead for debugging
+  const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
+    return !metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+  }).length;
+  
+  if (lyricsOnlyCount > 0) {
+    console.log(`Found ${lyricsOnlyCount} additional song(s) in lyrics`);
   }
 }
 
@@ -390,12 +389,16 @@ function updateSongsDisplay() {
   
   songsGrid.innerHTML = renderSongsGrid();
   
-  // Update count display
+  // Update count display with subtle lyrics indicator
   const countDisplay = document.querySelector('.text-sm.text-gray-600');
   if (countDisplay) {
+    const searchInput = document.getElementById('songs-search');
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    
     countDisplay.innerHTML = `
       Showing <span class="font-semibold">${songsData.filteredSongsCount}</span> of 
       <span class="font-semibold">${songsData.allSongsCount}</span> songs
+      ${hasSearch ? '<span class="text-xs text-gray-500 ml-2">(includes lyrics matches)</span>' : ''}
     `;
   }
 }

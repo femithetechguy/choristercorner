@@ -189,17 +189,15 @@ function searchHymns(query) {
   hymnsData.filteredHymnsCount = combinedResults.length;
   updateHymnsDisplay();
   
-  // Show a message if search found results in lyrics
-  if (lyricsResults.length > 0 && window.showToast) {
-    const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
-      return !metadataResults.some(
-        metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
-      );
-    }).length;
-    
-    if (lyricsOnlyCount > 0) {
-      showToast(`Found ${lyricsOnlyCount} hymn(s) matching in lyrics`, "info");
-    }
+  // Simple console log for debugging (no toast)
+  const lyricsOnlyCount = lyricsResults.filter(lyricsMatch => {
+    return !metadataResults.some(
+      metadataMatch => metadataMatch.serial_number === lyricsMatch.serial_number
+    );
+  }).length;
+  
+  if (lyricsOnlyCount > 0) {
+    console.log(`Found ${lyricsOnlyCount} additional hymn(s) in lyrics`);
   }
 }
 
@@ -437,12 +435,16 @@ function updateHymnsDisplay() {
   
   hymnsGrid.innerHTML = renderHymnsGrid();
   
-  // Update count display
+  // Update count display with subtle lyrics indicator
   const countDisplay = document.querySelector('.text-sm.text-gray-600');
   if (countDisplay) {
+    const searchInput = document.getElementById('hymns-search');
+    const hasSearch = searchInput && searchInput.value.trim() !== '';
+    
     countDisplay.innerHTML = `
       Showing <span class="font-semibold">${hymnsData.filteredHymnsCount}</span> of 
       <span class="font-semibold">${hymnsData.allHymnsCount}</span> hymns
+      ${hasSearch ? '<span class="text-xs text-gray-500 ml-2">(includes lyrics matches)</span>' : ''}
     `;
   }
 }
@@ -452,7 +454,7 @@ function renderHymnsTab() {
   console.log("[DEBUG] Rendering Hymns tab");
   
   if (!hymnsData.isLoaded) {
-    return window.renderLoadingState('Loading traditional hymns...');
+    return window.renderLoadingState ? window.renderLoadingState('Loading hymns...') : '<div>Loading...</div>';
   }
   
   if (hymnsData.showLyrics && hymnsData.selectedHymn) {
@@ -461,12 +463,12 @@ function renderHymnsTab() {
   
   return `
     <div class="hymns-container">
-      ${window.renderContentHeader({
+      ${window.renderContentHeader ? window.renderContentHeader({
         icon: 'bi-book',
-        title: 'Hymns Library',
-        description: 'Explore our collection of {count} traditional hymns',
+        title: 'Hymns Collection',
+        description: 'Browse our collection of {count} traditional hymns',
         count: hymnsData.allHymnsCount
-      })}
+      }) : ''}
 
       ${window.renderSearchControls ? window.renderSearchControls({
         searchId: 'hymns-search',
