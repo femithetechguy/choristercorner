@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { EmailService } from '@/lib/email.service';
 import { ContactFormData } from '@/types';
 
+// Force Node.js runtime (required for Nodemailer)
+export const runtime = 'nodejs';
+
 // Initialize email service
 const emailService = new EmailService();
 
@@ -66,12 +69,16 @@ export async function POST(request: NextRequest) {
     );
   } catch (error) {
     console.error('Contact form error:', error);
+    
+    // Get more detailed error message
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
 
     // Return error response
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to send message. Please try again later.',
+        details: process.env.NODE_ENV === 'development' ? errorMessage : undefined,
       },
       { status: 500 }
     );

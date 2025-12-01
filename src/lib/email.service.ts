@@ -1,35 +1,14 @@
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { ContactFormData } from '@/types';
 
-interface EmailConfig {
-  host: string;
-  port: number;
-  secure: boolean;
-  auth: {
-    user: string;
-    pass: string;
-  };
-}
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 export class EmailService {
-  private transporter: nodemailer.Transporter;
   private templatePath: string;
 
   constructor() {
-    // Get email config from environment variables
-    const emailConfig: EmailConfig = {
-      host: process.env.EMAIL_HOST || 'mail.fttgsolutions.com',
-      port: parseInt(process.env.EMAIL_PORT || '465'),
-      secure: process.env.EMAIL_SECURE !== 'false', // true for 465, false for other ports
-      auth: {
-        user: process.env.EMAIL_USER || 'dev@fttgsolutions.com',
-        pass: process.env.EMAIL_PASSWORD || '',
-      },
-    };
-
-    this.transporter = nodemailer.createTransport(emailConfig);
     this.templatePath = join(process.cwd(), 'src/templates');
   }
 
@@ -64,10 +43,12 @@ export class EmailService {
   }
 
   /**
-   * Send contact form email to both admin and sender
+   * Send contact form email to both admin and sender using Resend
    */
   async sendContactEmail(formData: ContactFormData): Promise<void> {
     try {
+      const adminEmail = 'dev@fttgsolutions.com';
+
       // Prepare template variables
       const templateVars = {
         name: formData.name,
@@ -88,36 +69,43 @@ export class EmailService {
         year: new Date().getFullYear().toString(),
       };
 
-      // Render template
-      const adminEmail = process.env.EMAIL_USER || 'dev@fttgsolutions.com';
-
       // Email 1: Send to admin using admin template
       const adminHtmlContent = this.renderTemplate('admin-email.html', templateVars);
-      const adminMailOptions = {
-        from: adminEmail,
+      
+      const adminResponse = await resend.emails.send({
+        from: 'noreply@fttgsolutions.com',
         to: adminEmail,
         replyTo: formData.email,
         subject: `[ChoristerCorner] ${formData.contactType}: ${formData.subject}`,
         html: adminHtmlContent,
-      };
+      });
 
-      const adminInfo = await this.transporter.sendMail(adminMailOptions);
-      console.log('Admin email sent successfully:', adminInfo.messageId);
+      if (adminResponse.error) {
+        throw new Error(`Failed to send admin email: ${adminResponse.error.message}`);
+      }
+
+      console.log('Admin email sent successfully:', adminResponse.data?.id);
 
       // Email 2: Send confirmation to sender using sender template
       const senderHtmlContent = this.renderTemplate('sender-email.html', templateVars);
-      const senderMailOptions = {
-        from: adminEmail,
+      
+      const senderResponse = await resend.emails.send({
+        from: 'noreply@fttgsolutions.com',
         to: formData.email,
         subject: `[ChoristerCorner] We've received your ${formData.contactType}`,
         html: senderHtmlContent,
-      };
+      });
 
-      const senderInfo = await this.transporter.sendMail(senderMailOptions);
-      console.log('Confirmation email sent to sender:', senderInfo.messageId);
+      if (senderResponse.error) {
+        throw new Error(`Failed to send confirmation email: ${senderResponse.error.message}`);
+      }
+
+      console.log('Confirmation email sent to sender:', senderResponse.data?.id);
     } catch (error) {
-      console.error('Error sending email:', error);
-      throw new Error('Failed to send email');
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      console.error('Error sending email:', errorMessage);
+      console.error('Full error:', error);
+      throw new Error(`Failed to send email: ${errorMessage}`);
     }
   }
 
@@ -126,8 +114,8 @@ export class EmailService {
    */
   async verifyConnection(): Promise<boolean> {
     try {
-      await this.transporter.verify();
-      console.log('Email service is ready to send emails');
+      // Resend doesn't require verification
+      console.log('Resend email service is configured');
       return true;
     } catch (error) {
       console.error('Email service verification failed:', error);
