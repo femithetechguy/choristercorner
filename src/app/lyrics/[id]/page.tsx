@@ -8,6 +8,7 @@ import { Song, Hymn } from '@/types';
 import songs from '@/data/songs.json';
 import hymns from '@/data/hymns.json';
 import { extractSerialFromSlug } from '@/utils/slug';
+import { parseLyricsWithTags } from '@/utils/lyrics';
 
 // Helper function to get YouTube thumbnail
 function getYouTubeThumbnail(url: string): string {
@@ -195,11 +196,16 @@ export default function LyricsPage() {
         </h2>
 
         {item.lyrics && item.lyrics.length > 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 space-y-8">
-            {item.lyrics.map((verse: string, idx: number) => (
-              <div key={idx} className="text-gray-800">
-                <p className="text-base leading-relaxed whitespace-pre-wrap font-medium">
-                  {verse}
+          <div className="bg-white rounded-lg shadow p-8 space-y-6">
+            {parseLyricsWithTags(item.lyrics).map((verseData: { isTag: boolean; tag: string | null; content: string }, idx: number) => (
+              <div key={idx}>
+                {verseData.isTag && (
+                  <p className="text-base font-bold text-purple-600 mb-3 bg-purple-50 px-3 py-2 rounded inline-block">
+                    {verseData.tag}
+                  </p>
+                )}
+                <p className="text-base leading-relaxed whitespace-pre-wrap font-medium text-gray-800">
+                  {verseData.content}
                 </p>
               </div>
             ))}
