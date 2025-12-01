@@ -1,7 +1,31 @@
+'use client';
+
 import Link from 'next/link';
-import { Music, Menu } from 'lucide-react';
+import { Music, Menu, X } from 'lucide-react';
+import { useState } from 'react';
 
 export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
+
+  const navLinks = [
+    { href: '/', label: 'Home' },
+    { href: '/songs', label: 'Songs' },
+    { href: '/hymns', label: 'Hymns' },
+    { href: '/metronome', label: 'Metronome' },
+    { href: '/drummer', label: 'Drummer' },
+    { href: '/about', label: 'About' },
+    { href: '/contact', label: 'Contact' },
+    { href: '/extras', label: 'Extras' },
+  ];
+
   return (
     <header className="bg-white shadow-sm sticky top-0 z-50">
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -15,39 +39,50 @@ export default function Header() {
             </div>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Navigation Links - Desktop */}
           <div className="hidden md:flex gap-8">
-            <Link href="/" className="text-gray-700 hover:text-purple-600 transition">
-              Home
-            </Link>
-            <Link href="/songs" className="text-gray-700 hover:text-purple-600 transition">
-              Songs
-            </Link>
-            <Link href="/hymns" className="text-gray-700 hover:text-purple-600 transition">
-              Hymns
-            </Link>
-            <Link href="/metronome" className="text-gray-700 hover:text-purple-600 transition">
-              Metronome
-            </Link>
-            <Link href="/drummer" className="text-gray-700 hover:text-purple-600 transition">
-              Drummer
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-purple-600 transition">
-              About
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-purple-600 transition">
-              Contact
-            </Link>
-            <Link href="/extras" className="text-gray-700 hover:text-purple-600 transition">
-              Extras
-            </Link>
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-gray-700 hover:text-purple-600 transition"
+              >
+                {link.label}
+              </Link>
+            ))}
           </div>
 
           {/* Mobile Menu Button */}
-          <button className="md:hidden p-2">
-            <Menu className="w-6 h-6" />
+          <button 
+            onClick={toggleMenu}
+            className="md:hidden p-2"
+            aria-label="Toggle menu"
+          >
+            {isOpen ? (
+              <X className="w-6 h-6 text-gray-700" />
+            ) : (
+              <Menu className="w-6 h-6 text-gray-700" />
+            )}
           </button>
         </div>
+
+        {/* Mobile Menu */}
+        {isOpen && (
+          <div className="md:hidden pb-4 border-t">
+            <div className="flex flex-col gap-2 pt-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={closeMenu}
+                  className="px-2 py-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600 transition"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </nav>
     </header>
   );
