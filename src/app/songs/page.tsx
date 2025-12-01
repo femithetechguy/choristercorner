@@ -4,27 +4,29 @@ import { useState, useMemo } from 'react';
 import { Music, Grid3X3, List } from 'lucide-react';
 import SongCard from '@/components/SongCard';
 import songs from '@/data/songs.json';
+import appConfig from '@/data/app.json';
 import { Song } from '@/types';
 
 export default function SongsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedChannel, setSelectedChannel] = useState('All Channels');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const config = appConfig as any;
 
   const channels = useMemo(() => {
     const allChannels = new Set((songs as Song[]).map(s => s.channel));
-    return ['All Channels', ...Array.from(allChannels)];
-  }, []);
+    return [config.songs.allChannelsText, ...Array.from(allChannels)];
+  }, [config.songs.allChannelsText]);
 
   const filteredSongs = useMemo(() => {
     return (songs as Song[]).filter(song => {
       const matchesSearch =
         song.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         song.channel?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesChannel = selectedChannel === 'All Channels' || song.channel === selectedChannel;
+      const matchesChannel = selectedChannel === config.songs.allChannelsText || song.channel === selectedChannel;
       return matchesSearch && matchesChannel;
     });
-  }, [searchQuery, selectedChannel]);
+  }, [searchQuery, selectedChannel, config.songs.allChannelsText]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -33,9 +35,9 @@ export default function SongsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Music className="w-8 h-8 text-purple-600" />
-            <h1 className="text-3xl font-bold">Songs Library</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{config.songs.title}</h1>
           </div>
-          <p className="text-gray-600">Explore our collection of {songs.length} worship songs</p>
+          <p className="text-gray-600">Explore our collection of {songs.length} {config.songs.resultsText}</p>
         </div>
 
         {/* Search and Filter */}
@@ -43,7 +45,7 @@ export default function SongsPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <input
               type="text"
-              placeholder="Search songs by title, artist, or lyrics..."
+              placeholder={config.songs.searchPlaceholder}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"

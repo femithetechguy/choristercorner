@@ -34,7 +34,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <Music className="w-6 h-6 text-purple-600" />
             <div>
-              <div className="font-bold text-lg">ChoristerCorner</div>
+              <div className="font-bold text-lg text-gray-900">ChoristerCorner</div>
               <div className="text-xs text-gray-500">1.1.26</div>
             </div>
           </Link>
@@ -45,7 +45,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-gray-700 hover:text-purple-600 transition"
+                className="tab-animated text-gray-700 hover:text-purple-600"
               >
                 {link.label}
               </Link>
@@ -75,7 +75,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={closeMenu}
-                  className="px-2 py-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600 transition"
+                  className="tab-animated px-2 py-2 rounded hover:bg-purple-50 text-gray-700 hover:text-purple-600"
                 >
                   {link.label}
                 </Link>

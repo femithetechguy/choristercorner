@@ -15,7 +15,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-bold mb-4">Quick Links</h3>
+            <h3 className="font-bold mb-4 text-gray-900">Quick Links</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/songs" className="text-gray-600 hover:text-purple-600">
@@ -42,7 +42,7 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="font-bold mb-4">Resources</h3>
+            <h3 className="font-bold mb-4 text-gray-900">Resources</h3>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link href="/about" className="text-gray-600 hover:text-purple-600">
@@ -65,7 +65,9 @@ export default function Footer() {
           {/* Contact */}
           <div>
             <h3 className="font-bold mb-4">Contact</h3>
-            <p className="text-sm text-gray-600">contact@choristercorner.com</p>
+            <a href="mailto:dev@fttgsolutions.com" className="text-sm text-purple-600! hover:text-purple-700 hover:underline transition">
+              dev@fttgsolutions.com
+            </a>
             <p className="text-sm text-gray-600 mt-2">Within 24-48 hours</p>
           </div>
         </div>

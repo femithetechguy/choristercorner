@@ -4,11 +4,15 @@ import { ContactFormData } from '@/types';
 interface ContactFormProps {
   onSubmit?: (data: ContactFormData) => Promise<void>;
   isLoading?: boolean;
+  preselectedType?: string;
 }
 
-export default function ContactForm({ onSubmit, isLoading = false }: ContactFormProps) {
+export default function ContactForm({ onSubmit, isLoading = false, preselectedType }: ContactFormProps) {
   const [formData, setFormData] = useState<ContactFormData>({
-    contactType: 'General Contact',
+    contactType: preselectedType === 'feedback' ? 'General Feedback' : 
+                 preselectedType === 'suggestions' ? 'Song Suggestions' : 
+                 preselectedType === 'issues' ? 'Report Issues' : 
+                 'General Contact',
     name: '',
     email: '',
     subject: '',

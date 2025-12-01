@@ -1,12 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Music, Bug, Clock, Globe, Heart } from 'lucide-react';
+import { Mail, Music, Bug, Clock, Globe, Heart, X, Check } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { ContactFormData } from '@/types';
+import appConfig from '@/data/app.json';
+
+const iconMap: { [key: string]: any } = {
+  Heart,
+  Music,
+  Bug,
+};
 
 export default function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+  const config = appConfig as any;
 
   const handleFormSubmit = async (data: ContactFormData) => {
     setIsLoading(true);
@@ -31,6 +41,13 @@ export default function ContactPage() {
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message
+      setShowSuccess(true);
+      setOpenModal(null);
+      
+      // Hide success after 3 seconds
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -39,54 +56,53 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
           <Mail className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
+          <h1 className="text-4xl font-bold mb-2">{config.contact.header.title}</h1>
           <p className="text-gray-600">
-            We&apos;d love to hear from you! Whether you have feedback, suggestions, or need support,
-            we&apos;re here to help make ChoristerCorner better for everyone.
+            {config.contact.header.description}
           </p>
         </div>
 
         {/* Contact Options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Heart className="w-10 h-10 text-purple-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">General Feedback</h3>
-            <p className="text-gray-600 text-sm">Share your thoughts and experiences</p>
-            <button className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-              Give Feedback
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Music className="w-10 h-10 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Song Suggestions</h3>
-            <p className="text-gray-600 text-sm">Suggest songs to add to our library</p>
-            <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-              Suggest Song
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Bug className="w-10 h-10 text-red-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Report Issues</h3>
-            <p className="text-gray-600 text-sm">Found a bug or have technical issues?</p>
-            <button className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">
-              Report Bug
-            </button>
-          </div>
+          {config.contact.options.map((option: any) => {
+            const Icon = iconMap[option.icon];
+            const colorClasses: { [key: string]: string } = {
+              feedback: 'text-purple-600',
+              suggestions: 'text-blue-600',
+              issues: 'text-red-600',
+            };
+            const buttonClasses: { [key: string]: string } = {
+              feedback: 'bg-purple-600 hover:bg-purple-700',
+              suggestions: 'bg-blue-600 hover:bg-blue-700',
+              issues: 'bg-red-600 hover:bg-red-700',
+            };
+            return (
+              <div key={option.id} className="card-animated bg-white rounded-lg shadow p-6 text-center">
+                {Icon && <Icon className={`w-10 h-10 ${colorClasses[option.id]} mx-auto mb-4`} />}
+                <h3 className="text-xl font-bold mb-2">{option.title}</h3>
+                <p className="text-gray-600 text-sm">{option.description}</p>
+                <button 
+                  onClick={() => setOpenModal(option.id)}
+                  className={`mt-4 text-white px-6 py-2 rounded-lg transition ${buttonClasses[option.id]}`}
+                >
+                  {option.buttonText}
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* Contact Form Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">Contact Form</h2>
-            <p className="text-gray-600 mb-6">Currently showing: General Contact</p>
+            <h2 className="text-2xl font-bold mb-6">{config.contact.form.title}</h2>
+            <p className="text-gray-600 mb-6">{config.contact.form.description}</p>
             <ContactForm onSubmit={handleFormSubmit} isLoading={isLoading} />
           </div>
 
@@ -100,7 +116,9 @@ export default function ContactPage() {
                   <Mail className="w-5 h-5" />
                   <span>Email</span>
                 </h3>
-                <p className="text-gray-700">contact@choristercorner.com</p>
+                <a href="mailto:dev@fttgsolutions.com" className="text-purple-600 hover:text-purple-700 hover:underline transition">
+                  dev@fttgsolutions.com
+                </a>
               </div>
 
               <div>
@@ -150,6 +168,62 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+
+        {/* Modal Backdrop - Blur background instead of dark overlay */}
+        {openModal && (
+          <div 
+            className="fixed inset-0 backdrop-blur-sm z-40 transition-all"
+            onClick={() => setOpenModal(null)}
+          />
+        )}
+
+        {/* Modal */}
+        {openModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+            <div 
+              className="bg-white rounded-lg shadow-2xl w-full md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto animate-scale-in h-[75vh] md:h-auto overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-linear-to-r from-purple-600 to-purple-700 text-white p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">
+                    {config.contact.options.find((opt: any) => opt.id === openModal)?.title}
+                  </h2>
+                  <p className="text-purple-100 text-sm mt-1">
+                    {config.contact.options.find((opt: any) => opt.id === openModal)?.description}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setOpenModal(null)}
+                  className="text-white hover:bg-purple-800 p-2 rounded-full transition"
+                  aria-label="Close"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 sm:p-8">
+                <ContactForm 
+                  onSubmit={handleFormSubmit} 
+                  isLoading={isLoading}
+                  preselectedType={openModal}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Toast */}
+        {showSuccess && (
+          <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+            <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+              <Check className="w-5 h-5" />
+              <span className="font-medium">Message sent successfully! We'll get back to you soon.</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

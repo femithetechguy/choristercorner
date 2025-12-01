@@ -19,6 +19,30 @@ export const metadata: Metadata = {
   title: 'ChoristerCorner - Worship Songs & Hymns Platform',
   description:
     'A comprehensive platform for choristers and worship leaders to discover, learn, and share beautiful worship songs.',
+  keywords: ['worship songs', 'hymns', 'choir', 'worship leader', 'music', 'praise'],
+  authors: [{ name: 'ChoristerCorner Team' }],
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://choristercorner.com',
+    siteName: 'ChoristerCorner',
+    title: 'ChoristerCorner - Worship Songs & Hymns Platform',
+    description: 'A comprehensive platform for choristers and worship leaders to discover, learn, and share beautiful worship songs.',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'ChoristerCorner - Worship Songs & Hymns Platform',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ChoristerCorner - Worship Songs & Hymns Platform',
+    description: 'A comprehensive platform for choristers and worship leaders to discover, learn, and share beautiful worship songs.',
+    images: ['/og-image.png'],
+  },
 };
 
 export default function RootLayout({
