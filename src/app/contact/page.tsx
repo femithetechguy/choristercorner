@@ -4,9 +4,17 @@ import { useState } from 'react';
 import { Mail, Music, Bug, Clock, Globe, Heart } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { ContactFormData } from '@/types';
+import appConfig from '@/data/app.json';
+
+const iconMap: { [key: string]: any } = {
+  Heart,
+  Music,
+  Bug,
+};
 
 export default function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const config = appConfig as any;
 
   const handleFormSubmit = async (data: ContactFormData) => {
     setIsLoading(true);
@@ -44,49 +52,45 @@ export default function ContactPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <Mail className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
+          <h1 className="text-4xl font-bold mb-2">{config.contact.header.title}</h1>
           <p className="text-gray-600">
-            We&apos;d love to hear from you! Whether you have feedback, suggestions, or need support,
-            we&apos;re here to help make ChoristerCorner better for everyone.
+            {config.contact.header.description}
           </p>
         </div>
 
         {/* Contact Options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Heart className="w-10 h-10 text-purple-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">General Feedback</h3>
-            <p className="text-gray-600 text-sm">Share your thoughts and experiences</p>
-            <button className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
-              Give Feedback
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Music className="w-10 h-10 text-blue-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Song Suggestions</h3>
-            <p className="text-gray-600 text-sm">Suggest songs to add to our library</p>
-            <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
-              Suggest Song
-            </button>
-          </div>
-
-          <div className="bg-white rounded-lg shadow p-6 text-center">
-            <Bug className="w-10 h-10 text-red-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold mb-2">Report Issues</h3>
-            <p className="text-gray-600 text-sm">Found a bug or have technical issues?</p>
-            <button className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">
-              Report Bug
-            </button>
-          </div>
+          {config.contact.options.map((option: any) => {
+            const Icon = iconMap[option.icon];
+            const colorClasses: { [key: string]: string } = {
+              feedback: 'text-purple-600',
+              suggestions: 'text-blue-600',
+              issues: 'text-red-600',
+            };
+            const buttonClasses: { [key: string]: string } = {
+              feedback: 'bg-purple-600 hover:bg-purple-700',
+              suggestions: 'bg-blue-600 hover:bg-blue-700',
+              issues: 'bg-red-600 hover:bg-red-700',
+            };
+            return (
+              <div key={option.id} className="bg-white rounded-lg shadow p-6 text-center">
+                {Icon && <Icon className={`w-10 h-10 ${colorClasses[option.id]} mx-auto mb-4`} />}
+                <h3 className="text-xl font-bold mb-2">{option.title}</h3>
+                <p className="text-gray-600 text-sm">{option.description}</p>
+                <button className={`mt-4 text-white px-6 py-2 rounded-lg transition ${buttonClasses[option.id]}`}>
+                  {option.buttonText}
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         {/* Contact Form Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Form */}
           <div className="lg:col-span-2 bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-2xl font-bold mb-6">Contact Form</h2>
-            <p className="text-gray-600 mb-6">Currently showing: General Contact</p>
+            <h2 className="text-2xl font-bold mb-6">{config.contact.form.title}</h2>
+            <p className="text-gray-600 mb-6">{config.contact.form.description}</p>
             <ContactForm onSubmit={handleFormSubmit} isLoading={isLoading} />
           </div>
 

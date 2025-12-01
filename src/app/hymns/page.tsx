@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { BookOpen, Grid3X3, List } from 'lucide-react';
 import HymnCard from '@/components/HymnCard';
 import hymns from '@/data/hymns.json';
+import appConfig from '@/data/app.json';
 import { Hymn } from '@/types';
 
 export default function HymnsPage() {
@@ -11,27 +12,28 @@ export default function HymnsPage() {
   const [selectedAuthor, setSelectedAuthor] = useState('All Authors');
   const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const config = appConfig as any;
 
   const authors = useMemo(() => {
     const allAuthors = new Set((hymns as Hymn[]).map(h => h.author));
-    return ['All Authors', ...Array.from(allAuthors)];
-  }, []);
+    return [config.hymns.allAuthorsText, ...Array.from(allAuthors)];
+  }, [config.hymns.allAuthorsText]);
 
   const categories = useMemo(() => {
     const allCategories = new Set((hymns as Hymn[]).map(h => h.category));
-    return ['All Categories', ...Array.from(allCategories)];
-  }, []);
+    return [config.hymns.allCategoriesText, ...Array.from(allCategories)];
+  }, [config.hymns.allCategoriesText]);
 
   const filteredHymns = useMemo(() => {
     return (hymns as Hymn[]).filter(hymn => {
       const matchesSearch =
         hymn.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
         hymn.author?.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesAuthor = selectedAuthor === 'All Authors' || hymn.author === selectedAuthor;
-      const matchesCategory = selectedCategory === 'All Categories' || hymn.category === selectedCategory;
+      const matchesAuthor = selectedAuthor === config.hymns.allAuthorsText || hymn.author === selectedAuthor;
+      const matchesCategory = selectedCategory === config.hymns.allCategoriesText || hymn.category === selectedCategory;
       return matchesSearch && matchesAuthor && matchesCategory;
     });
-  }, [searchQuery, selectedAuthor, selectedCategory]);
+  }, [searchQuery, selectedAuthor, selectedCategory, config.hymns.allAuthorsText, config.hymns.allCategoriesText]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -40,9 +42,9 @@ export default function HymnsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <BookOpen className="w-8 h-8 text-purple-600" />
-            <h1 className="text-3xl font-bold text-gray-900">Hymns Collection</h1>
+            <h1 className="text-3xl font-bold text-gray-900">{config.hymns.title}</h1>
           </div>
-          <p className="text-gray-600">Browse our collection of {hymns.length} traditional hymns</p>
+          <p className="text-gray-600">Browse our collection of {hymns.length} {config.hymns.resultsText}</p>
         </div>
 
         {/* Search and Filter */}
@@ -50,7 +52,7 @@ export default function HymnsPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
-              placeholder="Search hymns by title, author, number, or lyrics..."
+              placeholder={config.hymns.searchPlaceholder}
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"

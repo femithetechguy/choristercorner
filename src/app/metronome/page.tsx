@@ -1,18 +1,20 @@
 'use client';
 
 import { Clock } from 'lucide-react';
+import appConfig from '@/data/app.json';
 
 export default function MetronomePage() {
+  const config = appConfig as any;
+
   return (
     <div className="min-h-screen bg-linear-to-b from-blue-50 to-white">
       <div className="max-w-6xl mx-auto px-4 py-6">
         {/* Header */}
         <div className="text-center mb-4 md:mb-8">
           <Clock className="w-12 h-12 md:w-16 md:h-16 text-blue-600 mx-auto mb-2" />
-          <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2 text-gray-900">Metronome</h1>
+          <h1 className="text-2xl md:text-4xl font-bold mb-1 md:mb-2 text-gray-900">{config.metronome.title}</h1>
           <p className="text-xs md:text-base text-gray-600">
-            Keep perfect time with our professional metronome. Ideal for worship practice, choir
-            rehearsals, and personal practice sessions.
+            {config.metronome.description}
           </p>
         </div>
 

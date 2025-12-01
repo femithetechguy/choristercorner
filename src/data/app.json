@@ -1,0 +1,147 @@
+{
+  "site": {
+    "name": "ChoristerCorner",
+    "tagline": "Worship Songs & Hymns Platform",
+    "version": "1.0.0"
+  },
+  "home": {
+    "hero": {
+      "title": "Welcome to ChoristerCorner",
+      "description": "A comprehensive platform for choristers and worship leaders to discover, learn, and share beautiful worship songs."
+    },
+    "stats": [
+      {
+        "number": "48",
+        "label": "Total Songs"
+      },
+      {
+        "number": "25",
+        "label": "Traditional Hymns"
+      },
+      {
+        "number": "43+",
+        "label": "Featured Artists"
+      },
+      {
+        "number": "473+",
+        "label": "Minutes of Worship"
+      }
+    ],
+    "featuredSongs": {
+      "heading": "Featured Songs",
+      "buttonText": "View All Songs"
+    },
+    "featuredHymns": {
+      "heading": "Featured Traditional Hymns",
+      "buttonText": "View All Hymns"
+    }
+  },
+  "songs": {
+    "title": "Songs Library",
+    "description": "Explore our collection of worship songs",
+    "searchPlaceholder": "Search songs by title, artist, or lyrics...",
+    "channelFilterLabel": "Filter by Channel",
+    "allChannelsText": "All Channels",
+    "resultsText": "worship songs"
+  },
+  "hymns": {
+    "title": "Hymns Collection",
+    "description": "Browse our collection of traditional hymns",
+    "searchPlaceholder": "Search hymns by title, author, number, or lyrics...",
+    "authorFilterLabel": "Filter by Author",
+    "categoryFilterLabel": "Filter by Category",
+    "allAuthorsText": "All Authors",
+    "allCategoriesText": "All Categories",
+    "resultsText": "traditional hymns"
+  },
+  "drummer": {
+    "title": "Drum Machine",
+    "description": "Practice with our interactive drum machine"
+  },
+  "metronome": {
+    "title": "Metronome",
+    "description": "Keep your rhythm with our professional metronome"
+  },
+  "about": {
+    "header": {
+      "title": "About ChoristerCorner",
+      "subtitle": "A comprehensive platform for choristers and worship leaders"
+    },
+    "mission": {
+      "title": "Our Mission",
+      "content": "To empower worship leaders and choristers with easy access to quality worship songs, complete with lyrics, multimedia resources, and practice tools. We believe that worship is central to Christian life, and having the right tools makes all the difference in leading others into God's presence."
+    },
+    "vision": {
+      "title": "Our Vision",
+      "content": "To become the go-to platform for worship teams worldwide, providing not just songs and lyrics, but also professional practice tools, resources for training, community building, and spiritual growth in worship ministry."
+    },
+    "tools": {
+      "heading": "Professional Practice Tools",
+      "metronome": {
+        "title": "Metronome",
+        "features": [
+          "Professional metronome with BPM range from 40-300",
+          "Multiple time signatures for various musical styles",
+          "Visual feedback and tap tempo feature",
+          "Mobile friendly interface"
+        ]
+      },
+      "drummer": {
+        "title": "Drum Machine",
+        "features": [
+          "Interactive drum patterns for worship practice",
+          "Customizable rhythm sections for different musical genres",
+          "Real-time audio feedback and loop functionality",
+          "Essential tool for developing rhythmic consistency"
+        ]
+      }
+    }
+  },
+  "contact": {
+    "header": {
+      "title": "Get in Touch",
+      "description": "We'd love to hear from you! Whether you have feedback, suggestions, or need support, we're here to help make ChoristerCorner better for everyone."
+    },
+    "options": [
+      {
+        "id": "feedback",
+        "title": "General Feedback",
+        "description": "Share your thoughts and experiences",
+        "buttonText": "Give Feedback",
+        "icon": "Heart"
+      },
+      {
+        "id": "suggestions",
+        "title": "Song Suggestions",
+        "description": "Suggest songs to add to our library",
+        "buttonText": "Suggest Song",
+        "icon": "Music"
+      },
+      {
+        "id": "issues",
+        "title": "Report Issues",
+        "description": "Found a bug or have technical issues?",
+        "buttonText": "Report Bug",
+        "icon": "Bug"
+      }
+    ],
+    "form": {
+      "title": "Send us a Message",
+      "description": "Fill out the form below and we'll get back to you as soon as possible.",
+      "nameLabel": "Your Name",
+      "emailLabel": "Your Email",
+      "typeLabel": "Contact Type",
+      "subjectLabel": "Subject",
+      "messageLabel": "Message",
+      "submitButton": "Send Message",
+      "successMessage": "Thank you for your message! We'll get back to you soon.",
+      "errorMessage": "There was an error sending your message. Please try again."
+    }
+  },
+  "extras": {
+    "header": {
+      "title": "Extras & Resources",
+      "description": "Discover additional tools and resources to enhance your worship experience"
+    }
+  }
+}
