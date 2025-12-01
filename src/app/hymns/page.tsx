@@ -108,6 +108,8 @@ export default function HymnsPage() {
           </div>
         )}
       </div>
+
+      {/* Back to Top Button removed - now in LayoutClient */}
     </div>
   );
 }
