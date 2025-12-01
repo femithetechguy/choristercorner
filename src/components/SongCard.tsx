@@ -42,6 +42,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
               fill
               className="object-cover"
               unoptimized
+              priority
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-purple-100">
@@ -84,6 +85,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             fill
             className="object-cover"
             unoptimized
+            priority
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-purple-100">

@@ -42,6 +42,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
               fill
               className="object-cover"
               unoptimized
+              priority
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-blue-100">
@@ -92,6 +93,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
             fill
             className="object-cover"
             unoptimized
+            priority
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-blue-100">
