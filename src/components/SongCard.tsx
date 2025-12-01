@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Song } from '@/types';
 import { Play, Copy, ExternalLink } from 'lucide-react';
+import { usePlayer } from '@/context/PlayerContext';
 
 interface SongCardProps {
   song: Song;
@@ -27,6 +28,7 @@ function getYouTubeThumbnail(url: string): string {
 }
 
 export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
+  const { play } = usePlayer();
   const thumbnailUrl = getYouTubeThumbnail(song.url);
 
   if (variant === 'list') {
@@ -52,13 +54,19 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
           <p className="text-xs text-gray-700 mt-1">{song.channel}</p>
           <p className="text-xs text-gray-600 mt-1">{song.duration}</p>
           <div className="flex gap-2 mt-3 flex-wrap">
+            <button
+              onClick={() => play(song)}
+              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+            >
+              <Play size={12} /> Play
+            </button>
             <a
               href={song.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition flex items-center gap-1"
             >
-              <Play size={12} /> Watch
+              <ExternalLink size={12} /> Watch
             </a>
           </div>
         </div>
@@ -83,7 +91,10 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
           </div>
         )}
         <div className="absolute inset-0 bg-black/40 hover:bg-black/20 transition flex items-center justify-center">
-          <button className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition">
+          <button 
+            onClick={() => play(song)}
+            className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition"
+          >
             <Play className="w-6 h-6 text-white fill-white" />
           </button>
         </div>

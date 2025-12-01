@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { Hymn } from '@/types';
 import { Play, Copy, ExternalLink } from 'lucide-react';
+import { usePlayer } from '@/context/PlayerContext';
 
 interface HymnCardProps {
   hymn: Hymn;
@@ -27,6 +28,7 @@ function getYouTubeThumbnail(url: string): string {
 }
 
 export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
+  const { play } = usePlayer();
   const thumbnailUrl = getYouTubeThumbnail(hymn.url);
 
   if (variant === 'list') {
@@ -53,13 +55,19 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
           <p className="text-xs text-purple-600 mt-1">{hymn.category} • {hymn.duration}</p>
           <p className="text-xs text-gray-600 mt-1">{hymn.channel}</p>
           <div className="flex gap-2 mt-2">
+            <button
+              onClick={() => play(hymn as any)}
+              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+            >
+              <Play size={12} className="fill-current" /> Play
+            </button>
             <a
               href={hymn.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition flex items-center gap-1"
             >
-              <Play size={12} className="fill-current" /> Watch
+              <ExternalLink size={12} /> Watch
             </a>
             <button 
               className="p-1 border rounded hover:bg-gray-50 transition"
@@ -91,7 +99,10 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
           </div>
         )}
         <div className="absolute inset-0 bg-black/40 hover:bg-black/20 transition flex items-center justify-center">
-          <button className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition">
+          <button 
+            onClick={() => play(hymn as any)}
+            className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition"
+          >
             <Play className="w-6 h-6 text-white fill-white" />
           </button>
         </div>
@@ -108,13 +119,20 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
         <p className="text-xs text-gray-600 mt-1">{hymn.channel}</p>
         <p className="text-xs text-gray-600 mt-1">{hymn.duration}</p>
         <div className="flex gap-2 mt-4 flex-wrap">
+          <button
+            onClick={() => play(hymn as any)}
+            className="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-xs hover:bg-purple-700 transition flex items-center justify-center gap-1"
+          >
+            <Play size={14} className="fill-current" /> Play
+          </button>
           <a
             href={hymn.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-xs hover:bg-purple-700 transition flex items-center justify-center gap-1"
+            className="p-2 border border-blue-200 rounded hover:bg-blue-50 transition"
+            title="Watch on YouTube"
           >
-            <Play size={14} className="fill-current" /> Watch
+            <ExternalLink size={14} className="text-blue-600" />
           </a>
           <button 
             className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
@@ -123,15 +141,6 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
           >
             <Copy size={14} className="text-purple-600" />
           </button>
-          <a
-            href={hymn.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
-            title="Open in new tab"
-          >
-            <ExternalLink size={14} className="text-purple-600" />
-          </a>
         </div>
       </div>
     </div>
