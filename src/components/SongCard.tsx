@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Song } from '@/types';
 import { Play, Copy, ExternalLink, FileText, Heart } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
@@ -29,6 +30,7 @@ function getYouTubeThumbnail(url: string): string {
 }
 
 export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
+  const router = useRouter();
   const { play } = usePlayer();
   const [isFavorite, setIsFavorite] = useState(false);
   const thumbnailUrl = getYouTubeThumbnail(song.url);
@@ -121,6 +123,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             <Play size={16} className="fill-current" />
           </button>
           <button 
+            onClick={() => router.push(`/lyrics/${song.serial_number}`)}
             className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
             title="Show Lyrics"
           >

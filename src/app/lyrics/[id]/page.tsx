@@ -55,9 +55,9 @@ export default function LyricsPage() {
   };
 
   return (
-    <main className="min-h-screen pb-24">
+    <main className="min-h-screen bg-gray-50 pb-24">
       {/* Back Button */}
-      <div className="bg-white border-b sticky top-0 z-30">
+      <div className="bg-white border-b sticky top-0 z-30 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <button
             onClick={() => router.back()}
@@ -70,7 +70,7 @@ export default function LyricsPage() {
       </div>
 
       {/* Song Header */}
-      <div className="bg-linear-to-b from-purple-50 to-white border-b">
+      <div className="bg-white border-b">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -99,21 +99,23 @@ export default function LyricsPage() {
               </button>
               <button
                 onClick={handleShare}
-                className="p-3 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+                className="p-3 border border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition"
                 title="Share"
               >
-                <Share2 size={20} className="text-purple-600" />
+                <Share2 size={20} className="text-gray-600" />
               </button>
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                className="p-3 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
-                title="Add to favorites"
+                className={`p-3 rounded-lg transition ${
+                  isFavorite
+                    ? 'bg-red-100 text-red-600'
+                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
+                }`}
+                title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Heart
                   size={20}
-                  className={`${
-                    isFavorite ? 'fill-red-500 text-red-500' : 'text-purple-600'
-                  }`}
+                  className={isFavorite ? 'fill-current' : ''}
                 />
               </button>
             </div>
@@ -123,24 +125,22 @@ export default function LyricsPage() {
 
       {/* Lyrics Content */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="flex items-center gap-2 mb-8">
-          <div className="flex items-center gap-2 text-purple-600">
-            <h2 className="text-lg font-bold">Lyrics</h2>
-          </div>
-        </div>
+        <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+          <span className="text-purple-600">🎵</span> Lyrics
+        </h2>
 
         {item.lyrics && item.lyrics.length > 0 ? (
-          <div className="space-y-8">
+          <div className="bg-white rounded-lg shadow p-8 space-y-8">
             {item.lyrics.map((verse: string, idx: number) => (
-              <div key={idx} className="prose prose-sm max-w-none">
-                <p className="text-base leading-relaxed text-gray-800 whitespace-pre-wrap font-medium">
+              <div key={idx} className="text-gray-800">
+                <p className="text-base leading-relaxed whitespace-pre-wrap font-medium">
                   {verse}
                 </p>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12">
+          <div className="bg-white rounded-lg shadow text-center py-12">
             <p className="text-gray-500 text-lg">No lyrics available for this song</p>
           </div>
         )}
