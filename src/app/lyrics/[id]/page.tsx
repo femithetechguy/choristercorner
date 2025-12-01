@@ -2,11 +2,22 @@
 
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Share2, Heart, Play } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { usePlayer } from '@/context/PlayerContext';
 import { Song, Hymn } from '@/types';
 import songs from '@/data/songs.json';
 import hymns from '@/data/hymns.json';
+import { extractSerialFromSlug } from '@/utils/slug';
+
+// Helper function to get YouTube thumbnail
+function getYouTubeThumbnail(url: string): string {
+  try {
+    const videoId = new URL(url).searchParams.get('v') || url.split('v=')[1]?.split('&')[0] || '';
+    return `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  } catch {
+    return '';
+  }
+}
 
 export default function LyricsPage() {
   const router = useRouter();
@@ -14,14 +25,68 @@ export default function LyricsPage() {
   const { play } = usePlayer();
   const [isFavorite, setIsFavorite] = useState(false);
   
-  // Parse ID and find song/hymn
-  const songId = parseInt(params.id as string, 10);
+  // Parse slug to get serial number
+  const slug = params.id as string;
+  const songId = useMemo(() => {
+    return extractSerialFromSlug(slug, songs as Song[], hymns as Hymn[]);
+  }, [slug]);
+  
   const item = useMemo(() => {
+    if (!songId) return undefined;
     const foundSong = (songs as Song[]).find((s: Song) => s.serial_number === songId);
     if (foundSong) return foundSong;
     const foundHymn = (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
     return foundHymn;
   }, [songId]) as Song | Hymn | undefined;
+
+  // Set Open Graph meta tags for social sharing
+  useEffect(() => {
+    if (!item) return;
+
+    const thumbnail = getYouTubeThumbnail(item.url);
+    const description = `Listen to "${item.title}" on ChoristerCorner. Music channel: ${item.channel}. Duration: ${item.duration}`;
+    const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+
+    // Update meta tags
+    const updateMetaTag = (property: string, content: string) => {
+      let element = document.querySelector(`meta[property="${property}"]`) as HTMLMetaElement;
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute('property', property);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    const updateNameTag = (name: string, content: string) => {
+      let element = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
+      if (!element) {
+        element = document.createElement('meta');
+        element.setAttribute('name', name);
+        document.head.appendChild(element);
+      }
+      element.setAttribute('content', content);
+    };
+
+    // Update title
+    document.title = `${item.title} - ChoristerCorner`;
+
+    // Open Graph tags (for Facebook, Twitter, LinkedIn, etc.)
+    updateMetaTag('og:title', item.title);
+    updateMetaTag('og:description', description);
+    updateMetaTag('og:image', thumbnail);
+    updateMetaTag('og:url', currentUrl);
+    updateMetaTag('og:type', 'music.song');
+
+    // Twitter Card tags
+    updateNameTag('twitter:card', 'summary_large_image');
+    updateNameTag('twitter:title', item.title);
+    updateNameTag('twitter:description', description);
+    updateNameTag('twitter:image', thumbnail);
+
+    // Additional meta tags
+    updateNameTag('description', description);
+  }, [item]);
 
   if (!item) {
     return (

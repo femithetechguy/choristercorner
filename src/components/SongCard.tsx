@@ -6,6 +6,7 @@ import { Song } from '@/types';
 import { Play, Copy, ExternalLink, FileText, Heart } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
 import { useState } from 'react';
+import { createSlug } from '@/utils/slug';
 
 interface SongCardProps {
   song: Song;
@@ -33,7 +34,20 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
   const router = useRouter();
   const { play } = usePlayer();
   const [isFavorite, setIsFavorite] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
   const thumbnailUrl = getYouTubeThumbnail(song.url);
+
+  const handleCopyLink = async () => {
+    const slug = createSlug(song.title, song.serial_number, 'song');
+    const lyricsUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/lyrics/${slug}`;
+    try {
+      await navigator.clipboard.writeText(lyricsUrl);
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   if (variant === 'list') {
     return (
@@ -69,7 +83,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
               <Play size={14} className="fill-current" />
             </button>
             <button 
-              onClick={() => router.push(`/lyrics/${song.serial_number}`)}
+              onClick={() => router.push(`/lyrics/${createSlug(song.title, song.serial_number, 'song')}`)}
               className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
               title="Show Lyrics"
             >
@@ -78,9 +92,9 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             <button 
               className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
               title="Copy Link"
-              onClick={() => navigator.clipboard.writeText(song.url)}
+              onClick={handleCopyLink}
             >
-              <Copy size={14} className="text-purple-600" />
+              <Copy size={14} className={`${copyFeedback ? 'text-green-500' : 'text-purple-600'}`} />
             </button>
             <a
               href={song.url}
@@ -148,7 +162,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             <Play size={16} className="fill-current" />
           </button>
           <button 
-            onClick={() => router.push(`/lyrics/${song.serial_number}`)}
+            onClick={() => router.push(`/lyrics/${createSlug(song.title, song.serial_number, 'song')}`)}
             className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
             title="Show Lyrics"
           >
@@ -157,9 +171,9 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
           <button 
             className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
             title="Copy Link"
-            onClick={() => navigator.clipboard.writeText(song.url)}
+            onClick={handleCopyLink}
           >
-            <Copy size={16} className="text-purple-600" />
+            <Copy size={16} className={`${copyFeedback ? 'text-green-500' : 'text-purple-600'}`} />
           </button>
           <a
             href={song.url}
