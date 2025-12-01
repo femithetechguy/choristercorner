@@ -21,35 +21,33 @@ export default function ContactPage() {
   const handleFormSubmit = async (data: ContactFormData) => {
     setIsLoading(true);
     try {
-      // TODO: Integrate with EmailJS
-      // const emailjs = await import('@emailjs/browser');
-      // await emailjs.send(
-      //   process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!,
-      //   process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!,
-      //   {
-      //     to_email: 'contact@choristercorner.com',
-      //     from_name: data.name,
-      //     from_email: data.email,
-      //     contact_type: data.contactType,
-      //     subject: data.subject,
-      //     message: data.message,
-      //   }
-      // );
+      // Send to API endpoint
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
 
-      // For now, just log the data
-      console.log('Form data:', data);
-      
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to send message');
+      }
+
+      const result = await response.json();
+      console.log('Message sent successfully:', result);
+
       // Show success message
       setShowSuccess(true);
       setOpenModal(null);
-      
+
       // Hide success after 3 seconds
       setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Error submitting form:', error);
+      // Show error toast (optional - you can add error state management)
+      alert(`Error: ${error instanceof Error ? error.message : 'Failed to send message'}`);
     } finally {
       setIsLoading(false);
     }

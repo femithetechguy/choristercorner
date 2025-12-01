@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+      .container { max-width: 600px; margin: 0 auto; padding: 0; background: #f9fafb; }
+      .header { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); color: white; padding: 30px 20px; text-align: center; }
+      .header h1 { margin: 0; font-size: 24px; }
+      .header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
+      .badge { display: inline-block; background: rgba(255,255,255,0.2); padding: 5px 12px; border-radius: 20px; font-size: 12px; margin-top: 10px; }
+      .content { background: white; padding: 30px 20px; }
+      .info-row { margin: 20px 0; padding: 15px; background: #f3f4f6; border-radius: 6px; }
+      .info-label { font-weight: bold; color: #a855f7; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+      .info-value { margin-top: 5px; color: #333; font-size: 14px; }
+      .message-section { margin: 30px 0; padding: 20px; background: #faf8ff; border-left: 4px solid #a855f7; border-radius: 4px; }
+      .message-label { font-weight: bold; color: #a855f7; margin-bottom: 10px; text-transform: uppercase; font-size: 12px; letter-spacing: 0.5px; }
+      .message-content { color: #333; line-height: 1.8; white-space: pre-wrap; word-wrap: break-word; }
+      .footer { background: #111827; color: #9ca3af; padding: 20px; text-align: center; font-size: 12px; }
+      .footer p { margin: 5px 0; }
+      .timestamp { color: #999; font-size: 12px; text-align: right; margin-top: 20px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>New Message Received</h1>
+        <p>ChoristerCorner Contact Form</p>
+        <span class="badge">{{contactTypeBadge}} {{contactType}}</span>
+      </div>
+      
+      <div class="content">
+        <div class="info-row">
+          <div class="info-label">From</div>
+          <div class="info-value">{{name}} &lt;{{email}}&gt;</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">Subject</div>
+          <div class="info-value">{{subject}}</div>
+        </div>
+
+        <div class="info-row">
+          <div class="info-label">Type</div>
+          <div class="info-value">{{contactType}}</div>
+        </div>
+
+        <div class="message-section">
+          <div class="message-label">Message</div>
+          <div class="message-content">{{message}}</div>
+        </div>
+
+        <div class="timestamp">
+          <strong>Submitted:</strong> {{submissionTime}}
+        </div>
+      </div>
+
+      <div class="footer">
+        <p><strong>ChoristerCorner</strong> | Contact Form Submission</p>
+        <p>Reply to: {{email}}</p>
+        <p>&copy; {{year}} ChoristerCorner. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
