@@ -72,6 +72,17 @@ export default function Footer() {
 
         <div className="border-t mt-8 pt-8 text-center text-sm text-gray-600">
           <p>&copy; 2025 ChoristerCorner. All rights reserved.</p>
+          <p className="mt-2">
+            Designed and Developed By{' '}
+            <a
+              href="https://fttgsolutions.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-purple-600 hover:text-purple-700 font-medium"
+            >
+              FTTG Solutions
+            </a>
+          </p>
         </div>
       </div>
     </footer>

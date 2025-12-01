@@ -77,7 +77,7 @@ export default function VideoPlayer() {
 
       {/* Persistent Expanded Player Container - always in DOM */}
       <div 
-        className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 max-h-96 flex flex-col shadow-2xl md:max-h-[65vh] md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 max-h-96 md:max-h-[65vh] flex flex-col shadow-2xl md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
           isMinimized ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'
         }`}
       >
@@ -106,10 +106,10 @@ export default function VideoPlayer() {
           </div>
         </div>
 
-        {/* Main Content - 50/50 Split */}
-        <div className="flex-1 overflow-hidden flex">
-          {/* Video Section - Left Half */}
-          <div className="flex-1 flex flex-col items-center justify-center p-4 overflow-y-auto md:p-8">
+        {/* Main Content - Vertical on Mobile, 50/50 Split on Desktop */}
+        <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
+          {/* Video Section */}
+          <div className="flex flex-col items-center justify-center p-4 md:p-8 md:flex-1">
             <div className="w-full max-w-sm md:max-w-lg aspect-video rounded-lg overflow-hidden shadow-lg bg-black">
               {videoId && (
                 <iframe
@@ -131,32 +131,32 @@ export default function VideoPlayer() {
             <p className="text-xs md:text-sm text-gray-500 mt-1">{currentSong.duration}</p>
           </div>
 
-          {/* Lyrics Section - Right Half */}
-          <div className="hidden md:flex flex-1 border-l flex-col bg-gray-50 overflow-hidden">
+          {/* Lyrics Section - Below Video on Mobile, Right Half on Desktop */}
+          <div className="flex-1 border-t md:border-t-0 md:border-l flex flex-col bg-gray-50 overflow-hidden">
             {showLyrics ? (
               <>
-                <div className="px-6 py-4 border-b bg-white shrink-0">
-                  <h3 className="text-base font-semibold text-gray-900">Lyrics</h3>
+                <div className="px-4 md:px-6 py-3 md:py-4 border-b bg-white shrink-0">
+                  <h3 className="text-sm md:text-base font-semibold text-gray-900">Lyrics</h3>
                 </div>
-                <div className="flex-1 overflow-y-auto px-8 py-6">
+                <div className="flex-1 overflow-y-auto px-4 md:px-8 py-4 md:py-6">
                   {currentSong.lyrics && currentSong.lyrics.length > 0 ? (
                     currentSong.lyrics.map((verse, idx) => (
                       <div
                         key={idx}
-                        className="text-base text-gray-800 mb-8 whitespace-pre-wrap leading-relaxed font-medium"
+                        className="text-sm md:text-base text-gray-800 mb-6 md:mb-8 whitespace-pre-wrap leading-relaxed font-medium"
                       >
                         {verse}
                       </div>
                     ))
                   ) : (
-                    <p className="text-base text-gray-500 text-center mt-12">
+                    <p className="text-sm md:text-base text-gray-500 text-center mt-12">
                       No lyrics available
                     </p>
                   )}
                 </div>
                 <button
                   onClick={() => setShowLyrics(false)}
-                  className="px-6 py-3 text-sm text-gray-500 hover:text-gray-700 transition border-t bg-white"
+                  className="px-4 md:px-6 py-2 md:py-3 text-xs md:text-sm text-gray-500 hover:text-gray-700 transition border-t bg-white shrink-0"
                 >
                   Hide Lyrics
                 </button>
@@ -165,7 +165,7 @@ export default function VideoPlayer() {
               <div className="flex items-center justify-center h-full">
                 <button
                   onClick={() => setShowLyrics(true)}
-                  className="text-base text-purple-600 hover:text-purple-700 transition font-semibold px-6 py-3 bg-white rounded border border-purple-200 hover:border-purple-400"
+                  className="text-sm md:text-base text-purple-600 hover:text-purple-700 transition font-semibold px-4 md:px-6 py-2 md:py-3 bg-white rounded border border-purple-200 hover:border-purple-400"
                 >
                   Show Lyrics
                 </button>
