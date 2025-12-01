@@ -1,0 +1,62 @@
+[
+  {
+    "id": "1",
+    "title": "Omemma | Chandler Moore | Live In Los Angeles (Official Music Video)",
+    "artist": "TRIBL",
+    "duration": "11 minutes 27 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop",
+    "channel": "TRIBL",
+    "youtubeUrl": "https://youtube.com/watch?v=example1",
+    "featured": true
+  },
+  {
+    "id": "2",
+    "title": "Bidemi Olaoba and Mercy Chinwo - Give Me Chance (Official Audio)",
+    "artist": "Bidemi Olaoba",
+    "duration": "4 minutes 17 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
+    "channel": "Bidemi Olaoba",
+    "youtubeUrl": "https://youtube.com/watch?v=example2",
+    "featured": true
+  },
+  {
+    "id": "3",
+    "title": "Yadah - How Can I Forget? (Official Audio)",
+    "artist": "Yadah",
+    "duration": "3 minutes 19 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1514376309641-ca0caa988bc7?w=400&h=300&fit=crop",
+    "channel": "Yadah",
+    "youtubeUrl": "https://youtube.com/watch?v=example3",
+    "featured": true
+  },
+  {
+    "id": "4",
+    "title": "Nathaniel Bassey - Imela (Official Audio)",
+    "artist": "Nathaniel Bassey",
+    "duration": "5 minutes 42 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&h=300&fit=crop",
+    "channel": "Nathaniel Bassey",
+    "youtubeUrl": "https://youtube.com/watch?v=example4",
+    "featured": false
+  },
+  {
+    "id": "5",
+    "title": "Jenn Johnson - Goodness Of God (Official Lyric Video)",
+    "artist": "Bethel Music",
+    "duration": "6 minutes 15 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop",
+    "channel": "Bethel Music",
+    "youtubeUrl": "https://youtube.com/watch?v=example5",
+    "featured": false
+  },
+  {
+    "id": "6",
+    "title": "Sinach - Way Maker (Official Lyric Video)",
+    "artist": "Sinach",
+    "duration": "4 minutes 45 seconds",
+    "imageUrl": "https://images.unsplash.com/photo-1499415479124-56a48d1b9b78?w=400&h=300&fit=crop",
+    "channel": "Sinach",
+    "youtubeUrl": "https://youtube.com/watch?v=example6",
+    "featured": false
+  }
+]
