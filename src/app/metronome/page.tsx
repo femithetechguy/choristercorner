@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
+import { Clock, Play, Pause } from 'lucide-react';
 
 export default function MetronomePage() {
   const [bpm, setBpm] = useState(127);
@@ -84,11 +85,11 @@ export default function MetronomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-blue-50 to-white">
       <div className="max-w-2xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">⏱️</div>
+          <Clock className="w-16 h-16 text-blue-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-2">Metronome</h1>
           <p className="text-gray-600">
             Keep perfect time with our professional metronome. Ideal for worship practice, choir

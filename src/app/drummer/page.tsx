@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Drum, Play, Pause } from 'lucide-react';
 
 interface DrumPad {
   id: string;
@@ -29,11 +30,11 @@ export default function DrummerPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
+    <div className="min-h-screen bg-linear-to-b from-purple-50 to-white">
       <div className="max-w-6xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">🥁</div>
+          <Drum className="w-16 h-16 text-purple-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-2">Drum Machine</h1>
           <p className="text-gray-600">
             Practice with professional drum patterns and rhythms. Perfect for worship teams, choir

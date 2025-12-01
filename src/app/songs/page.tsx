@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { Music, Grid3X3, List } from 'lucide-react';
 import SongCard from '@/components/SongCard';
 import songs from '@/data/songs.json';
 import { Song } from '@/types';
@@ -19,7 +20,7 @@ export default function SongsPage() {
     return songs.filter(song => {
       const matchesSearch =
         song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        song.artist.toLowerCase().includes(searchQuery.toLowerCase());
+        song.channel.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesChannel = selectedChannel === 'All Channels' || song.channel === selectedChannel;
       return matchesSearch && matchesChannel;
     });
@@ -31,7 +32,7 @@ export default function SongsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-3xl">🎵</span>
+            <Music className="w-8 h-8 text-purple-600" />
             <h1 className="text-3xl font-bold">Songs Library</h1>
           </div>
           <p className="text-gray-600">Explore our collection of {songs.length} worship songs</p>
@@ -61,23 +62,25 @@ export default function SongsPage() {
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-4 py-2 rounded-lg transition ${
+                className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${
                   viewMode === 'grid'
                     ? 'bg-purple-600 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                ⊞
+                <Grid3X3 className="w-4 h-4" />
+                Grid
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded-lg transition ${
+                className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${
                   viewMode === 'list'
                     ? 'bg-purple-600 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                ≡
+                <List className="w-4 h-4" />
+                List
               </button>
             </div>
           </div>
@@ -89,13 +92,13 @@ export default function SongsPage() {
           viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredSongs.map(song => (
-                <SongCard key={song.id} song={song} variant="grid" />
+                <SongCard key={song.serial_number} song={song} variant="grid" />
               ))}
             </div>
           ) : (
             <div className="space-y-4">
               {filteredSongs.map(song => (
-                <SongCard key={song.id} song={song} variant="list" />
+                <SongCard key={song.serial_number} song={song} variant="list" />
               ))}
             </div>
           )

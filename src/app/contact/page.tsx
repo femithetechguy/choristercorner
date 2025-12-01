@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Mail, Music, Bug, Clock, Globe, Heart } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { ContactFormData } from '@/types';
 
@@ -42,7 +43,7 @@ export default function ContactPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">✉️</div>
+          <Mail className="w-16 h-16 text-purple-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-2">Get in Touch</h1>
           <p className="text-gray-600">
             We&apos;d love to hear from you! Whether you have feedback, suggestions, or need support,
@@ -53,7 +54,7 @@ export default function ContactPage() {
         {/* Contact Options */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-4xl mb-4">💬</div>
+            <Heart className="w-10 h-10 text-purple-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">General Feedback</h3>
             <p className="text-gray-600 text-sm">Share your thoughts and experiences</p>
             <button className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition">
@@ -62,7 +63,7 @@ export default function ContactPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-4xl mb-4">🎵</div>
+            <Music className="w-10 h-10 text-blue-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">Song Suggestions</h3>
             <p className="text-gray-600 text-sm">Suggest songs to add to our library</p>
             <button className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition">
@@ -71,7 +72,7 @@ export default function ContactPage() {
           </div>
 
           <div className="bg-white rounded-lg shadow p-6 text-center">
-            <div className="text-4xl mb-4">🐛</div>
+            <Bug className="w-10 h-10 text-red-600 mx-auto mb-4" />
             <h3 className="text-xl font-bold mb-2">Report Issues</h3>
             <p className="text-gray-600 text-sm">Found a bug or have technical issues?</p>
             <button className="mt-4 bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700 transition">
@@ -96,21 +97,24 @@ export default function ContactPage() {
             <div className="space-y-6">
               <div>
                 <h3 className="font-bold text-purple-600 mb-2 flex items-center gap-2">
-                  📧 <span>Email</span>
+                  <Mail className="w-5 h-5" />
+                  <span>Email</span>
                 </h3>
                 <p className="text-gray-700">contact@choristercorner.com</p>
               </div>
 
               <div>
                 <h3 className="font-bold text-purple-600 mb-2 flex items-center gap-2">
-                  ⏱️ <span>Response Time</span>
+                  <Clock className="w-5 h-5" />
+                  <span>Response Time</span>
                 </h3>
                 <p className="text-gray-700">Within 24-48 hours</p>
               </div>
 
               <div>
                 <h3 className="font-bold text-purple-600 mb-2 flex items-center gap-2">
-                  🌍 <span>Languages</span>
+                  <Globe className="w-5 h-5" />
+                  <span>Languages</span>
                 </h3>
                 <p className="text-gray-700">English</p>
               </div>

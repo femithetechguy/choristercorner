@@ -1,3 +1,5 @@
+import { Sparkles, Music, BookOpen, Mic, FileText, Headphones } from 'lucide-react';
+
 export default function ExtrasPage() {
   const tools = [
     {
@@ -5,7 +7,7 @@ export default function ExtrasPage() {
       title: 'Chosic Playlist Generator',
       description: 'A tool for generating music playlists based on various parameters and preferences.',
       tags: ['playlist', 'music', 'generator', 'tool'],
-      icon: '🎵',
+      icon: Music,
       url: 'https://www.chosic.com/spotify-playlist-generator/',
     },
     {
@@ -13,7 +15,7 @@ export default function ExtrasPage() {
       title: 'GCC Hymns Library',
       description: 'A searchable library of hymns from GCC San Antonio.',
       tags: ['hymns', 'library', 'search', 'music'],
-      icon: '📚',
+      icon: BookOpen,
       url: 'https://www.gcc-sa.org/hymns/',
     },
     {
@@ -21,7 +23,7 @@ export default function ExtrasPage() {
       title: 'AZLyrics',
       description: 'Search for song lyrics from a vast database of artists and tracks.',
       tags: ['lyrics', 'search', 'music', 'database'],
-      icon: '🎤',
+      icon: Mic,
       url: 'https://www.azlyrics.com/',
     },
     {
@@ -29,7 +31,7 @@ export default function ExtrasPage() {
       title: 'CCLI SongSelect',
       description: 'Licensed song resources, lyrics, chords, and lead sheets for worship teams and churches.',
       tags: ['lyrics', 'chords', 'worship', 'licenses', 'CCLI'],
-      icon: '📄',
+      icon: FileText,
       url: 'https://www.ccli.com/songselect',
     },
     {
@@ -37,7 +39,7 @@ export default function ExtrasPage() {
       title: 'MultiTracks Discovery',
       description: 'Platform for multitrack backing tracks, stems, charts, and rehearsal tools for worship and live performance.',
       tags: ['multitrack', 'stems', 'backing tracks', 'charts', 'worship', 'live'],
-      icon: '🎧',
+      icon: Headphones,
       url: 'https://www.multitracksmusic.com/discover',
     },
   ];
@@ -47,7 +49,7 @@ export default function ExtrasPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="text-6xl mb-4">✨</div>
+          <Sparkles className="w-16 h-16 text-purple-600 mx-auto mb-4" />
           <h1 className="text-4xl font-bold mb-2">Extras & Resources</h1>
           <p className="text-gray-600">
             Discover additional tools and resources to enhance your worship experience
@@ -56,31 +58,34 @@ export default function ExtrasPage() {
 
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {tools.map(tool => (
-            <div key={tool.id} className="bg-white rounded-lg p-6 shadow hover:shadow-lg transition">
-              <div className="text-5xl mb-4">{tool.icon}</div>
-              <h3 className="text-xl font-bold mb-2">{tool.title}</h3>
-              <p className="text-gray-600 mb-4">{tool.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {tool.tags.map(tag => (
-                  <span
-                    key={tag}
-                    className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded"
-                  >
-                    {tag}
-                  </span>
-                ))}
+          {tools.map(tool => {
+            const IconComponent = tool.icon;
+            return (
+              <div key={tool.id} className="bg-white rounded-lg p-6 shadow hover:shadow-lg transition">
+                <IconComponent className="w-12 h-12 text-purple-600 mb-4" />
+                <h3 className="text-xl font-bold mb-2">{tool.title}</h3>
+                <p className="text-gray-600 mb-4">{tool.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {tool.tags.map(tag => (
+                    <span
+                      key={tag}
+                      className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                <a
+                  href={tool.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
+                >
+                  Open Tool
+                </a>
               </div>
-              <a
-                href={tool.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-block bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition"
-              >
-                Open Tool
-              </a>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Featured Resources */}

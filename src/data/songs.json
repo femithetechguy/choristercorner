@@ -1,62 +1,643 @@
 [
   {
-    "id": "1",
-    "title": "Omemma | Chandler Moore | Live In Los Angeles (Official Music Video)",
-    "artist": "TRIBL",
-    "duration": "11 minutes 27 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=400&h=300&fit=crop",
+    "serial_number": 1,
+    "title": "Omemma  | Chandler Moore | Live In Los Angeles (Official Music Video)",
     "channel": "TRIBL",
-    "youtubeUrl": "https://youtube.com/watch?v=example1",
-    "featured": true
+    "duration": "11 minutes 27 seconds",
+    "url": "https://www.youtube.com/watch?v=85B_DpmMunk",
+    "lyrics": [
+      "Verse 1:\nI know He loves me, I know He cares\nWhenever I call, He always is right there\nIn times of trouble, He is my help\nYeah, I know no fear\nI know He'll be right there",
+      "Chorus:\nAy, He really does what He says He will do\nMy God really moves, oh\nAy, why would I doubt when He always comes through?\nMy God really moves, oh\nHe really, really moves, oh",
+      "Pre-chorus:\nOmemma\nYou're always on time\nYou can do no wrong\nOmemma\nYou leave the 99, always for the one",
+      "Bridge:\nWhatever it takes, whatever it takes\nWhatever it takes, whatever it takes\nWhatever it takes, whatever it takes",
+      "Outro:\nSo glad You leave the 99, always for the one"
+    ]
   },
   {
-    "id": "2",
+    "serial_number": 2,
     "title": "Bidemi Olaoba and Mercy Chinwo - Give Me Chance (Official Audio)",
-    "artist": "Bidemi Olaoba",
-    "duration": "4 minutes 17 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
     "channel": "Bidemi Olaoba",
-    "youtubeUrl": "https://youtube.com/watch?v=example2",
-    "featured": true
+    "duration": "4 minutes 17 seconds",
+    "url": "https://www.youtube.com/watch?v=ahiy9DgSyoI",
+    "lyrics": [
+      "Verse 1:\nIt's amazing what the lord has done\nCome and see what the lord has done\nAs è shock you\nNa so è shock me too\nCome and see what the lord has done",
+      "Chorus:\nGive me chance o\nI want to praise my God\nGive me chance o\nI want to praise my God\nClear the road o\nI want to praise my God o\nClear the road o\nI want to praise my God",
+      "Verse 2:\nIt's amazing how you love me\nIt's amazing how you do the things you do for me\nTestimony o ti por por\nMany blessings oti surplus\nIt's amazing how you love me Lord\nIt's amazing how you do the things you do for me\nTestimonies o ti por por\nMany blessings oti yapa gan",
+      "Bridge:\nCome and see, come and see\nTestimonies bo se por to\nYou are my melody and my song\nI'll forever praise your name\nTestimony people talk about oo, eh eh eh\nI no fit shout I cannot pariwo\nTestimony speaks louder than voice È",
+      "Outro:\nAh eh eh\nAh eh eh\nAh eh eh\nAh eh eh"
+    ]
   },
   {
-    "id": "3",
+    "serial_number": 3,
     "title": "Yadah - How Can I Forget? (Official Audio)",
-    "artist": "Yadah",
-    "duration": "3 minutes 19 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1514376309641-ca0caa988bc7?w=400&h=300&fit=crop",
     "channel": "Yadah",
-    "youtubeUrl": "https://youtube.com/watch?v=example3",
-    "featured": true
+    "duration": "3 minutes 19 seconds",
+    "url": "https://www.youtube.com/watch?v=-a6PCxczh4k",
+    "lyrics": [
+      "Verse:\nHow can I forget your goodness echetalamo\nHow can I forget your mercy echetalamo\nHow can I forget your goodness\nCan forget your love\nCan forget your mercy yeah yeah\nHow can I forget your mercy",
+      "Chorus:\nEchetalamo, echetam\nEchetalamo iheoma Chukwu mereoo\nEchetalamo iheoma Chukwu meremo\nEechetalam iheoma Chukwu mereoo\nEchetalamo iheoma Chukwu mereoo",
+      "Bridge:\nSo how can I forget your love\nI can't forget your love\nI can't forget your mercy\nI can't forget your goodness",
+      "Outro:\nHow can I forget your mercy\nEchetalamo\nEchetammm\nEchetalamoooooooooooooooo\nIheoma Chukwu mere mo\nOma Chukwu mere mo\nEchetalamo iheoma Chukwu mere mo"
+    ]
   },
   {
-    "id": "4",
-    "title": "Nathaniel Bassey - Imela (Official Audio)",
-    "artist": "Nathaniel Bassey",
+    "serial_number": 4,
+    "title": "Dancing Around Medley",
+    "channel": "Nathaniel Bassey - Topic",
+    "duration": "11 minutes 44 seconds",
+    "url": "https://www.youtube.com/watch?v=4_trroYl8d4",
+    "lyrics": [
+      "Chorus:\nI am dancing around\nI am turning around\nTo my Father and my Lover\nI am dancing around\nAs I dance, every other thing is turning around",
+      "Verse:\nWe give You glory, we give You praise\nRiches and wisdom, honour and strength\nKing of the Ages, Ancient of Days\nWe give You glory, we give You praise",
+      "Bridge:\nWe give You praise Baba\nWe give You praise\nOgimma konga\nOgimma come back here\nDon't go\nStay here",
+      "Outro:\nLion of Judah, we give You praise\nAgu n'echemba, we give You praise\nAtofarati, we give You praise\nJehovah Nisi, we give You praise"
+    ]
+  },
+  {
+    "serial_number": 5,
+    "title": "Onos - Thank You For Being Jehovah (Official Audio)",
+    "channel": "OnosVEVO",
+    "duration": "3 minutes 43 seconds",
+    "url": "https://www.youtube.com/watch?v=J_cPDUfPsrA",
+    "lyrics": []
+  },
+  {
+    "serial_number": 6,
+    "title": "We will be many ft Lawrence Oyor, Moses Akoh || Sounds Of Salem",
+    "channel": "Prophet Joel Ogebe",
+    "duration": "3 minutes 15 seconds",
+    "url": "https://www.youtube.com/watch?v=POHXsztJpMM",
+    "lyrics": [
+      "Chorus:\nAyy, the nations are waiting (Waiting)\nThe people are hungry, oh\nThe Master is in need of vessels\nSo I pledge my allegiance\nTo the One who has called me, oh\nI will make Jesus proud!\nWe'll be many, oh",
+      "Verse 1:\nLord, the price that You paid (Very costly, oh)\nAnd the love that You showed (No denying, oh)\nAnd the prayer that You made (I will answer, oh)\nI will make Jesus proud (We'll be many, oh)",
+      "Hook:\nWe will be many that pray\nWe will be many that preach\nWe will be many that fast and give\nI will make Jesus proud! (We'll be many, oh)",
+      "Verse 2:\nOh, Jesus, I've made my mind to follow\nI'll follow You\nIt is written about me to follow (We'll be many, oh)\nI must walk the walk of the One who sent me, oh\nWhile it is day, we must work, oh\nWe must work, we must work, oh\n'Til we see Him face to face",
+      "Outro:\nWaiting\nPeople are hungry\nThe Master is in need"
+    ]
+  },
+  {
+    "serial_number": 7,
+    "title": "What A Mighty God We Serve",
+    "channel": "Hezekiah Walker - Topic",
+    "duration": "10 minutes 15 seconds",
+    "url": "https://www.youtube.com/watch?v=Oa0OVROu7x0",
+    "lyrics": [
+      "Intro:\nWhat a mighty God we serve\nWhat a mighty God we serve\nWhat a mighty God we serve\nWhat a mighty God we serve",
+      "Chorus:\nAngels bow before Him\nHeaven and earth adore Him\nWhat a mighty God we serve\nWhat a mighty God we serve",
+      "Verse 1:\nHe holds the winds in His hand\nAnd He is the great I am\nHe is the bright and morning star\nAnd without Him I would fall",
+      "Bridge:\nHe is Jehovah Jireh\nJehovah Jireh, my provider\nJehovah Shalom, my peace\nJehovah Tsidkenu, my righteousness\nJehovah Jireh, my provider\nJehovah Shalom, my peace\nJehovah Tsidkenu, my righteousness",
+      "Outro:\nWhat a mighty God we serve\nWhat a mighty God we serve\nWhat a mighty God we serve\nWhat a mighty God we serve\nWhat a mighty God we serve"
+    ]
+  },
+  {
+    "serial_number": 8,
+    "title": "High Praise",
+    "channel": "Tosin Bee - Topic",
+    "duration": "27 minutes 51 seconds",
+    "url": "https://www.youtube.com/watch?v=jucF0lme2P4",
+    "lyrics": []
+  },
+  {
+    "serial_number": 9,
+    "title": "Oil On My Head (Official Video) - EBEN",
+    "channel": "OfficialEben",
+    "duration": "2 minutes 36 seconds",
+    "url": "https://www.youtube.com/watch?v=p6L4aQ38lH0",
+    "lyrics": [
+      "Verse 1:\nLord, I just wanna thank you (ooh eeh)\nHow could I ever repay you\nJesus, you've taken the pains away from me\nAnd you have given me victory, eh\nEverywhere I go blessings follow (follow, follow, follow)\nEverything I do, favour follow am o\nKings are coming to my rising\nI'm going higher by the grace of God",
+      "Chorus:\nOil on my head (oil on my head)\nOil on my head (oil on my head)\nIncrease in my hands (increase in my hands)\nIncrease in my hands (increase in my hands)\nSpeed on my feet (speed on my feet)\nSpeed on my feet (speed on my feet)\nEverywhere I go (everywhere I go)\nEverywhere I go (everywhere I go)",
+      "Bridge:\nThis is my season of favour, yes\nThis is my season of increase\nMy life is upward and forward\nI can never go down, no, no no no no\nEverywhere I enter, goodness and mercy dey enter\nEverywhere I go now, goodness and mercy dey follow\nKings are coming to my rising\nI'm going higher by the grace of God",
+      "Outro:\nI carry favour for head\nI carry favour for head\nAka nchawa, nchawa, nchawa\nAka nchawa, nchawa"
+    ]
+  },
+  {
+    "serial_number": 10,
+    "title": "Jubilee Worship - Atmosphere Shift  (feat. Phil Thompson)",
+    "channel": "Jubilee Worship",
+    "duration": "5 minutes 27 seconds",
+    "url": "https://www.youtube.com/watch?v=q6OLbE_FBhQ",
+    "lyrics": [
+      "Verse 1:\nThere is only one name\nThere is only one name\nWith power to save\nWith power to save",
+      "Chorus:\nAnd our God is champion\nHe reigns forevermore\nForevermore",
+      "Bridge:\nAnd every knee will bow down\nEvery knee will bow down\nEvery tongue will confess\nThat Jesus Christ You are Lord",
+      "Build:\nFather we worship You\nFather we praise Your name, Your worthy\nOur God, we lift You up\nFather we exalt You in this place\nFather we magnify Your name",
+      "Hook:\nAtmosphere shift now\nChains be broken, breakout\nHoly Spirit come now\nHeaven open, heaven open"
+    ]
+  },
+  {
+    "serial_number": 11,
+    "title": "Firm Foundation (He Won't) [feat. Chandler Moore & Cody Carnes] | Maverick City Music | TRIBL",
+    "channel": "TRIBL",
+    "duration": "8 minutes 40 seconds",
+    "url": "https://www.youtube.com/watch?v=uOP4s8fOEm0",
+    "lyrics": [
+      "Verse 1:\nChrist is my firm foundation\nThe rock on which I stand\nWhen everything around me is shaken\nI've never been more glad\nThat I put my faith in Jesus\n'Cause He's never let me down\nHe's faithful through generations\nSo why would He fail now",
+      "Chorus:\nHe won't, He won't",
+      "Verse 2:\nI've still got joy in chaos\nI've got peace that makes no sense\nI won't be going under\nI'm not held by my own strength\n'Cause I've built my life on Jesus\nHe's never let me down\nHe's faithful in every season\nSo why would He fail now",
+      "Bridge:\nRain came and wind blew\nBut my house was built on You\nI'm safe with You\nI'm going to make it through",
+      "Outro:\nYeah, I'm going to make it through\n'Cause I'm standing strong on You\nYeah, I'm going to make it through\n'Cause my house is built on You"
+    ]
+  },
+  {
+    "serial_number": 12,
+    "title": "Neon Adejo-Eze Ebube II/Grace found me (LIVE)",
+    "channel": "Neon ADEJO",
+    "duration": "7 minutes 10 seconds",
+    "url": "https://www.youtube.com/watch?v=-pNWoWl9taA",
+    "lyrics": [
+      "Verse 1:\nMore than my mouth can testify\nMore than my mind can comprehend\nSee I′ve seen the wonders of your grace\nI'm so sure that this is not the end",
+      "Chorus:\nEze ebube\nSee how far you′ve brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise",
+      "Verse 2:\nMy heart is full of gratitude\nTo you and no one else but you\nLord I′m here only by your grace\nThank you Jesus for not giving up on me\nOh oh oh oh oh",
+      "Bridge:\nGrace found me\nGrace saved me\nGrace made me\nWho I am\nGrace redeemed me\nGrace sustains me\nGrace made me\nWho I am",
+      "Outro:\nNow can you use this moment\nTo begin to rattle in the spirit\nZi ka ba la ba ya de de de de\nZi ka ba la ba la de de de de\nI′m everything by your grace God\nEverything I have I got by your grace\nI'm nothing without you oh oh oh\nI′m nothing with you lord\nI'm nothing with you lord"
+    ]
+  },
+  {
+    "serial_number": 13,
+    "title": "Oluwatosin (Jesus Is Enough) Tkeyz Ft. SteveHills [ visualizer ]",
+    "channel": "Tkeyz Music",
+    "duration": "4 minutes 26 seconds",
+    "url": "https://www.youtube.com/watch?v=2u08HbxWnuc",
+    "lyrics": [
+      "Intro:\nOh ooh oh oh oh\nEh eh eh eh eh",
+      "Verse 1:\nI've climbed the mountains\nCrossed the seas\nI've found no other love like this\nYou are the treasure that I have\nIn You, I'm truly satisfied\n\nJesus, You're my everything\nYou're the light that shines through me\nYou are the treasure that I have\nIn You, I'm truly satisfied",
+      "Chorus:\nOluwatosin\nThe Jesus that I know\nIs enough for me",
+      "Verse 2:\nThis Jesus that I've seen\nHa ha ha ha ha\nThis Jesus that I've heard\nOh oh oh oh oh\nThis Jesus that I know,\nEh, eh, eh, oh oh, oh, oh, o,h oh, eh\n\nYou are more than life to me\nYou are everything and more\nYou are the treasure inside of me\nIn You, I'm truly satisfied\n\nIzurukeme, Izurukeme\nThe Jesus that I have is enough for me\nIzurukeme, Chizurumkeme\nThe Jesus that I have is enough for me",
+      "Bridge:\nO tó fún mi, o tó fún mi\n(He's enough for me, He's enough for me)\nJésù tí mo mọ́, o tó fún mi\n(The Jesus that I know is enough for me)\n\nO tó mí o, o tó mí o\n(I'm satisfied, I'm satisfied)\nJésù tí mo mọ́, o tó fún mi\n(The Jesus that I know is enough for me)",
+      "Outro:\nYou are enough for me\nYou are enough for me\nYou are enough for me\n\nJesus is enough\nJesus is enough for me"
+    ]
+  },
+  {
+    "serial_number": 14,
+    "title": "CityAlight - His Glory and My Good (Live)",
+    "channel": "CityAlight",
+    "duration": "5 minutes 32 seconds",
+    "url": "https://www.youtube.com/watch?v=d5nUTO4m9oA",
+    "lyrics": []
+  },
+  {
+    "serial_number": 15,
+    "title": "CityAlight - Only A Holy God",
+    "channel": "CityAlight",
     "duration": "5 minutes 42 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1487180144351-b8472da7d491?w=400&h=300&fit=crop",
-    "channel": "Nathaniel Bassey",
-    "youtubeUrl": "https://youtube.com/watch?v=example4",
-    "featured": false
+    "url": "https://www.youtube.com/watch?v=7HSdeeCm8_g",
+    "lyrics": []
   },
   {
-    "id": "5",
-    "title": "Jenn Johnson - Goodness Of God (Official Lyric Video)",
-    "artist": "Bethel Music",
-    "duration": "6 minutes 15 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1459749411175-04bf5292ceea?w=400&h=300&fit=crop",
+    "serial_number": 16,
+    "title": "Sing For Joy (Live)",
+    "channel": "Don Moen - Topic",
+    "duration": "4 minutes 5 seconds",
+    "url": "https://www.youtube.com/watch?v=zEwNeqF7b90",
+    "lyrics": [
+      "Chorus:\nSing for joy to God our strength\nSing for joy to God our strength, our strength",
+      "Verse 1:\nIf we call to Him, He will answer us\nIf we run to Him, He will run to us\nIf we lift our hands, He will lift us up\nCome now praise his name, all you saints of God.",
+      "Verse 2:\nDraw near to Him, he is here with us\nGive Him your love, He's in love with us\nHe will heal our hearts, He will cleanse our hands\nIf we rend our hearts He will heal our land."
+    ]
+  },
+  {
+    "serial_number": 17,
+    "title": "Worthy | Live | Elevation Worship",
+    "channel": "Elevation Worship",
+    "duration": "6 minutes 10 seconds",
+    "url": "https://www.youtube.com/watch?v=Ak5WTb-mgeA",
+    "lyrics": []
+  },
+  {
+    "serial_number": 18,
+    "title": "As We Worship You (Live)",
+    "channel": "Don Moen - Topic",
+    "duration": "7 minutes 34 seconds",
+    "url": "https://www.youtube.com/watch?v=N9RWGMcPyD4",
+    "lyrics": []
+  },
+  {
+    "serial_number": 19,
+    "title": "Chris Tomlin - Holy Forever (Live) feat. Jenn & Brian Johnson",
+    "channel": "ChrisTomlinVEVO",
+    "duration": "6 minutes 29 seconds",
+    "url": "https://www.youtube.com/watch?v=SlEEgMWwxhc",
+    "lyrics": []
+  },
+  {
+    "serial_number": 20,
+    "title": "Sheks musa JP - Baruwana (Official Video)",
+    "channel": "Shekwolo Musa",
+    "duration": "6 minutes 48 seconds",
+    "url": "https://www.youtube.com/watch?v=wQCH7WnlyJs",
+    "lyrics": [
+      "Chorus:\nBaruwana\nBaruwana\nNa ce Baruwana, Baruwana\nBaruwana da rikici ye\nBaruwana",
+      "Verse 1:\nMe I want to praise my Jesus\nWith my molo\nMe I want to praise my Jesus\nWith my molo\nMe I want to Praise my Jesus\nWith my guitar\nMe I want to Praise my Jesus\nWith my guitar",
+      "Verse 2:\nNa ce Baruwana, Baruwana\nBaruwana da ogogoro\nBaruwana\nBaruwana Baruwana\nBaruwana da rikici ye\nBaruwana",
+      "Bridge:\nNot my problem. Leave me out of this.\nI have nothing to do with it."
+    ]
+  },
+  {
+    "serial_number": 21,
+    "title": "Nagode - Dunsin Oyekan Ft. @DavidDam",
+    "channel": "WHOISNK MUSIC",
+    "duration": "14 minutes 59 seconds",
+    "url": "https://www.youtube.com/watch?v=LJA_g-_xlCs",
+    "lyrics": [
+      "Verse 1:\nYou have been faithful\nMore than just faithful\nFrom my cradle days\nTill this very hour\nAnd I know You will\nYou will be with me\nTill the very end",
+      "Chorus:\nUbangiji (Sovereign God)\nYesu (Jesus)\nNabaka godiya (I give You thanks)\nSarkin duniya (The King of all the Earth)\nNagode (Thank You)",
+      "Bridge 1:\nAlpha and Omega\nAnd everything between\nI'll raise my banner\nFor My Ebenezer\nSarkin duniya (The King of all the Earth)\nNagode (Thank You)",
+      "Verse 2:\nYou've been faithful Lord\nFrom the ages past\nThat is why Your name\nIs forever more",
+      "Bridge 2:\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it\nHe turned it He turned it"
+    ]
+  },
+  {
+    "serial_number": 22,
+    "title": "BABA - Dunsin Oyekan",
+    "channel": "Dunsin Oyekan",
+    "duration": "13 minutes 51 seconds",
+    "url": "https://www.youtube.com/watch?v=zZXPDlyb__w",
+    "lyrics": [
+      "Chorus:\nBaba Baba\nNo one else besides you\nNo one but you",
+      "Verse 1:\nMy love, my life\nOnly you will I serve\nNo one but you",
+      "Verse 2:\nMy peace, my joy\nIn you I'm satisfied\nNo one but you",
+      "Verse 3:\nMy hope, my strength\nIn you I have my being\nNo one but you"
+    ]
+  },
+  {
+    "serial_number": 23,
+    "title": "JESU - Dunsin Oyekan ft. Apostle Grace Lubega",
+    "channel": "Dunsin Oyekan",
+    "duration": "13 minutes 00 seconds",
+    "url": "https://www.youtube.com/watch?v=HnPhaKs9PoA",
+    "lyrics": [
+      "Refrain:\nI come to the Throne of grace\nTo obtain mercy and help\nThose who call on Your name\nWill never be ashamed",
+      "Chorus:\nJesu Jesu o (Jesus Jesus)\nJesu Jesu (Jesus Jesus)\nJesu Jesu (Jesus Jesus)\nMo wa so do re (I have come to You)",
+      "Interlude:\nO gbe inu wundia sola (He dwells in the virgin honorably)\nO gbe inu adelebo sogo (He dwells in the married woman gloriously)",
+      "Apostle Grace's ministration:\nNow listen child of God\nThe woman at the well\nThat Samaritan woman that many of us know\nJesus told us something so powerful\nHe said you worship what you know not\nSo, allow me to give context to what we are singing\nThe bible tells us, that God who at sundry times and in diverse manners\nSpoke to our fathers through the prophets\nBut He has in these last days spoken through His son Jesus Christ\nAnd the bible says He has made Him heir to all things\nAnd by Him were the worlds created\nNow listen to the mystery\nThe bible had said He spoke to the fathers through the prophets -present continuous\nEvery time He came to a prophet\nHe gave him a revelation for Isreal or an Individual\nBut the bible says in these last days, He has spoken\nWho gets the revelation?\nIn the old He spoke -present continuous\nIt was progressive revelation\nIn the last days, He's not speaking or going to speak what He has not already spoken\nPraise God\nThe Jesus you are coming to\nHas already spoken your destiny\nYou've been given everything that pertains to life and godliness\nYou've been blessed with every spiritual blessing, in the heavenly places in Christ Jesus\nThe bible is very clear that He has been given a name above all names\nThat at the sound of that name, every knee should bow, of the things in the earth\nOf the things in the heavens and the end of the earth\nAnd every tongue should confess\nThat Jesus Christ is Lord\nTo the glory of the Father\nWhen we come to Him\nWe don't come to Him hoping that He will do something\nWe come to Him because everything we've come for is finished",
+      "Bridge in Luganda:\nYesu Yesu (Jesus Jesus)\nYesu Yesu (Jesus Jesus)\nYesu Yesu (Jesus Jesus)\nNzize gyooli (I have come to You)",
+      "Dunsin's Ministration:\nFor He has given You a Name that is above every other names\nAt the mention of the Name of Jesus\nEvery knee shall bow and every tongue shall confess\nThat Jesus is Lord\nFor the Name of the Lord is a strong tower\nThe righteous runs into it and is saved\nFor the virgins love Thee\nFor Your name is poured forth like oil\nSo, when I call the name Jesus\nIt means I anointed\nJesus Christo\nThe anointed one\nJesus, anointed\nJesus, anointed\nAnd according to Isaiah 10:27\nIt shall come to pass in that day\nThat the yolk shall be destroyed\nAnd the burden shall be lifted\nBecause of the anointing"
+    ]
+  },
+  {
+    "serial_number": 24,
+    "title": "Limoblaze, kaestrings, Joe L Barnes - Yahweh (Godiya Gareka) [Live]",
+    "channel": "LimoblazeVEVO",
+    "duration": "9 minutes 40 seconds",
+    "url": "https://www.youtube.com/watch?v=xCCEcXU5pm0",
+    "lyrics": [
+      "Intro:\nGodiya ga re ka\nI wanna teach you this song\nYahweh, Yahweh\nGodiya ga re ka, Godiya ga re ka\nThis song is Hausa\nIt says \"Godiya ga re ka\"\nIt means 'Thanks be to You', 'Thank You Lord'\nCan you scream it, 'Thank You Jesus'\nVery simple sound",
+      "Chorus:\nOh say\nYahweh, Yahweh\nGodiya ga re ka, Godiya ga re ka\nCan I hear you all?\nYahweh, Yahweh\nGodiya ga re ka (oh), Godiya ga re ka\nYahweh, Yahweh\nGodiya ga re ka (oh), Godiya ga re ka",
+      "Verse 1:\nI was lost before, but You found me\nTook me out the deep when I was drowning\nWay Maker, there's nothing beyond You\nThere's not a thing that You can't do\nCause on that day when my world was crashing\nYou were my light in the midst of the darkness\nYou were my hope and my firm foundation\nAnd my faith will not be shaken"
+    ]
+  },
+  {
+    "serial_number": 25,
+    "title": "Worthy Of My Praise - Dunsin Oyekan ft Lawrence Oyor",
+    "channel": "Dunsin Oyekan",
+    "duration": "15 minutes 15 seconds",
+    "url": "https://www.youtube.com/watch?v=lrdmnAn9gxk",
+    "lyrics": [
+      "Intro:\nAy-yah\nWake up, wake up, wake up, wake up\nLet the worshiper in you wake up\nLet the worshiper in you wake up",
+      "Verse 1:\nThis is my story\nYou are my song\nAll day, all night\nI will sing of Your faithfulness, ay\nThis is my story\nYou are my song (ay)\nAll day, all night\nI will sing of Your faithfulness",
+      "Chorus:\nFrom my spirit to my soul\nUntil my voice re-echoes\nYou are worthy of my worship\nWorthy of my praise, ay\nFrom my spirit to my soul\nUntil my voice re-echoes\nYou are worthy of my worship\nWorthy of my praise",
+      "Bridge 1:\nHalle, halle, hallelujah\nHalle, halle, hallelujah\nYou are worthy of my worship\nWorthy of my praise",
+      "Bridge 2:\nLa, la, la, la, la, la, la\nLa, la, la, la, la, la, la\nYou are worthy of my worship\nWorthy of my praise",
+      "Outro:\nWhen I see my lover, I will dance for Him\nWhen I see my lover, I will sing for Him\nWhen I see my Father, I will sing for Him"
+    ]
+  },
+  {
+    "serial_number": 26,
+    "title": "JOE METTLE-THE KADOSH(LIVE ) feat NATHANIEL BASSEY",
+    "channel": "Joe Mettle",
+    "duration": "9 minutes 5 seconds",
+    "url": "https://www.youtube.com/watch?v=WS4qWFvGJN8",
+    "lyrics": [
+      "Verse 1:\nYou are holy\nYou are worthy\nAncient of days\nKadosh, Kadosh\nLord God Almighty\nKadosh, Kadosh",
+      "Chorus:\nKadosh, kadosh, kadosh, kadosh, kadosh\nKadosh, kadosh, kadosh, kadosh, kadosh\nIs the Lamb of God who sits upon the throne\nHe alone is worthy of our praise",
+      "Bridge 1:\nAh-ah, ah-ah, ah-ah-ah-ah, ah-ah, ah-ah\nAh-ah, ah-ah, ah-ah-ah-ah, ah-ah, ah-ah\nIs the Lamb of God who sits upon the throne\nHe alone is worthy of our praise",
+      "Bridge 2:\nEh-ya, eh-ya, eh-eh-eh-ya, eh-ya, eh-ya\nEh-ya, eh-ya, eh-eh-eh-ya, eh-ya, eh-ya\nIs the Lamb of God who sits upon the throne\nHe alone is worthy of our praise",
+      "Bridge 3:\nHoly, holy, holy, holy, holy\nHoly, holy, holy, holy, holy\nHoly, holy, holy, holy, holy\nTo the Lion and the Lamb",
+      "Outro:\nKadosh, kadosh, kadosh, kadosh, kadosh\nKadosh, kadosh, kadosh, kadosh, kadosh\nIs the Lamb of God who sits upon the throne\nHe alone is worthy of our praise"
+    ]
+  },
+  {
+    "serial_number": 27,
+    "title": "Open The Eyes Of My Heart (Live)",
+    "channel": "Michael W. Smith - Topic",
+    "duration": "5 minutes 21 seconds",
+    "url": "https://www.youtube.com/watch?v=HwKCvuorI9E",
+    "lyrics": [
+      "Verse 1:\nOpen the eyes of my heart, Lord\nOpen the eyes of my heart\nI want to see You\nI want to see You",
+      "Verse 2:\nTo see You high and lifted up\nShinin' in the light of Your glory\nPour out Your power and love\nAs we sing holy, holy, holy",
+      "Bridge:\nHoly, holy, holy\nWe cry holy, holy, holy\nYou are holy, holy, holy\nI want to see you"
+    ]
+  },
+  {
+    "serial_number": 28,
+    "title": "ADA EHI - JESUS ( You Are Able)",
+    "channel": "Ada Ehi",
+    "duration": "5 minutes 55 seconds",
+    "url": "https://www.youtube.com/watch?v=HPqDaKajSnQ",
+    "lyrics": [
+      "Verse 1:\nWhat can't you do Jesus\nLets go hmm hmm hmm\nJesus\nCreator creator of the universe\nWhat can't you do\nWhat can't you do Jesus",
+      "Chorus:\nName above every other name oh oh oh\nWhat can't you change\nWhat can't you change Jesus",
+      "Verse 2:\nJesus\nCreator creator of the universe what cant you do\nWhat can't you do what can't you do\nWhat can't you do Jesus",
+      "Bridge 1:\nYou're able\nYou are able great and mighty great and mighty God\nYou're able Jesus",
+      "Bridge 2:\nThere is nothing nothing you cannot do\nNothing you cannot change\nNothing you cannot turn around\nYou are able\nGreat and mighty God\nI put my trust in you\nYou are able Jesus",
+      "Bridge 3:\nFor there is nothing nothing you cannot do\nNothing you cannot change nothing you cannot change\nNothing you cannot turn nothing you cannot turn around turn around\nYou are able you are able great and mighty great and mighty God\nI put my trust in you I put my trust in you"
+    ]
+  },
+  {
+    "serial_number": 29,
+    "title": "Hezekiah Walker New Video \"Every Praise\"",
+    "channel": "Hezekiah Walker",
+    "duration": "5 minutes 28 seconds",
+    "url": "https://www.youtube.com/watch?v=UuuZMg6NVeA",
+    "lyrics": [
+      "Intro:\nLet me hear the worshippers!\nWhere is all of my praises?\nI want everybody around the world to put your hands together\nBecause all the praise belong' to God\nHere we go",
+      "Chorus:\nEvery praise is to our God\nEvery word of worship with one accord\nEvery praise, every praise\nIs to our God\nSing hallelujah to our God\nGlory hallelujah is due our God\nEvery praise, every praise\nIs to our God",
+      "Bridge 1:\nGod my savior\nGod my healer\nGod my deliverer\nYes He is, yes He is",
+      "Bridge 2:\nGod my savior (God my savior)\nGod my healer (God my healer)\nGod my deliverer\nYes He is (yes He is)\nYes He is (yes He is)",
+      "Outro:\nAll of my worship (every praise)\nAll of my praise (every praise)\nWhen you see me dancing (every praise)\nEvery praise (every praise)\nWhen you see me shoutin' (every praise)\nEvery praise (every praise)\nI got to praise Him (every praise)\nEvery praise (every praise)\nI got to thank Him (every praise)\nEvery praise (every praise)\nHe's been so good (every praise)\nEvery praise (every praise)"
+    ]
+  },
+  {
+    "serial_number": 30,
+    "title": "Bill & Gloria Gaither - Bless His Holy Name (Live)",
+    "channel": "GaitherVEVO",
+    "duration": "2 minutes 26 seconds",
+    "url": "https://www.youtube.com/watch?v=d3pQOmFts0E",
+    "lyrics": [
+      "Verse:\nBless the Lord, O my soul,\nand all that is within me, bless his holy name!\nBless the Lord, O my soul,\nand all that is within me, bless his holy name!",
+      "Refrain:\nHe has done great things,\nhe has done great things,\nhe has done great things,\nbless his holy name!"
+    ]
+  },
+  {
+    "serial_number": 31,
+    "title": "CeCe Winans - Worthy Of It All (Official Audio)",
+    "channel": "CeCe Winans",
+    "duration": "5 minutes 28 seconds",
+    "url": "https://www.youtube.com/watch?v=JzZSrOPeolc",
+    "lyrics": [
+      "Verse 1:\nAll the saints and angels\nThey bow before Your throne\nAll the elders cast their crowns\nBefore the Lamb of God and sing",
+      "Chorus:\nYou are worthy of it all\nYou are worthy of it all, Jesus\nFor from You are all things\nAnd to You are all things\nYou deserve the glory",
+      "Verse 2:\nSinging\nAll the saints and angels\nThey bow before Your throne\nAll the elders cast their crowns\nBefore the Lamb of God and sing",
+      "Bridge 1:\nYou are worthy of it all\nYou are worthy of it all, Jesus\nFor from You are all things\nAnd to You are all things\nYou deserve the glory, yeah",
+      "Bridge 2:\nYou are worthy of it all\nYou are worthy of it all\nFor from You are all things\nAnd to You are all things\nYou deserve the glory",
+      "Refrain:\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let incense arise\nDay and night, night and day, let it rise, let it rise",
+      "Bridge 3:\nYou are worthy of it all, Jesus\nYou are worthy of it all\nFor from You are all things\nAnd to You are all things\nYou deserve the glory",
+      "Bridge 4:\nYou are worthy of it all\nYou are worthy of it all, always now and forever\nFor from You are all things\nAnd to You are all things\nYou deserve the glory, day and night",
+      "Outro:\nJust the voice says You're worthy\nYou are worthy of it all\nYou are worthy of it all\nFor from You are all things\nAnd to You are all things\nYou deserve the glory"
+    ]
+  },
+  {
+    "serial_number": 32,
+    "title": "You Are Great",
+    "channel": "Dr. Juanita Bynum",
+    "duration": "4 minutes 6 seconds",
+    "url": "https://www.youtube.com/watch?v=tJLZ1UaeVhE",
+    "lyrics": [
+      "Verse 1:\n'Cause You deserve the glory and the honor\nI lift my hands in worship and I bless Your Holy name\nYou deserve the glory\nAll the honor, yeah-yeah\nI lift my hands in worship and I bless Your Holy name",
+      "Chorus:\n'Cause You are great\nYou do miracles, so great\nThere is no one else like You (nobody else like You, Lord)\nThere is no one else like You\nYou are great\nYou do miracles, so great\nThere is no one else like You\nThere is no one else",
+      "Bridge:\nYou are great\nYou do miracles, so great\nThere is no one else like You\nThere is no one else like You\nYou are great\nYou do miracles, so great\nThere is no one else like You\nThere is no one else",
+      "Refrain:\nYou are great\nYou do miracles, so great\nThere is no one else like You (can't find nobody, nobody else like You, Lord)\nThere is no one else like You\nYou are great\nYou do miracles, so great\nThere is no one else like You\nThere is no one else like You",
+      "Outro:\nLike You\nYou are great\nYou do miracles, so great (You opened up the grave, yeah)\nThere is no one else like You (You make the lame to walk)\nThere is no one else like You (You wake the dead up)\nYou are great (no sickness)\nYou do miracles, so great (no disease can stand in Your presence)\nThere is no one else like You\nThere is no one else\nYou are great (You're so great)\nYou do miracles, so great (You're so great)\nThere is no one else like You (Yes You are)\nThere is no one else like You (Yes You are)\nLike You"
+    ]
+  },
+  {
+    "serial_number": 33,
+    "title": "ADONAI by Elijah Oyelade LIVE at SFWTHS",
+    "channel": "Elijah Oyelade",
+    "duration": "9 minutes 40 seconds",
+    "url": "https://www.youtube.com/watch?v=SkFZOFHXFSg",
+    "lyrics": [
+      "Chorus:\nAdonai Adonai\nWe worship You Adonai\nAdonai Adonai\nWe worship You Adonai",
+      "Verse 1:\nAll power is in Your hands\nElshaddai oh Elohim\nThere is no other God like You Adonai",
+      "Verse 2:\nYou are God all by yourself\nWhat You say, yes You will do\nThere is no other God like You Adonai"
+    ]
+  },
+  {
+    "serial_number": 34,
+    "title": "Arise Arise Take Your Place (lyrics)",
+    "channel": "Praise Party",
+    "duration": "2 minutes 21 seconds",
+    "url": "https://www.youtube.com/watch?v=N8Ix25EWO8U",
+    "lyrics": [
+      "Verse 1:\nArise, arise, arise, arise\nArise, take Your place\nBe enthroned on our praise\nOne thing we ask of You\nOne thing that we desire\nThat as we worship You\nLord come and change our lives",
+      "Chorus:\nArise, arise, arise, arise\nArise, take Your place\nBe enthroned on our praise, arise\nKing of kings, Holy God, as we sing arise\nArise, arise, arise",
+      "Verse 2:\nOne thing we ask of You\nOne thing that we desire\nThat as we worship You\nLord come and change our lives",
+      "Bridge:\nWe lift You up, we lift You up\nWe lift You up on our praises, yeah\nWe lift You up, we lift You up\nWe lift You up on our praises\nWe lift You up, we lift You up\nWe lift You up on our praises, yeah\nWe lift You up, we lift You up\nWe lift You up on our praises",
+      "Outro:\nArise, take Your place\nBe enthroned on our praise, arise\nKing of kings, Holy God, as we sing arise\nArise, arise, arise, arise\nArise, take Your place\nBe enthroned on our praise, arise\nKing of kings, Holy God, as we sing arise\nArise, arise, arise, arise"
+    ]
+  },
+  {
+    "serial_number": 35,
+    "title": "Don Moen - God Is Good All The Time (Live Praise and Worship Music)",
+    "channel": "Don Moen TV",
+    "duration": "6 minutes 7 seconds",
+    "url": "https://www.youtube.com/watch?v=Q376chG2yDs",
+    "lyrics": [
+      "Intro:\nGod is good all the time\nThrough the darkest night\nHis light will shine\nGod is good God is good\nAll the time",
+      "Chorus:\nGod is good all the time\nHe put a song of praise\nIn this heart of mine\nGod is good all the time\nThrough the darkest night\nHis light will shine\nGod is good\nGod is good\nAll the time",
+      "Verse 1:\nIf you're walking through the valley\nAnd there are shadows all around\nDo not fear He will guide you\nHe will keep you safe and sound",
+      "Pre Chorus 1:\nHe has promised\nTo never leave you\nOr forsake you\nAnd His word is true",
+      "Verse 2:\nWe were sinners and so unworthy\nStill for us He chose to die\nFilled us with His Holy Spirit\nNow we can stand and testify",
+      "Pre Chorus 2:\nThat His love\nIs everlasting\nAnd His mercies\nThey will never end",
+      "Bridge:\nThough I may not understand\nAll the plans you have for me\nMy life is in your hands\nAnd through the eyes of faith\nI can clearly see",
+      "Tag:\nGod is good\nHe is so good"
+    ]
+  },
+  {
+    "serial_number": 36,
+    "title": "YOU ARE YAHWEH (LIVE) STEVE CROWN",
+    "channel": "STEVE CROWN",
+    "duration": "4 minutes 55 seconds",
+    "url": "https://www.youtube.com/watch?v=mCyN3Ty6_BE",
+    "lyrics": [
+      "Verse:\nYou are the God who was, who is and is to come\nJesus, Jesus\nAnd in You I trust, my life is in Your hands, Jesus\nJesus, You are the miracle working God",
+      "Chorus:\nAnd You are Yahweh, eh-eh-eh\nYou are Yahweh\nYou are Yahweh, eh-eh-eh\nYou are Yahweh\nYou are Yahweh, Alpha and Omega (we reverence You, Lord)\nYou are Yahweh, Alpha and Omega",
+      "Hook:\nExpress yourself in the Holy Ghost\nYou are Yahweh, Alpha and Omega\nYou are Yahweh, Alpha and Omega",
+      "Bridge:\nFate is rising right now (miracle working God)\nThe power of God is rising right now\nLift your voices, His presence is here\nSay \"You are Yahweh\", You are",
+      "Outro:\nYou are Yahweh, eh-eh-eh\nYou are Yahweh\nYou are Yahweh, eh-eh-eh\nYou are Yahweh\nYou are Yahweh, Alpha and Omega\nYou are Yahweh, Alpha and Omega"
+    ]
+  },
+  {
+    "serial_number": 37,
+    "title": "EXALTED - NATHANIEL BASSEY",
+    "channel": "Nathaniel Bassey Main",
+    "duration": "7 minutes 39 seconds",
+    "url": "https://www.youtube.com/watch?v=nMya7l29fmA",
+    "lyrics": [
+      "Intro:\nOne more time\nOh-oh\nMmm-mmm-mmm\nOoh-ooh-ooh-ooh\nIt's just an anthem\nA simple anthem",
+      "Verse 1:\nYour name (your name), is exalted in the heavens\nExalted in the earth\nHallelujah\nYour name, your name, your name\nYour name is exalted in the heavens\nExalted in the earth\nHallelujah",
+      "Verse 2:\nYour name is exalted in the heavens\nExalted in this place\nHallelujah\nEeeh, Jesus\nYour name is exalted in the heavens\nExalted in the earth\nHallelujah",
+      "Chorus 1:\nOh Lord\nYour kingdom (your kingdom), reigns forever\nYour kingdom has no end (it never ends)\nHallelujah\nOh lord, oh lord, oh lord\nOh Lord\nYour kingdom (your kingdom), reigns forever\nYour kingdom has no end (eeh)\nHallelujah",
+      "Verse 3:\nYour name is Alpha and Omega\nBeginning and the end, halle-\nHallelujah\nEeh\nOh, your name, your name, your name\nYour name (is the Alpha), is Alpha and omega\n(The beginning), beginning and the end\nHallelujah",
+      "Bridge:\nYour name is exalted in the heavens\nExalted in the earth\nHallelujah\nYour name is exalted in the heavens\nExalted in the earth\nHallelujah\nYour name is exalted in the heavens\nExalted in the earth\nHallelujah",
+      "Outro:\nSing your name one more time\nYour name (your name), is exalted in the heavens\nExalted in the earth\nHallelujah\nProclaim say, oh lord, oh lord, oh lord\nOh lord\nYour kingdom (your kingdom), reigns forever\nYour kingdom has no end, Halle-\nHallelujah\nYour name is the Alpha and Omega\nYour name (your name), is Alpha and Omega (is the Alpha)\nBeginning and the end\nHallelujah\nC'mon clap your hands\nOh, you people\nHe's here tonight\nHe's here tonight"
+    ]
+  },
+  {
+    "serial_number": 38,
+    "title": "Onise Iyanu (feat. Micah Stampley) - NATHANIEL BASSEY",
+    "channel": "Nathaniel Bassey Main",
+    "duration": "6 minutes 06 seconds",
+    "url": "https://www.youtube.com/watch?v=TeCPVxR1wDc",
+    "lyrics": [
+      "Intro:\nONISE IYANU eh eh\nOh oh oh oh oh oh oh",
+      "Verse 1:\nOnise Iyanu\nYou are the God of awesome wonders\nI've tasted of Your power\nOnise Iyanu\nYou have show me so much mercy\nMuch more than I deserve",
+      "Verse 2:\nMy eyes have seen, my ears have heard\nThe wonders of Your praise\nCreation bows in awe of You\nAnd we join to give You praise\nThe words You speak turn things around\nYour outstretched arm has lifted me\nYou took away the chains and cords\nThat held me bound",
+      "Chorus:\nOnise Iyanu\nYou are the God of Awesome wonders\nI've tasted of Your power\nOnise Iyanu\nYou have show me so much mercy\nMuch more than I deserve",
+      "Bridge 1:\nOmniscient, Omnipotent\nThe One who does great things\nWhen I behold the things You do\nI just can't hold back my praise\nThe words you speak turns things around\nYour outstretched arm\nHas lifted me\nYou took away the chains and cords that held me bound",
+      "Bridge 2:\nHey hey hey hey\nIyanu (Iyanu)\nOnise (Onise)\nIyanu (Iyanu)\nOnise (Onise)\nIyanu (Iyanu)\nOnise (Onise)\nIyanu (Iyanu)\nIyanu (Iyanu)",
+      "Outro:\nOh oh oh oh oh oh oh\nOh oh oh oh oh oh oh\nGod of awesome wonders\nGod of awesome wonders\nGod of awesome wonders\nI've tasted of Your kindness\nI've tasted of Your goodness\nGod of awesome wonders"
+    ]
+  },
+  {
+    "serial_number": 39,
+    "title": "Ntokozo Mbambo - Jehova Is Your Name (Live in Johannesburg)",
+    "channel": "Koko Records",
+    "duration": "7 minutes 28 seconds",
+    "url": "https://www.youtube.com/watch?v=Ro9KtH6cSVU",
+    "lyrics": [
+      "Chorus:\nJehovah is Your Name\nJehovah is Your Name\nJehovah is Your Name\nJehovah is Your Name",
+      "Verse:\nMighty Warrior\nGreat in Battle\nJehovah is Your Name\nMighty Warrior\nGreat in Battle\nJehovah is Your Name",
+      "Bridge:\nJehovah is Your Name\nJehovah is Your Name\nJehovah is Your Name\nJehovah is Your Name",
+      "Outro:\nMighty Warrior\nGreat in Battle\nJehovah is Your Name\nMighty Warrior\nGreat in Battle\nJehovah is Your Name"
+    ]
+  },
+  {
+    "serial_number": 40,
+    "title": "O Praise The Name (Anástasis) Lyric Video - Hillsong Worship",
+    "channel": "Hillsong Worship",
+    "duration": "5 minutes 29 seconds",
+    "url": "https://www.youtube.com/watch?v=LqBpifDpNKc",
+    "lyrics": [
+      "Verse 1:\nI cast my mind to Calvary\nWhere Jesus bled and died for me\nI see His wounds, His hands, His feet\nMy Saviour on that cursed tree",
+      "Verse 2:\nHis body bound and drenched in tears\nThey laid Him down in Joseph's tomb\nThe entrance sealed by heavy stone\nMessiah still and all alone",
+      "Chorus:\nO praise the Name of the Lord, our God\nO praise His Name forevermore\nFor endless days we will sing Your praise\nOh Lord, oh Lord, our God",
+      "Verse 3:\nThen on the third at break of dawn\nThe Son of heaven rose again\nO trampled death, where is your sting?\nThe angels roar for Christ the King",
+      "Chorus:\nO praise the Name of the Lord, our God\nO praise His Name forevermore\nFor endless days we will sing Your praise\nOh Lord, oh Lord, our God",
+      "Verse 4:\nHe shall return in robes of white\nThe blazing sun shall pierce the night\nAnd I will rise among the saints\nMy gaze transfixed on Jesus' face",
+      "Chorus:\nO praise the Name of the Lord, our God\nO praise His Name forevermore\nFor endless days we will sing Your praise\nOh Lord, oh Lord, our God\nO praise the Name of the Lord, our God\nO praise His Name forevermore\nFor endless days we will sing Your praise\nOh Lord, oh Lord, our God\nOh Lord, oh Lord, our God"
+    ]
+  },
+  {
+    "serial_number": 41,
+    "title": "Gratitude - Brandon Lake | Moment",
     "channel": "Bethel Music",
-    "youtubeUrl": "https://youtube.com/watch?v=example5",
-    "featured": false
+    "duration": "13 minutes 05 seconds",
+    "url": "https://www.youtube.com/watch?v=vA83MufOCoA",
+    "lyrics": [
+      "Verse 1:\nAll my words fall short\nI got nothing new\nHow could I express\nAll my gratitude?",
+      "Verse 2:\nI could sing these songs\nAs I often do\nBut every song must end\nAnd You never do",
+      "Chorus:\nSo I throw up my hands\nAnd praise You again and again\n'Cause all that I have is a hallelujah\nHallelujah\nAnd I know it's not much\nBut I've nothing else fit for a King\nExcept for a heart singing hallelujah\nHallelujah",
+      "Bridge:\nI've got one response\nI've got just one move\nWith my arm stretched wide\nI will worship You",
+      "Chorus:\nSo I throw up my hands\nAnd praise You again and again\n'Cause all that I have is a hallelujah\nHallelujah\nAnd I know it's not much\nBut I've nothing else fit for a King\nExcept for a heart singing hallelujah\nHallelujah",
+      "Tag:\nSo come on, my soul\nOh, don't you get shy on me\nLift up your song\n'Cause you've got a lion inside of those lungs\nGet up and praise the Lord\nOh, come on, my soul\nOh, don't you get shy on me\nLift up your song\n'Cause you've got a lion inside of those lungs\nGet up and praise the Lord\nCome on, my soul\nOh, don't you get shy on me\nLift up your song\n'Cause you've got a lion inside of those lungs\nGet up and praise the Lord, hey\nPraise the Lord\nPraise the Lord\nPraise the Lord",
+      "Final:\nSo I throw up my hands\nPraise You again and again\n'Cause all that I have is a hallelujah\nHallelujah\nAnd I know it's not much\nBut I've nothing else fit for a King\nExcept for a heart singing hallelujah\nHallelujah"
+    ]
   },
   {
-    "id": "6",
-    "title": "Sinach - Way Maker (Official Lyric Video)",
-    "artist": "Sinach",
-    "duration": "4 minutes 45 seconds",
-    "imageUrl": "https://images.unsplash.com/photo-1499415479124-56a48d1b9b78?w=400&h=300&fit=crop",
-    "channel": "Sinach",
-    "youtubeUrl": "https://youtube.com/watch?v=example6",
-    "featured": false
+    "serial_number": 42,
+    "title": "Goodness of God (Official Lyric Video) - Bethel Music & Jenn Johnson | VICTORY",
+    "channel": "Bethel Music & Jenn Johnson",
+    "duration": "4 minutes 54 seconds",
+    "url": "https://www.youtube.com/watch?v=IvSuGyJQ6oM",
+    "lyrics": [
+      "Verse 1:\nI love You Lord\nOh Your mercy never fails me\nAll my days\nI've been held in Your hands\nFrom the moment that I wake up\nUntil I lay my head\nI will sing of the goodness of God",
+      "Chorus:\nAll my life You have been faithful\nAll my life You have been so, so good\nWith every breath that I am able\nI will sing of the goodness of God",
+      "Verse 2:\nI love Your voice\nYou have led me through the fire\nIn darkest nights\nYou are close like no other\nI've known You as a father\nI've known You as a friend\nI have lived in the goodness of God",
+      "Bridge:\nYour goodness is running after, it's running after me\nYour goodness is running after, it's running after me\nWith my life laid down, I'm surrendered now, I give You everything\nYour goodness is running after, it's running after me"
+    ]
+  },
+  {
+    "serial_number": 43,
+    "title": "Yadah - Beyond Me (Official Video) | YADAH LIVE IN CONCERT 2019",
+    "channel": "Yadah",
+    "duration": "7 minutes 8 seconds",
+    "url": "https://www.youtube.com/watch?v=9zMQdYSrDpo",
+    "lyrics": [
+      "Intro:\nIt's one of my favourite songs\nIt says beyond me\nGod has looked beyond me",
+      "Chorus:\nYou looked past my sin\nMy guilt, my shame\nAnd poured your love\nYou looked beyond me oh\nYou looked beyond me oh\nYou looked past my sin\nMy guilt, my shame\nAnd poured your love\nYou you looked beyond me oh\nYou looked beyond me oh",
+      "Bridge:\nAnd am the one\nThat you have shown mercy\nYou have shown me mercy\nYou have shown me mercy\nI am the one the one\nThat you have shown mercy\nYou have shown me mercy God\nYou have shown me mercy\nSee pop shows near Atlanta\nGet tickets as low as $77\nYou might also like\nIN THE GARDEN\nDavido\nOVER DEM\nDavido\nHoudini\nEminem",
+      "Verse 1:\nI'm the little girl, the lost sheep\nLost in sin and filth\nUnworthy, yet you poured your love\nPoured your love on me\nI was naked and cold\nI needed covering\nFashioned to your taste\nYet you have dressed me\nIn your righteousness alone",
+      "Repeat Chorus:\nYou looked past my sin\nMy shame my guilt\nYou poured your love\nYou looked beyond me, oh\nYou looked beyond me, oh",
+      "Verse 2:\nYou saw my shame and my flaws\nYet you poured your love on me, God\nYou looked beyond me\nBeyond me oh\nYou looked beyond me oh\nAnd I'll sing this song\nYes",
+      "Repeat Bridge:\nI'm the one\nThat you have shown mercy\nYou have shown me mercy\nYou have shown me mercy\nI'm the one\nThat you have shown mercy\nYou have shown me mercy God\nYou have shown me mercy",
+      "Repeat Chorus (x4):\nLooked past my sin\nMy guilt, my shame\nAnd poured your love\nYou looked beyond me, oh\nYou looked beyond me, oh",
+      "Repeat Bridge (x4):\nI'm the one\nThat you have shown mercy\nYou have shown me mercy\nYou have shown me mercy",
+      "Repeat Chorus (x4):\nLooked past my sin\nMy guilt, my shame\nAnd poured your love\nYou looked beyond me, oh\nYou looked beyond me, oh",
+      "Solo Bridge:\nYes, I'm the one\nThat you have shown mercy\nYou have shown me mercy\nYou have shown me mercy\nSee the love and the grace\nThat you poured\nSo much that I can never pay for\nYou have shown me mercy God\nYou have shown me mercy",
+      "Outro (x6):\nI am the one\nThat you have shown mercy\nYou have shown me mercy\nYou have shown me mercy"
+    ]
+  },
+  {
+    "serial_number": 44,
+    "title": "AFRICAN PRAISE MEDLEY, MINISTER SAM AND THE SPIRIT OF WORSHIP #AEOW2024",
+    "channel": "Minister Sam",
+    "duration": "18 minutes 17 seconds",
+    "url": "https://www.youtube.com/watch?v=YevObjkKWco",
+    "lyrics": [
+      "ALMIGHTY GOD MY REDEEMER\nAlmighty God, my Redeemer\nMy Hiding Place, my Safe Refuge\nNo other name like Jesus\nNo power can stand against You.\n\nMy feet are planted on this Rock\nAnd I will not be shaken\nMy hope it comes from You alone\nMy Lord and my salvation.\n\nYour praise is al - ways on my lips\nYour word is living in my heart\nAnd I will praise You with a new song\nMy soul will bless You, Lord\nYou fill my life with greater joy\nYes, I delight myself in You\nAnd I will praise You with a new song\nMy soul will bless You, Lord.",
+      "I WILL PRAISE FOREVER\nI will praise you forever\nI will praise you forever\nI will praise you forever\nI will praise you forever",
+      "CREATOR OF THE UNIVERSE\nCreator of the universe\nWhat can't you do\nWhat can't you do\nJesus\n\nName above every other name\nWhat can't you change\nWhat can't you change\nJesus",
+      "You are able\nGreat and mighty God\nYou are able, Jesus\n\nYou are able\nGreat and mighty God\nYou are able, Jesus\n\nThere is nothing\nNothing you cannot do\nNothing you cannot change\nNothing you cannot turn around\n\nYou are able\nGreat and mighty God\nI put my trust in you\nYou are able Jesus\nYou are able Jesus\nYou are able Jesus",
+      "THIS LIFE THAT I HAVE IS THE LIFE OF CHRIST\nThis life that I have\nIs the life of Christ in me\nThis life that I have\nIs the life of God\nThis joy that I have\nIs the joy of the Holy Ghost\nThis life that I have\nIs the life of God",
+      "Zoe Zoe\nZoe Zoe\nZoe Zoe\nZoe Zoe\nZoe Zoe\nZoe Zoe\nZoe Zoe\nZoe Zoe",
+      "AMARACHI OBARUBA NEBENA - TBD",
+      "PRAISE\nI'll praise in the valley\nPraise on the mountain (yeah)\nI'll praise when I'm sure\nAnd praise when I'm doubting (yes, sir)\n\nI'll praise when outnumbered\nPraise when surrounded\n'Cause praise is the water\nMy enemies drown in\n\nAs long as I'm breathing\nI've got a reason to\n\nPraise the Lord\nOh, my soul (c'mon)\nPraise the Lord\nOh, my soul (hey)\n\nI won't be quiet, my God is alive\nSo how could I keep it inside?\nPraise the Lord\nOh, my soul\n(Praise the Lord)\n\nPraise the Lord\nOh, my soul (c'mon)\nPraise the Lord\nOh, my soul (hey)\n\nPraise the Lord\nOh, my soul (c'mon)\nPraise the Lord\nOh, my soul (hey)\n\nLet everything\nThat has breath\nPraise the Lord (you got it)\nPraise the Lord",
+      "HE HAS DONE GREAT THING\nHe has done great thing\nHe has done great thing\nHe has done great thing\nBless His Holy name",
+      "EZE BUBE\nEze ebube\nSee how far you've brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise\n\nEze ebube\nSee how far you've brought me\nEze ebube\nI'm so glad you found me worthy\nI can see\nI can tell\nAnd I know it's your grace\nAll my days I will sing your praise",
+      "YOU RAISE ME UP\nYou raise me up so I can stand on mountains\nYou raise me up to walk on stormy seas\nI am strong when I am on Your shoulders\nYou raise me up to more than I can be",
+      "WONI KOSAYE LOKE\nWon nì ko saye loke\nO waye fun mì loke\nO gbogo fole mi\nIyanu loruko re\n\nWon nì ko saye loke\nO waye fun mì loke\nO gbogo fole mi\nIyanu loruko re",
+      "ALAGBARA BI ARA EYA JUDAH (O DE O DE)\nAlagbara bi ara o, eya judah\nKiniun de, eya Judah\n\nOde - Ode\nOde - Ode\n\nAlagbara bi ara o, eya judah\nKiniun de, eya Judah",
+      "YOU ARE YAHWEH\nYou are yahweh eh eh\nYou are yahweh\nYou are yahweh eh eh\nYou are yahweh\n\nYou are yahweh\nAlpha & Omega\nYou are yahweh\nAlpha & Omega",
+      "EKUEME\nSee what you've done for me\nSee how you set me free\nSee what you've done for me\nSee how you set me free\n\nYou are the living God o\nEze no one like you\n\nEkueme - Ekueme\nEkueme - Ekueme\nEkueme - Ekueme\n\nYou are the living God o\nEze no one like you\n\nEkueme - Ekueme\nEkueme - Ekueme\nEkueme - Ekueme\n\nYou are the living God o\nEze no one like you",
+      "ON YOUR MARK, GET SET\nOn your mark, get set\nLet us go\nOn your mark, get set\nLet us go\n\nRepeat as needed",
+      "COME AND SEE O\nCome and see o\nCome and see\n\nCome and see o\nCome and see\n\nCome and see\nWhat the Lord has done\nCome and see\nWhat the Lord has done",
+      "WHEN YOU SEE ME DANCE I DANCE LIKE A WINNER\nWhen you see me praise,\nI praise like a winner man\n\nOh oh oh winner man\nOh oh oh winner man o\npraise like a winner man\nI praise like a winner man o\n\nWhen you see me dance,\nI dance like a winner man\n\nOh oh oh winner man\nOh oh oh winner man o\ndance like a winner man\nI dance like a winner man o\n\nWhen you see me sing,\nI sing like a winner man\n\nOh oh oh winner man\nOh oh oh winner man o\nsing like a winner man\nI sing like a winner man o",
+      "AHH EHH THIS KIND GOD\nAh eh this kind God\nAnother one no dey o\n\nAh eh this kind God\nAnother one no dey o\n\nThis kind God\nAnother one no dey o\nThis kind God\nAnother one no dey o",
+      "CARRY ME DEY GO\nCarry me dey go\nJehova carry me dey go dey go dey go\n\nLift me higher\nJehova lift me higher higher higher",
+      "HALLELUJAH THAT'S WHAT MY SONG WILL BE\nHallelujah\nThat's what my song will be\nThat's what my song will be\nThat's what my song will be"
+    ]
+  },
+  {
+    "serial_number": 45,
+    "title": "Contemporary Praise Medley",
+    "channel": "Gabriel Eziashi TV",
+    "duration": "13 minutes 38 seconds",
+    "url": "https://www.youtube.com/watch?v=a6yBrXHwkcI",
+    "lyrics": [
+      "I WILL CALL UPON THE LORD\nI will call upon the Lord (I will call upon the Lord)\nFor he is worthy to be praised (for He is worthy to be praised)\nI will call upon the Lord (I will call upon the Lord)\nFor He is worthy to be praised (for He is worthy to be praised)\nSo shall I be saved from my enemies\n\nThe Lord reigneth\nBlessed be the Rock\nAnd let the Rock of my salvation be exalted",
+      "THE LORD REIGNETH\nThe Lord regneth let the earth tremble,\nHe reigneth let the earth tremble\nMy God reigneth let the earth tremble,\nHe reigneth let the earth tremble\n\nOur God reigneth let the earth tremble,\nHe reigneth let the earth tremble\nAbba Father reigneth let the earth tremble,\nHe reigneth let the earth tremble",
+      "HALLELUYAH\nHalleluyah\nIs an heavenly language\nIs an heavenly language\nIs an heavenly language\nIs an heavenly language",
+      "HE REIGNS YES HE REIGNS\nHe reigns, yes He reigns (He reigns, yes He reigns)\nHe reigns, yes He reigns (He's an awesome God)\nHe reigns, yes He reigns (He reigns, yes He reigns)\nHe reigns, yes He reigns (He's an awesome God)",
+      "THAT ALL MAY SEE AND ALL WILL KNOW\nThat all may see\nAnd all will know\nThat all may see\nAnd all will know\nThat you are God",
+      "BEMI BA LEGBERUN AHON (1000 TONGUES)\nEmi 'ba n'egberun ahon (O for a thousand tongues)\nFun 'yin Olugbala (To sing my redeemer's praise)\nOgo Olorun Oba mi (The glory of my God & king)\nIsegun ore Re (The triumph of his grace)\n\nAbi ko seun fun o (Has He been good to you?)\nAh oma seun fun mi (Yes He's been good to me)\nAbi ko da e lare (Has He justified you?)\nA o ma damilare (Yes He has justified me)\n\nEje Jesu se fun mi (The blood of Jesus did it for me)\nEje re se fun mi (His blood did it for me)",
+      "AGBARA ESU DA\nAgbara Esu da (Where's the power of Satan)\nNibi ti Jesu gbe n joba (Where Jesus is King)\nAgbara Esu da (Where's the power of Satan)\nKosi O (There is none)\nOti wo (It has fallen)",
+      "OHHH EKELE DIRI GI\nOoo (ooo) ekele diri gi (ekele diri gi)\nChukwuku na gwuzo (eh!) mmama diri gi\nSo we can say (nmama)\nDiri gi (nmama) jehova mo (nmama)\nThe lifter of my head\nYou are the only God",
+      "WHO CAN BATTLE WITH THE LORD?\nWho can battle with the Lord? (nobody no nobody!)\nWho can deceive the great I am? (nobody no nobody!)\nWho can challenge the lion of Judah? (Nobody No nobody!)\nWho can say no when he says yes? (nobody No nobody!)"
+    ]
+  },
+  {
+    "serial_number": 46,
+    "title": "THE PRAISE MEDLEY - TMcube [Official Live Music Video]",
+    "channel": "TMcube",
+    "duration": "16 minutes 28 seconds",
+    "url": "https://www.youtube.com/watch?v=ZFq9aLhhFmw",
+    "lyrics": []
+  },
+  {
+    "serial_number": 47,
+    "title": "African Praise Medley",
+    "channel": "Gabriel Eziashi TV",
+    "duration": "21 minutes 6 seconds",
+    "url": "https://www.youtube.com/watch?v=ckjxHUAaxeA",
+    "lyrics": []
+  },
+  {
+    "serial_number": 48,
+    "title": "Praisefest 3.0 by BLESSING LOPEZ |Best Nigerian Gospel Songs 2024|Best African Gospel Songs 2024",
+    "channel": "Blessing Lopez",
+    "duration": "18 minutes 18 seconds",
+    "url": "https://www.youtube.com/watch?v=jcITLEhYnKc",
+    "lyrics": []
   }
 ]

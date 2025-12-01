@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { BookOpen, Grid3X3, List } from 'lucide-react';
 import HymnCard from '@/components/HymnCard';
 import hymns from '@/data/hymns.json';
 
@@ -18,8 +19,7 @@ export default function HymnsPage() {
     return hymns.filter(hymn => {
       const matchesSearch =
         hymn.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hymn.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hymn.lyrics.toLowerCase().includes(searchQuery.toLowerCase());
+        hymn.author.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesAuthor = selectedAuthor === 'All Authors' || hymn.author === selectedAuthor;
       return matchesSearch && matchesAuthor;
     });
@@ -31,7 +31,7 @@ export default function HymnsPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
-            <span className="text-3xl">📖</span>
+            <BookOpen className="w-8 h-8 text-purple-600" />
             <h1 className="text-3xl font-bold">Hymns Collection</h1>
           </div>
           <p className="text-gray-600">Browse our collection of {hymns.length} traditional hymns</p>
@@ -61,23 +61,25 @@ export default function HymnsPage() {
             <div className="flex gap-2 justify-end">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-4 py-2 rounded-lg transition ${
+                className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${
                   viewMode === 'grid'
                     ? 'bg-purple-600 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                ⊞
+                <Grid3X3 className="w-4 h-4" />
+                Grid
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded-lg transition ${
+                className={`px-4 py-2 rounded-lg transition flex items-center gap-2 ${
                   viewMode === 'list'
                     ? 'bg-purple-600 text-white'
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
               >
-                ≡
+                <List className="w-4 h-4" />
+                List
               </button>
             </div>
           </div>
@@ -89,13 +91,13 @@ export default function HymnsPage() {
           viewMode === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredHymns.map(hymn => (
-                <HymnCard key={hymn.id} hymn={hymn} variant="grid" />
+                <HymnCard key={hymn.serial_number} hymn={hymn} variant="grid" />
               ))}
             </div>
           ) : (
             <div className="space-y-4">
               {filteredHymns.map(hymn => (
-                <HymnCard key={hymn.id} hymn={hymn} variant="list" />
+                <HymnCard key={hymn.serial_number} hymn={hymn} variant="list" />
               ))}
             </div>
           )

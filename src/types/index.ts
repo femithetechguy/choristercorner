@@ -1,23 +1,23 @@
 export interface Song {
-  id: string;
+  serial_number: number;
   title: string;
-  artist: string;
-  duration: string; // e.g., "11 minutes 27 seconds"
-  imageUrl: string;
   channel: string;
-  youtubeUrl: string;
-  lyrics?: string;
-  featured: boolean;
+  duration: string; // e.g., "11 minutes 27 seconds"
+  url: string;
+  lyrics?: string[];
 }
 
 export interface Hymn {
-  id: string;
+  serial_number: number;
   title: string;
   author: string;
-  lyrics: string;
-  imageUrl: string;
-  category: string; // e.g., "Grace", "Strength", "Fellowship"
-  featured: boolean;
+  meter: string;
+  category: string;
+  year: number;
+  channel: string;
+  duration: string;
+  url: string;
+  lyrics?: string[];
 }
 
 export interface ContactFormData {
