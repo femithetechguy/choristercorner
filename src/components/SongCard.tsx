@@ -2,8 +2,9 @@
 
 import Image from 'next/image';
 import { Song } from '@/types';
-import { Play, Copy, ExternalLink } from 'lucide-react';
+import { Play, Copy, ExternalLink, FileText, Heart } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
+import { useState } from 'react';
 
 interface SongCardProps {
   song: Song;
@@ -29,6 +30,7 @@ function getYouTubeThumbnail(url: string): string {
 
 export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
   const { play } = usePlayer();
+  const [isFavorite, setIsFavorite] = useState(false);
   const thumbnailUrl = getYouTubeThumbnail(song.url);
 
   if (variant === 'list') {
@@ -110,31 +112,43 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
         <h3 className="font-bold text-sm line-clamp-2 text-gray-900">{song.title}</h3>
         <p className="text-xs text-gray-600 mt-2">{song.channel}</p>
         <p className="text-xs text-gray-500 mt-1">{song.duration}</p>
-        <div className="flex gap-2 mt-4 flex-wrap">
-          <a
-            href={song.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-xs hover:bg-purple-700 transition flex items-center justify-center gap-1"
-          >
-            <Play size={14} className="fill-current" /> Watch
-          </a>
+        <div className="flex gap-2 mt-4 justify-center">
           <button 
-            className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
-            title="Copy URL"
+            onClick={() => play(song)}
+            className="p-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            title="Play"
+          >
+            <Play size={16} className="fill-current" />
+          </button>
+          <button 
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Show Lyrics"
+          >
+            <FileText size={16} className="text-purple-600" />
+          </button>
+          <button 
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Copy Link"
             onClick={() => navigator.clipboard.writeText(song.url)}
           >
-            <Copy size={14} className="text-purple-600" />
+            <Copy size={16} className="text-purple-600" />
           </button>
           <a
             href={song.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
             title="Open in new tab"
           >
-            <ExternalLink size={14} className="text-purple-600" />
+            <ExternalLink size={16} className="text-purple-600" />
           </a>
+          <button 
+            onClick={() => setIsFavorite(!isFavorite)}
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Add to favorites"
+          >
+            <Heart size={16} className={`${isFavorite ? 'fill-red-500 text-red-500' : 'text-purple-600'}`} />
+          </button>
         </div>
       </div>
     </div>
