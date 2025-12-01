@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Mail, Music, Bug, Clock, Globe, Heart } from 'lucide-react';
+import { Mail, Music, Bug, Clock, Globe, Heart, X, Check } from 'lucide-react';
 import ContactForm from '@/components/ContactForm';
 import { ContactFormData } from '@/types';
 import appConfig from '@/data/app.json';
@@ -14,6 +14,8 @@ const iconMap: { [key: string]: any } = {
 
 export default function ContactPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState<string | null>(null);
+  const [showSuccess, setShowSuccess] = useState(false);
   const config = appConfig as any;
 
   const handleFormSubmit = async (data: ContactFormData) => {
@@ -39,6 +41,13 @@ export default function ContactPage() {
       
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Show success message
+      setShowSuccess(true);
+      setOpenModal(null);
+      
+      // Hide success after 3 seconds
+      setTimeout(() => setShowSuccess(false), 3000);
     } catch (error) {
       console.error('Error submitting form:', error);
     } finally {
@@ -77,7 +86,10 @@ export default function ContactPage() {
                 {Icon && <Icon className={`w-10 h-10 ${colorClasses[option.id]} mx-auto mb-4`} />}
                 <h3 className="text-xl font-bold mb-2">{option.title}</h3>
                 <p className="text-gray-600 text-sm">{option.description}</p>
-                <button className={`mt-4 text-white px-6 py-2 rounded-lg transition ${buttonClasses[option.id]}`}>
+                <button 
+                  onClick={() => setOpenModal(option.id)}
+                  className={`mt-4 text-white px-6 py-2 rounded-lg transition ${buttonClasses[option.id]}`}
+                >
                   {option.buttonText}
                 </button>
               </div>
@@ -156,6 +168,62 @@ export default function ContactPage() {
             </div>
           </div>
         </div>
+
+        {/* Modal Backdrop - Blur background instead of dark overlay */}
+        {openModal && (
+          <div 
+            className="fixed inset-0 backdrop-blur-sm z-40 transition-all"
+            onClick={() => setOpenModal(null)}
+          />
+        )}
+
+        {/* Modal */}
+        {openModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8">
+            <div 
+              className="bg-white rounded-lg shadow-2xl w-full md:max-w-2xl md:max-h-[90vh] md:overflow-y-auto animate-scale-in h-[75vh] md:h-auto overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Modal Header */}
+              <div className="sticky top-0 bg-linear-to-r from-purple-600 to-purple-700 text-white p-6 flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-bold">
+                    {config.contact.options.find((opt: any) => opt.id === openModal)?.title}
+                  </h2>
+                  <p className="text-purple-100 text-sm mt-1">
+                    {config.contact.options.find((opt: any) => opt.id === openModal)?.description}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setOpenModal(null)}
+                  className="text-white hover:bg-purple-800 p-2 rounded-full transition"
+                  aria-label="Close"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-6 sm:p-8">
+                <ContactForm 
+                  onSubmit={handleFormSubmit} 
+                  isLoading={isLoading}
+                  preselectedType={openModal}
+                />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Success Toast */}
+        {showSuccess && (
+          <div className="fixed bottom-4 right-4 z-50 animate-slide-up">
+            <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3">
+              <Check className="w-5 h-5" />
+              <span className="font-medium">Message sent successfully! We'll get back to you soon.</span>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
