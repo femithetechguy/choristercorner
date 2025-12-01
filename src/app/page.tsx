@@ -6,19 +6,39 @@ import StatBox from '@/components/StatBox';
 import songs from '@/data/songs.json';
 import hymns from '@/data/hymns.json';
 import appConfig from '@/data/app.json';
-
-const iconMap: { [key: string]: any } = {
-  Music,
-  BookOpen,
-  Clock,
-  'users': 'users',
-};
+import { Song, Hymn } from '@/types';
 
 export default function Home() {
   // Show first 3 songs and hymns instead of featured
-  const featuredSongs = songs.slice(0, 3);
-  const featuredHymns = hymns.slice(0, 3);
-  const config = appConfig as any;
+  const featuredSongs = (songs as Song[]).slice(0, 3);
+  const featuredHymns = (hymns as Hymn[]).slice(0, 3);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const config: any = appConfig;
+
+  // Calculate dynamic stats
+  const totalSongs = (songs as Song[]).length;
+  const totalHymns = (hymns as Hymn[]).length;
+  
+  // Calculate total duration in minutes
+  const totalMinutes = (songs as Song[]).reduce((sum, song) => {
+    const duration = song.duration || '0 minutes 0 seconds';
+    // Parse "11 minutes 27 seconds" format
+    const minutesMatch = duration.match(/(\d+)\s+minutes?/);
+    const secondsMatch = duration.match(/(\d+)\s+seconds?/);
+    const mins = minutesMatch ? parseInt(minutesMatch[1]) : 0;
+    const secs = secondsMatch ? parseInt(secondsMatch[1]) : 0;
+    return sum + mins + (secs / 60);
+  }, 0);
+  
+  // Count unique artists/channels
+  const uniqueChannels = new Set((songs as Song[]).map(s => s.channel).filter(Boolean)).size;
+
+  const dynamicStats = [
+    { number: totalSongs.toString(), label: 'Total Songs' },
+    { number: totalHymns.toString(), label: 'Traditional Hymns' },
+    { number: `${uniqueChannels}+`, label: 'Featured Artists' },
+    { number: `${Math.round(totalMinutes)}+`, label: 'Minutes of Worship' },
+  ];
 
   return (
     <div className="min-h-screen">
@@ -38,7 +58,7 @@ export default function Home() {
       {/* Stats Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-10 mb-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {config.home.stats.map((stat: any, index: number) => {
+          {dynamicStats.map((stat, index) => {
             const icons = [Music, BookOpen, 'users', Clock];
             return (
               <StatBox key={index} icon={icons[index]} number={stat.number} label={stat.label} />

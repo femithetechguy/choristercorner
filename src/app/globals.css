@@ -25,6 +25,11 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Ensure all headings are dark for proper contrast */
+h1, h2, h3, h4, h5, h6 {
+  @apply text-gray-900;
+}
+
 /* Custom Animations */
 @keyframes slideUp {
   from {

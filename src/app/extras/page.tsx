@@ -19,7 +19,7 @@ export default function ExtrasPage() {
         {/* Header */}
         <div className="text-center mb-12">
           <Sparkles className="w-16 h-16 text-purple-600 mx-auto mb-4" />
-          <h1 className="text-4xl font-bold mb-2">{config.extras.header.title}</h1>
+          <h1 className="text-4xl font-bold mb-2 text-gray-900">{config.extras.header.title}</h1>
           <p className="text-gray-600">
             {config.extras.header.description}
           </p>
@@ -30,7 +30,7 @@ export default function ExtrasPage() {
           {(extrasData as any).external_tools.map((tool: any, index: number) => (
             <div key={index} className="bg-white rounded-lg p-6 shadow hover:shadow-lg transition">
               <div className="text-3xl mb-4">{iconMap[tool.category] || '🔗'}</div>
-              <h3 className="text-xl font-bold mb-2">{tool.name}</h3>
+              <h3 className="text-xl font-bold mb-2 text-gray-900">{tool.name}</h3>
               <p className="text-gray-600 mb-4">{tool.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">
                 {tool.tags.map((tag: string) => (

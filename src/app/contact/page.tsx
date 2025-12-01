@@ -47,7 +47,7 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -104,7 +104,9 @@ export default function ContactPage() {
                   <Mail className="w-5 h-5" />
                   <span>Email</span>
                 </h3>
-                <p className="text-gray-700">contact@choristercorner.com</p>
+                <a href="mailto:dev@fttgsolutions.com" className="text-purple-600 hover:text-purple-700 hover:underline transition">
+                  dev@fttgsolutions.com
+                </a>
               </div>
 
               <div>

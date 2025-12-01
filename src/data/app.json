@@ -9,24 +9,6 @@
       "title": "Welcome to ChoristerCorner",
       "description": "A comprehensive platform for choristers and worship leaders to discover, learn, and share beautiful worship songs."
     },
-    "stats": [
-      {
-        "number": "48",
-        "label": "Total Songs"
-      },
-      {
-        "number": "25",
-        "label": "Traditional Hymns"
-      },
-      {
-        "number": "43+",
-        "label": "Featured Artists"
-      },
-      {
-        "number": "473+",
-        "label": "Minutes of Worship"
-      }
-    ],
     "featuredSongs": {
       "heading": "Featured Songs",
       "buttonText": "View All Songs"

@@ -16,7 +16,7 @@ export default function AboutPage() {
   const config = appConfig as any;
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Header */}
         <div className="text-center mb-12">
@@ -94,7 +94,7 @@ export default function AboutPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">{config.home.stats[0].number} {config.home.stats[0].label}</h3>
+              <h3 className="text-lg font-bold mb-4">Worship Songs</h3>
               <p className="text-gray-600 mb-4">
                 A carefully curated collection of modern worship songs from renowned artists and
                 worship leaders. Each song includes links to official videos, artist information,
@@ -102,7 +102,7 @@ export default function AboutPage() {
               </p>
             </div>
             <div>
-              <h3 className="text-lg font-bold mb-4">{config.home.stats[1].number} {config.home.stats[1].label}</h3>
+              <h3 className="text-lg font-bold mb-4">Traditional Hymns</h3>
               <p className="text-gray-600 mb-4">
                 Timeless hymns from Christian history, organized by category (Grace, Strength,
                 Faith, etc.). Includes lyrics, author information, and categorization for easy
