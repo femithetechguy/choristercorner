@@ -16,8 +16,16 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
   const [isMinimized, setIsMinimized] = useState(false);
 
   const play = (song: Song) => {
+    // Always set the current song, but preserve the minimize state
+    // Only auto-minimize if no song was playing before
+    const wasPlaying = currentSong !== null;
     setCurrentSong(song);
-    setIsMinimized(false);
+    
+    if (!wasPlaying) {
+      // First song being played - expand by default
+      setIsMinimized(false);
+    }
+    // If a song was already playing, keep the current minimize state
   };
 
   const close = () => {
