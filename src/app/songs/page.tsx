@@ -33,7 +33,7 @@ export default function SongsPage() {
         <div className="mb-8">
           <div className="flex items-center gap-2 mb-4">
             <Music className="w-8 h-8 text-purple-600" />
-            <h1 className="text-3xl font-bold">Songs Library</h1>
+            <h1 className="text-3xl font-bold text-gray-900">Songs Library</h1>
           </div>
           <p className="text-gray-600">Explore our collection of {songs.length} worship songs</p>
         </div>

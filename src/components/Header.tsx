@@ -34,7 +34,7 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <Music className="w-6 h-6 text-purple-600" />
             <div>
-              <div className="font-bold text-lg">ChoristerCorner</div>
+              <div className="font-bold text-lg text-gray-900">ChoristerCorner</div>
               <div className="text-xs text-gray-500">1.1.26</div>
             </div>
           </Link>
