@@ -79,7 +79,7 @@ export default function VideoPlayer() {
       <div 
         className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 flex flex-col shadow-2xl md:max-h-[65vh] md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
           isMinimized ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'
-        } ${isMinimized ? '' : 'h-screen md:h-auto'}`}
+        } max-h-[70vh] md:max-h-[65vh]`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
