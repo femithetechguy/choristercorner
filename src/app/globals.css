@@ -101,3 +101,47 @@ h1, h2, h3, h4, h5, h6 {
 .animate-pulse-subtle {
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+/* Card hover animation */
+@keyframes cardHover {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-4px);
+  }
+}
+
+.card-animated {
+  @apply transition-all duration-300 ease-out;
+}
+
+.card-animated:hover {
+  @apply shadow-lg;
+  animation: cardHover 0.3s ease-out forwards;
+}
+
+/* Tab animations */
+@keyframes tabSlide {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tab-animated {
+  @apply transition-all duration-300 ease-out;
+}
+
+.tab-animated:hover {
+  @apply text-purple-600;
+  transform: scale(1.05);
+}
+
+.tab-active {
+  animation: tabSlide 0.3s ease-out;
+}

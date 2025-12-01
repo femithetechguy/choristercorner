@@ -73,7 +73,7 @@ export default function ContactPage() {
               issues: 'bg-red-600 hover:bg-red-700',
             };
             return (
-              <div key={option.id} className="bg-white rounded-lg shadow p-6 text-center">
+              <div key={option.id} className="card-animated bg-white rounded-lg shadow p-6 text-center">
                 {Icon && <Icon className={`w-10 h-10 ${colorClasses[option.id]} mx-auto mb-4`} />}
                 <h3 className="text-xl font-bold mb-2">{option.title}</h3>
                 <p className="text-gray-600 text-sm">{option.description}</p>

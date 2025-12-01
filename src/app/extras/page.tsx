@@ -28,7 +28,7 @@ export default function ExtrasPage() {
         {/* Tools Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {(extrasData as any).external_tools.map((tool: any, index: number) => (
-            <div key={index} className="bg-white rounded-lg p-6 shadow hover:shadow-lg transition">
+            <div key={index} className="card-animated bg-white rounded-lg p-6 shadow">
               <div className="text-3xl mb-4">{iconMap[tool.category] || '🔗'}</div>
               <h3 className="text-xl font-bold mb-2 text-gray-900">{tool.name}</h3>
               <p className="text-gray-600 mb-4">{tool.description}</p>

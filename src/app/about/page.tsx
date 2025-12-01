@@ -29,7 +29,7 @@ export default function AboutPage() {
         {/* Mission and Vision */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
           {/* Mission */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="card-animated bg-white rounded-lg shadow-lg p-8">
             <Target className="w-10 h-10 text-purple-600 mb-4" />
             <h2 className="text-2xl font-bold mb-4">{config.about.mission.title}</h2>
             <p className="text-gray-600 leading-relaxed">
@@ -38,7 +38,7 @@ export default function AboutPage() {
           </div>
 
           {/* Vision */}
-          <div className="bg-white rounded-lg shadow-lg p-8">
+          <div className="card-animated bg-white rounded-lg shadow-lg p-8">
             <Eye className="w-10 h-10 text-purple-600 mb-4" />
             <h2 className="text-2xl font-bold mb-4">{config.about.vision.title}</h2>
             <p className="text-gray-600 leading-relaxed">
@@ -86,7 +86,7 @@ export default function AboutPage() {
         </section>
 
         {/* Content Library */}
-        <section className="mb-16 bg-white rounded-lg shadow-lg p-8">
+        <section className="card-animated mb-16 bg-white rounded-lg shadow-lg p-8">
           <div className="flex items-center gap-2 mb-8">
             <BookOpen className="w-8 h-8 text-purple-600" />
             <h2 className="text-2xl font-bold">Content Library</h2>
