@@ -68,7 +68,7 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden pb-4 border-t">
+          <div className="md:hidden pb-4 border-t animate-slide-down">
             <div className="flex flex-col gap-2 pt-4">
               {navLinks.map((link) => (
                 <Link

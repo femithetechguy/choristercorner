@@ -4,26 +4,34 @@ import { useState, useMemo } from 'react';
 import { BookOpen, Grid3X3, List } from 'lucide-react';
 import HymnCard from '@/components/HymnCard';
 import hymns from '@/data/hymns.json';
+import { Hymn } from '@/types';
 
 export default function HymnsPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAuthor, setSelectedAuthor] = useState('All Authors');
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const authors = useMemo(() => {
-    const allAuthors = new Set(hymns.map(h => h.author));
+    const allAuthors = new Set((hymns as Hymn[]).map(h => h.author));
     return ['All Authors', ...Array.from(allAuthors)];
   }, []);
 
+  const categories = useMemo(() => {
+    const allCategories = new Set((hymns as Hymn[]).map(h => h.category));
+    return ['All Categories', ...Array.from(allCategories)];
+  }, []);
+
   const filteredHymns = useMemo(() => {
-    return hymns.filter(hymn => {
+    return (hymns as Hymn[]).filter(hymn => {
       const matchesSearch =
-        hymn.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hymn.author.toLowerCase().includes(searchQuery.toLowerCase());
+        hymn.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hymn.author?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesAuthor = selectedAuthor === 'All Authors' || hymn.author === selectedAuthor;
-      return matchesSearch && matchesAuthor;
+      const matchesCategory = selectedCategory === 'All Categories' || hymn.category === selectedCategory;
+      return matchesSearch && matchesAuthor && matchesCategory;
     });
-  }, [searchQuery, selectedAuthor]);
+  }, [searchQuery, selectedAuthor, selectedCategory]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -39,7 +47,7 @@ export default function HymnsPage() {
 
         {/* Search and Filter */}
         <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <input
               type="text"
               placeholder="Search hymns by title, author, number, or lyrics..."
@@ -55,6 +63,17 @@ export default function HymnsPage() {
               {authors.map(author => (
                 <option key={author} value={author}>
                   {author}
+                </option>
+              ))}
+            </select>
+            <select
+              value={selectedCategory}
+              onChange={e => setSelectedCategory(e.target.value)}
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+            >
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category}
                 </option>
               ))}
             </select>
@@ -107,6 +126,8 @@ export default function HymnsPage() {
           </div>
         )}
       </div>
+
+      {/* Back to Top Button removed - now in LayoutClient */}
     </div>
   );
 }

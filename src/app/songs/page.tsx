@@ -12,15 +12,15 @@ export default function SongsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const channels = useMemo(() => {
-    const allChannels = new Set(songs.map(s => s.channel));
+    const allChannels = new Set((songs as Song[]).map(s => s.channel));
     return ['All Channels', ...Array.from(allChannels)];
   }, []);
 
   const filteredSongs = useMemo(() => {
-    return songs.filter(song => {
+    return (songs as Song[]).filter(song => {
       const matchesSearch =
-        song.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        song.channel.toLowerCase().includes(searchQuery.toLowerCase());
+        song.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        song.channel?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesChannel = selectedChannel === 'All Channels' || song.channel === selectedChannel;
       return matchesSearch && matchesChannel;
     });

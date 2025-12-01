@@ -1,9 +1,12 @@
 'use client';
 
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { Hymn } from '@/types';
-import { Play, Copy, ExternalLink } from 'lucide-react';
+import { Play, Copy, ExternalLink, FileText, Heart } from 'lucide-react';
 import { usePlayer } from '@/context/PlayerContext';
+import { useState } from 'react';
+import { createSlug } from '@/utils/slug';
 
 interface HymnCardProps {
   hymn: Hymn;
@@ -28,17 +31,32 @@ function getYouTubeThumbnail(url: string): string {
 }
 
 export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
+  const router = useRouter();
   const { play } = usePlayer();
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [copyFeedback, setCopyFeedback] = useState(false);
   const thumbnailUrl = getYouTubeThumbnail(hymn.url);
+
+  const handleCopyLink = async () => {
+    const slug = createSlug(hymn.title, hymn.serial_number, 'hymn');
+    const lyricsUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/lyrics/${slug}`;
+    try {
+      await navigator.clipboard.writeText(lyricsUrl);
+      setCopyFeedback(true);
+      setTimeout(() => setCopyFeedback(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
 
   if (variant === 'list') {
     return (
-      <div className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition bg-white">
+      <div className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition bg-white animate-fade-in hover:scale-105 duration-300 origin-left">
         <div className="shrink-0 relative w-16 h-16 bg-gray-200 rounded overflow-hidden">
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}
-              alt={hymn.title}
+              alt={hymn.title || 'Hymn thumbnail'}
               fill
               className="object-cover"
               unoptimized
@@ -50,32 +68,50 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
             </div>
           )}
         </div>
-        <div className="flex-1">
-          <h3 className="font-bold text-sm text-gray-900">{hymn.title}</h3>
-          <p className="text-xs text-gray-600">{hymn.author} ({hymn.year})</p>
-          <p className="text-xs text-purple-600 mt-1">{hymn.category} • {hymn.duration}</p>
-          <p className="text-xs text-gray-600 mt-1">{hymn.channel}</p>
-          <div className="flex gap-2 mt-2">
-            <button
+        <div className="flex-1 flex flex-col">
+          <div>
+            <h3 className="font-bold text-sm text-gray-900">{hymn.title}</h3>
+            <p className="text-xs text-gray-600">{hymn.author} ({hymn.year})</p>
+            <p className="text-xs text-purple-600 mt-1">{hymn.category} • {hymn.duration}</p>
+            <p className="text-xs text-gray-600 mt-1">{hymn.channel}</p>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button 
               onClick={() => play(hymn as any)}
-              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+              className="p-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+              title="Play"
             >
-              <Play size={12} className="fill-current" /> Play
+              <Play size={14} className="fill-current" />
+            </button>
+            <button 
+              onClick={() => router.push(`/lyrics/${createSlug(hymn.title, hymn.serial_number, 'hymn')}`)}
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Show Lyrics"
+            >
+              <FileText size={14} className="text-purple-600" />
+            </button>
+            <button 
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Copy Link"
+              onClick={handleCopyLink}
+            >
+              <Copy size={14} className={`${copyFeedback ? 'text-green-500' : 'text-purple-600'}`} />
             </button>
             <a
               href={hymn.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition flex items-center gap-1"
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Open in new tab"
             >
-              <ExternalLink size={12} /> Watch
+              <ExternalLink size={14} className="text-purple-600" />
             </a>
             <button 
-              className="p-1 border rounded hover:bg-gray-50 transition"
-              title="Copy URL"
-              onClick={() => navigator.clipboard.writeText(hymn.url)}
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Add to favorites"
             >
-              <Copy className="w-4 h-4 text-gray-600" />
+              <Heart size={14} className={`${isFavorite ? 'fill-red-500 text-red-500' : 'text-purple-600'}`} />
             </button>
           </div>
         </div>
@@ -84,12 +120,12 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full">
+    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full animate-fade-in hover:scale-105 duration-300">
       <div className="relative w-full aspect-video bg-gray-200 overflow-hidden">
         {thumbnailUrl ? (
           <Image
             src={thumbnailUrl}
-            alt={hymn.title}
+            alt={hymn.title || 'Hymn thumbnail'}
             fill
             className="object-cover"
             unoptimized
@@ -120,28 +156,43 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
         <p className="text-xs text-gray-700 mt-2">{hymn.author}</p>
         <p className="text-xs text-gray-600 mt-1">{hymn.channel}</p>
         <p className="text-xs text-gray-600 mt-1">{hymn.duration}</p>
-        <div className="flex gap-2 mt-4 flex-wrap">
-          <button
+        <div className="flex gap-2 mt-4 justify-center">
+          <button 
             onClick={() => play(hymn as any)}
-            className="flex-1 bg-purple-600 text-white px-3 py-2 rounded text-xs hover:bg-purple-700 transition flex items-center justify-center gap-1"
+            className="p-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+            title="Play"
           >
-            <Play size={14} className="fill-current" /> Play
+            <Play size={16} className="fill-current" />
+          </button>
+          <button 
+            onClick={() => router.push(`/lyrics/${createSlug(hymn.title, hymn.serial_number, 'hymn')}`)}
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Show Lyrics"
+          >
+            <FileText size={16} className="text-purple-600" />
+          </button>
+          <button 
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Copy Link"
+            onClick={handleCopyLink}
+          >
+            <Copy size={16} className={`${copyFeedback ? 'text-green-500' : 'text-purple-600'}`} />
           </button>
           <a
             href={hymn.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="p-2 border border-blue-200 rounded hover:bg-blue-50 transition"
-            title="Watch on YouTube"
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Open in new tab"
           >
-            <ExternalLink size={14} className="text-blue-600" />
+            <ExternalLink size={16} className="text-purple-600" />
           </a>
           <button 
-            className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
-            title="Copy URL"
-            onClick={() => navigator.clipboard.writeText(hymn.url)}
+            onClick={() => setIsFavorite(!isFavorite)}
+            className="p-2.5 border border-purple-200 rounded-lg hover:bg-purple-50 transition"
+            title="Add to favorites"
           >
-            <Copy size={14} className="text-purple-600" />
+            <Heart size={16} className={`${isFavorite ? 'fill-red-500 text-red-500' : 'text-purple-600'}`} />
           </button>
         </div>
       </div>
