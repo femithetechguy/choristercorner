@@ -28,7 +28,7 @@ export default function VideoPlayer() {
       {/* Persistent Minimized Bar Container - always in DOM */}
       <div 
         className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 shadow-lg transition-all duration-300 ${
-          isMinimized ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+          isMinimized ? 'opacity-100 visible animate-slide-up' : 'opacity-0 invisible pointer-events-none'
         }`}
       >
         <div className="flex gap-4 p-2">
@@ -78,7 +78,7 @@ export default function VideoPlayer() {
       {/* Persistent Expanded Player Container - always in DOM */}
       <div 
         className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 flex flex-col shadow-2xl md:max-h-[65vh] md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
-          isMinimized ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'
+          isMinimized ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible animate-scale-in'
         } max-h-[70vh] md:max-h-[65vh]`}
       >
         {/* Header */}

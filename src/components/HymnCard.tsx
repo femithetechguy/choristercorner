@@ -33,7 +33,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
 
   if (variant === 'list') {
     return (
-      <div className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition bg-white">
+      <div className="flex gap-4 p-4 border rounded-lg hover:shadow-md transition bg-white animate-fade-in hover:scale-105 duration-300 origin-left">
         <div className="shrink-0 relative w-16 h-16 bg-gray-200 rounded overflow-hidden">
           {thumbnailUrl ? (
             <Image
@@ -84,7 +84,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
   }
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full">
+    <div className="bg-white rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col h-full animate-fade-in hover:scale-105 duration-300">
       <div className="relative w-full aspect-video bg-gray-200 overflow-hidden">
         {thumbnailUrl ? (
           <Image
