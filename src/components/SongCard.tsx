@@ -54,25 +54,50 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             </div>
           )}
         </div>
-        <div className="flex-1 min-w-0">
-          <h3 className="font-bold text-sm text-gray-900 line-clamp-2">{song.title}</h3>
-          <p className="text-xs text-gray-700 mt-1">{song.channel}</p>
-          <p className="text-xs text-gray-600 mt-1">{song.duration}</p>
-          <div className="flex gap-2 mt-3 flex-wrap">
-            <button
+        <div className="flex-1 min-w-0 flex flex-col">
+          <div>
+            <h3 className="font-bold text-sm text-gray-900 line-clamp-2">{song.title}</h3>
+            <p className="text-xs text-gray-700 mt-1">{song.channel}</p>
+            <p className="text-xs text-gray-600 mt-1">{song.duration}</p>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <button 
               onClick={() => play(song)}
-              className="bg-purple-600 text-white px-3 py-1 rounded text-xs hover:bg-purple-700 transition flex items-center gap-1"
+              className="p-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+              title="Play"
             >
-              <Play size={12} /> Play
+              <Play size={14} className="fill-current" />
+            </button>
+            <button 
+              onClick={() => router.push(`/lyrics/${song.serial_number}`)}
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Show Lyrics"
+            >
+              <FileText size={14} className="text-purple-600" />
+            </button>
+            <button 
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Copy Link"
+              onClick={() => navigator.clipboard.writeText(song.url)}
+            >
+              <Copy size={14} className="text-purple-600" />
             </button>
             <a
               href={song.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700 transition flex items-center gap-1"
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Open in new tab"
             >
-              <ExternalLink size={12} /> Watch
+              <ExternalLink size={14} className="text-purple-600" />
             </a>
+            <button 
+              onClick={() => setIsFavorite(!isFavorite)}
+              className="p-2 border border-purple-200 rounded hover:bg-purple-50 transition"
+              title="Add to favorites"
+            >
+              <Heart size={14} className={`${isFavorite ? 'fill-red-500 text-red-500' : 'text-purple-600'}`} />
+            </button>
           </div>
         </div>
       </div>
