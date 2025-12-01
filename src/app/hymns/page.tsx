@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { BookOpen, Grid3X3, List } from 'lucide-react';
 import HymnCard from '@/components/HymnCard';
 import hymns from '@/data/hymns.json';
+import { Hymn } from '@/types';
 
 export default function HymnsPage() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -11,15 +12,15 @@ export default function HymnsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
 
   const authors = useMemo(() => {
-    const allAuthors = new Set(hymns.map(h => h.author));
+    const allAuthors = new Set((hymns as Hymn[]).map(h => h.author));
     return ['All Authors', ...Array.from(allAuthors)];
   }, []);
 
   const filteredHymns = useMemo(() => {
-    return hymns.filter(hymn => {
+    return (hymns as Hymn[]).filter(hymn => {
       const matchesSearch =
-        hymn.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        hymn.author.toLowerCase().includes(searchQuery.toLowerCase());
+        hymn.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        hymn.author?.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesAuthor = selectedAuthor === 'All Authors' || hymn.author === selectedAuthor;
       return matchesSearch && matchesAuthor;
     });

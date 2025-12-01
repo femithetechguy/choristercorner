@@ -40,7 +40,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}
-              alt={song.title}
+              alt={song.title || 'Song thumbnail'}
               fill
               className="object-cover"
               unoptimized
@@ -83,7 +83,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
         {thumbnailUrl ? (
           <Image
             src={thumbnailUrl}
-            alt={song.title}
+            alt={song.title || 'Song thumbnail'}
             fill
             className="object-cover"
             unoptimized

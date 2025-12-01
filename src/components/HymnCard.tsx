@@ -40,7 +40,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}
-              alt={hymn.title}
+              alt={hymn.title || 'Hymn thumbnail'}
               fill
               className="object-cover"
               unoptimized
@@ -91,7 +91,7 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
         {thumbnailUrl ? (
           <Image
             src={thumbnailUrl}
-            alt={hymn.title}
+            alt={hymn.title || 'Hymn thumbnail'}
             fill
             className="object-cover"
             unoptimized
