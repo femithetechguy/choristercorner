@@ -12,7 +12,7 @@ export default function ContactForm({ onSubmit, isLoading = false, preselectedTy
     contactType: preselectedType === 'feedback' ? 'General Feedback' : 
                  preselectedType === 'suggestions' ? 'Song Suggestions' : 
                  preselectedType === 'issues' ? 'Report Issues' : 
-                 'General Contact',
+                 'General Feedback',
     name: '',
     email: '',
     subject: '',
@@ -35,7 +35,7 @@ export default function ContactForm({ onSubmit, isLoading = false, preselectedTy
         await onSubmit(formData);
         setSubmitted(true);
         setFormData({
-          contactType: 'General Contact',
+          contactType: 'General Feedback',
           name: '',
           email: '',
           subject: '',
@@ -66,10 +66,9 @@ export default function ContactForm({ onSubmit, isLoading = false, preselectedTy
           onChange={handleChange}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
         >
-          <option>General Contact</option>
+          <option>General Feedback</option>
           <option>Song Suggestions</option>
           <option>Report Issues</option>
-          <option>Other</option>
         </select>
       </div>
 

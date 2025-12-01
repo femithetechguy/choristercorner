@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+      .container { max-width: 600px; margin: 0 auto; padding: 0; background: #f9fafb; }
+      .header { background: linear-gradient(135deg, #a855f7 0%, #9333ea 100%); color: white; padding: 40px 20px; text-align: center; }
+      .header h1 { margin: 0; font-size: 28px; }
+      .header p { margin: 10px 0 0 0; font-size: 14px; opacity: 0.9; }
+      .checkmark { font-size: 48px; margin-top: 15px; }
+      .content { background: white; padding: 40px 20px; }
+      .section { margin: 25px 0; }
+      .section-title { font-size: 16px; font-weight: bold; color: #a855f7; margin-bottom: 12px; }
+      .section-text { color: #555; font-size: 14px; line-height: 1.7; }
+      .highlight { background: #faf8ff; padding: 15px; border-left: 4px solid #a855f7; border-radius: 4px; margin: 15px 0; }
+      .highlight strong { color: #a855f7; }
+      .cta-button { display: inline-block; background: #a855f7; color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin-top: 10px; font-weight: bold; }
+      .cta-button:hover { background: #9333ea; }
+      .footer { background: #111827; color: #9ca3af; padding: 25px 20px; text-align: center; font-size: 12px; }
+      .footer p { margin: 5px 0; }
+      .footer a { color: #a855f7; text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <div class="checkmark">✅</div>
+        <h1>Thank You!</h1>
+        <p>We've received your message</p>
+      </div>
+      
+      <div class="content">
+        <p>Hi {{name}},</p>
+
+        <div class="section">
+          <div class="section-text">
+            Thank you for reaching out to <strong>ChoristerCorner</strong>! We appreciate your {{contactType}} and we're excited to help.
+          </div>
+        </div>
+
+        <div class="highlight">
+          <strong>{{contactTypeBadge}} Your {{contactType}}</strong><br>
+          {{subject}}
+        </div>
+
+        <div class="section">
+          <div class="section-title">What Happens Next?</div>
+          <div class="section-text">
+            <ul style="margin: 10px 0; padding-left: 20px;">
+              <li>Our team will review your message</li>
+              <li>We'll get back to you shortly with a response</li>
+              <li>If we need more details, we'll reach out via this email</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">In the Meantime...</div>
+          <div class="section-text">
+            Feel free to explore our collection of worship songs, hymns, and tools on ChoristerCorner!
+          </div>
+          <a href="https://choristercorner.com" class="cta-button">Visit ChoristerCorner</a>
+        </div>
+
+        <div class="section">
+          <div class="section-text">
+            <strong>Have another question?</strong><br>
+            You can reply to this email or visit our contact page anytime.
+          </div>
+        </div>
+
+        <p style="margin-top: 40px; color: #666; font-size: 13px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
+          Blessings,<br>
+          <strong>ChoristerCorner Team</strong>
+        </p>
+      </div>
+
+      <div class="footer">
+        <p><strong>ChoristerCorner</strong> | Worship Songs & Hymns</p>
+        <p>Submitted: {{submissionTime}}</p>
+        <p>&copy; {{year}} ChoristerCorner. All rights reserved.</p>
+        <p style="margin-top: 15px; font-size: 11px; color: #6b7280;">This is an automated confirmation. Please do not reply to this address.</p>
+      </div>
+    </div>
+  </body>
+</html>
