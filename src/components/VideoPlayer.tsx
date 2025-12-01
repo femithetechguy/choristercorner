@@ -77,9 +77,9 @@ export default function VideoPlayer() {
 
       {/* Persistent Expanded Player Container - always in DOM */}
       <div 
-        className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 max-h-96 md:max-h-[65vh] flex flex-col shadow-2xl md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
+        className={`fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-gray-200 flex flex-col shadow-2xl md:max-h-[65vh] md:bottom-20 md:left-1/2 md:-translate-x-1/2 md:w-11/12 md:max-w-7xl md:rounded-lg md:border-t-0 md:border transition-all duration-300 ${
           isMinimized ? 'opacity-0 invisible pointer-events-none' : 'opacity-100 visible'
-        }`}
+        } ${isMinimized ? '' : 'h-screen md:h-auto'}`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
@@ -109,11 +109,11 @@ export default function VideoPlayer() {
         {/* Main Content - Vertical on Mobile, 50/50 Split on Desktop */}
         <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
           {/* Video Section */}
-          <div className="flex flex-col items-center justify-center p-4 md:p-8 md:flex-1">
+          <div className="flex flex-col items-center justify-center p-4 md:p-8 md:flex-1 md:h-full">
             <div className="w-full max-w-sm md:max-w-lg aspect-video rounded-lg overflow-hidden shadow-lg bg-black">
               {videoId && (
                 <iframe
-                  key={`expanded-${videoId}`}
+                  key={`video-${videoId}`}
                   width="100%"
                   height="100%"
                   src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
@@ -132,7 +132,7 @@ export default function VideoPlayer() {
           </div>
 
           {/* Lyrics Section - Below Video on Mobile, Right Half on Desktop */}
-          <div className="flex-1 border-t md:border-t-0 md:border-l flex flex-col bg-gray-50 overflow-hidden">
+          <div className="flex-1 border-t md:border-t-0 md:border-l flex flex-col bg-gray-50 overflow-hidden md:h-full">
             {showLyrics ? (
               <>
                 <div className="px-4 md:px-6 py-3 md:py-4 border-b bg-white shrink-0">
