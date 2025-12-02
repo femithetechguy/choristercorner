@@ -25,6 +25,13 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+/* Mobile player background - ensure it's always black */
+@media (max-width: 768px) {
+  div[class*="fixed bottom-0"] {
+    background-color: #000000 !important;
+  }
+}
+
 /* Ensure all headings are dark for proper contrast */
 h1, h2, h3, h4, h5, h6 {
   @apply text-gray-900;
