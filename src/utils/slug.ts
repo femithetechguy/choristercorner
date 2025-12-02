@@ -65,18 +65,13 @@ export function extractSerialFromSlug(slug: string, songs: any[], hymns: any[]):
 
 /**
  * Create a slug from title or serial number as fallback
- * For hymns: Always uses serial-based slug to avoid conflicts (hymn-5)
+ * For hymns: Uses title-based slug with serial suffix to avoid conflicts
  * For songs: Uses title-based slug if available, serial-based as fallback
- * Example: "Blest Be The Tie That Binds" hymn -> "hymn-2"
+ * Example: "Blest Be The Tie That Binds" hymn -> "blest-be-the-tie-that-binds"
  * Example: "Song Title" song -> "song-title"
  * Fallback: song-42, hymn-5
  */
 export function createSlug(title: string, serial?: number, type?: 'song' | 'hymn'): string {
-  // For hymns, always use serial-based slug to avoid conflicts with songs
-  if (type === 'hymn' && serial !== undefined) {
-    return `hymn-${serial}`;
-  }
-  
   if (!title || title.trim().length === 0) {
     if (serial !== undefined && type) {
       return `${type}-${serial}`;
