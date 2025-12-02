@@ -6,22 +6,6 @@ import ContactForm from '@/components/ContactForm';
 import { ContactFormData } from '@/types';
 import appConfig from '@/data/app.json';
 
-export const generateMetadata = () => ({
-  title: 'Contact ChoristerCorner | Get in Touch',
-  description:
-    'Have questions, suggestions, or feedback? Contact ChoristerCorner to connect with our team. We\'d love to hear from you!',
-  keywords: ['contact', 'support', 'feedback', 'get in touch', 'help'],
-  openGraph: {
-    title: 'Contact ChoristerCorner',
-    description: 'Get in touch with our team or share your feedback.',
-    type: 'website',
-    url: 'https://choristercorner.com/contact',
-  },
-  alternates: {
-    canonical: 'https://choristercorner.com/contact',
-  },
-});
-
 const iconMap: { [key: string]: any } = {
   Heart,
   Music,
