@@ -144,10 +144,11 @@ export default function MediaPlayer({ media, onClose, SearchComponent }: MediaPl
                 ref={iframeRef}
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${videoId}?fs=0&modestbranding=1&rel=0&iv_load_policy=3`}
+                src={`https://www.youtube.com/embed/${videoId}?fs=0&modestbranding=1&rel=0&iv_load_policy=3&controls=1&autoplay=0`}
                 title={media.title}
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
                 className="w-full h-48 md:h-full"
+                style={{ border: 'none' }}
               />
             </div>
           </div>

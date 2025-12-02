@@ -168,3 +168,23 @@ input::placeholder, textarea::placeholder {
 .tab-active {
   animation: tabSlide 0.3s ease-out;
 }
+
+/* Hide YouTube branding and "Watch on YouTube" button in iframes */
+iframe[src*="youtube.com/embed"] {
+  background: #000000;
+}
+
+/* Target YouTube player elements to hide branding */
+.ytp-chrome-bottom {
+  display: none !important;
+}
+
+/* Hide YouTube endcard and annotations */
+.ytp-endscreen-content {
+  display: none !important;
+}
+
+/* Ensure clean player UI - hide all overlays except playback controls */
+.ytp-bottom-chrome {
+  display: none !important;
+}
