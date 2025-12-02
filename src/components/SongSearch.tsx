@@ -53,8 +53,8 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/50 flex items-end md:items-center justify-center p-0 md:p-4 pointer-events-auto overflow-hidden">
-      <div className="bg-gray-900 rounded-t-lg md:rounded-lg shadow-2xl border-t-2 md:border-2 border-purple-500 pointer-events-auto w-[calc(100vw-0rem)] md:max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-end md:items-center justify-center p-3 md:p-4 pointer-events-auto overflow-hidden">
+      <div className="bg-gray-900 rounded-t-lg md:rounded-lg shadow-2xl border-t-2 md:border-2 border-purple-500 pointer-events-auto w-full md:max-w-2xl max-h-[85vh] md:max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="p-3 md:p-4 bg-gray-800 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2 min-w-0">
