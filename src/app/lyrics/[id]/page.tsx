@@ -121,13 +121,13 @@ export default function LyricsPage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 pb-24">
+    <main className="min-h-screen bg-gray-50 pb-24 flex flex-col">
       {/* Back Button */}
       <div className="bg-white border-b sticky top-0 z-30 shadow-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-4">
           <button
             onClick={() => router.back()}
-            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition font-semibold"
+            className="flex items-center gap-2 text-purple-600 hover:text-purple-700 transition font-semibold text-sm sm:text-base"
           >
             <ArrowLeft size={20} />
             Back
@@ -135,44 +135,45 @@ export default function LyricsPage() {
         </div>
       </div>
 
-      {/* Song Header */}
+      {/* Song Header - Compact on Mobile */}
       <div className="bg-white border-b">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-start justify-between gap-4">
-            <div className="flex-1">
-              <span className="inline-block text-xs font-semibold text-purple-600 uppercase bg-purple-100 px-3 py-1 rounded-full mb-3">
+        <div className="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-8">
+          <div className="flex items-start justify-between gap-3 sm:gap-4">
+            <div className="flex-1 min-w-0">
+              <span className="inline-block text-xs font-semibold text-purple-600 uppercase bg-purple-100 px-2 py-1 rounded-full mb-2 sm:mb-3 text-xs">
                 Song #{item.serial_number}
               </span>
-              <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+              <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2">
                 {item.title}
               </h1>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
+              <div className="flex flex-col gap-1 sm:gap-2 sm:flex-row sm:items-center text-xs sm:text-sm text-gray-600">
                 <span className="flex items-center gap-1">
                   <span>By {item.channel}</span>
                 </span>
+                <span className="hidden sm:inline">•</span>
                 <span>{item.duration}</span>
               </div>
             </div>
 
-            {/* Action Icons */}
-            <div className="flex gap-2">
+            {/* Action Icons - Smaller on Mobile */}
+            <div className="flex gap-1 sm:gap-2 flex-shrink-0">
               <button
                 onClick={() => play(item as Song)}
-                className="p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                className="p-2 sm:p-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
                 title="Play"
               >
-                <Play size={20} className="fill-current" />
+                <Play size={18} className="sm:w-5 sm:h-5 fill-current" />
               </button>
               <button
                 onClick={handleShare}
-                className="p-3 border border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition"
+                className="p-2 sm:p-3 border border-gray-200 bg-white rounded-lg hover:bg-gray-50 transition"
                 title="Share"
               >
-                <Share2 size={20} className="text-gray-600" />
+                <Share2 size={18} className="sm:w-5 sm:h-5 text-gray-600" />
               </button>
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
-                className={`p-3 rounded-lg transition ${
+                className={`p-2 sm:p-3 rounded-lg transition ${
                   isFavorite
                     ? 'bg-red-100 text-red-600'
                     : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
@@ -180,8 +181,8 @@ export default function LyricsPage() {
                 title={isFavorite ? 'Remove from favorites' : 'Add to favorites'}
               >
                 <Heart
-                  size={20}
-                  className={isFavorite ? 'fill-current' : ''}
+                  size={18}
+                  className={`sm:w-5 sm:h-5 ${isFavorite ? 'fill-current' : ''}`}
                 />
               </button>
             </div>
@@ -189,22 +190,22 @@ export default function LyricsPage() {
         </div>
       </div>
 
-      {/* Lyrics Content */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-8 flex items-center gap-2">
+      {/* Lyrics Content - Full Height on Mobile */}
+      <div className="flex-1 max-w-4xl mx-auto w-full px-3 sm:px-6 lg:px-8 py-4 sm:py-12">
+        <h2 className="text-lg sm:text-2xl font-bold text-gray-900 mb-4 sm:mb-8 flex items-center gap-2">
           <span className="text-purple-600">🎵</span> Lyrics
         </h2>
 
         {item.lyrics && item.lyrics.length > 0 ? (
-          <div className="bg-white rounded-lg shadow p-8 space-y-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-8 space-y-4 sm:space-y-6 overflow-y-auto max-h-[calc(100vh-300px)] sm:max-h-none">
             {parseLyricsWithTags(item.lyrics).map((verseData: { isTag: boolean; tag: string | null; content: string }, idx: number) => (
               <div key={idx}>
                 {verseData.isTag && (
-                  <p className="text-base font-bold text-purple-600 mb-3 bg-purple-50 px-3 py-2 rounded inline-block">
+                  <p className="text-sm sm:text-base font-bold text-purple-600 mb-2 sm:mb-3 bg-purple-50 px-2 sm:px-3 py-1 sm:py-2 rounded inline-block">
                     {verseData.tag}
                   </p>
                 )}
-                <p className="text-base leading-relaxed whitespace-pre-wrap font-medium text-gray-800">
+                <p className="text-sm sm:text-base leading-relaxed sm:leading-relaxed whitespace-pre-wrap font-medium text-gray-800">
                   {verseData.content}
                 </p>
               </div>
