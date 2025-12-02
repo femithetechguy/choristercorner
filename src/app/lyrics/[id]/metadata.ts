@@ -49,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       title: item.title,
       description,
       type: 'music.song',
-      url: `https://choristercorner.com/lyrics/${id}`,
+      url: `https://www.choristercorner.com/lyrics/${id}`,
       images: [
         {
           url: thumbnail,
