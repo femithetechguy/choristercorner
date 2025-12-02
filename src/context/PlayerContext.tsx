@@ -1,10 +1,12 @@
 import React, { createContext, useContext, useState, useRef } from 'react';
-import { Song } from '@/types';
+import { Song, Hymn } from '@/types';
+
+type MediaItem = Song | Hymn;
 
 interface PlayerContextType {
-  currentSong: Song | null;
+  currentSong: MediaItem | null;
   isMinimized: boolean;
-  play: (song: Song) => void;
+  play: (song: MediaItem) => void;
   close: () => void;
   toggleMinimize: () => void;
 }
@@ -12,12 +14,12 @@ interface PlayerContextType {
 const PlayerContext = createContext<PlayerContextType | undefined>(undefined);
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
-  const [currentSong, setCurrentSong] = useState<Song | null>(null);
+  const [currentSong, setCurrentSong] = useState<MediaItem | null>(null);
   const [isMinimized, setIsMinimized] = useState(false);
   const lastPlayTimeRef = useRef(0);
   const PLAY_DEBOUNCE_MS = 300;
 
-  const play = (song: Song) => {
+  const play = (song: MediaItem) => {
     const now = Date.now();
     // Debounce: ignore if called within 300ms of last call with same song
     if (now - lastPlayTimeRef.current < PLAY_DEBOUNCE_MS && currentSong?.serial_number === song.serial_number) {

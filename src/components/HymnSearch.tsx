@@ -2,12 +2,12 @@
 
 import { useState, useMemo } from 'react';
 import { X, Search } from 'lucide-react';
-import { Song } from '@/types';
+import { Hymn } from '@/types';
 import Image from 'next/image';
-import songs from '@/data/songs.json';
+import hymns from '@/data/hymns.json';
 
-interface SongSearchProps {
-  onSelect: (song: Song) => void;
+interface HymnSearchProps {
+  onSelect: (hymn: Hymn) => void;
   onClose: () => void;
 }
 
@@ -22,33 +22,34 @@ function getYouTubeThumbnail(url: string): string {
   }
 }
 
-export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
+export default function HymnSearch({ onSelect, onClose }: HymnSearchProps) {
   const [query, setQuery] = useState('');
-  const [selectedChannel, setSelectedChannel] = useState('All Channels');
-  const allSongs = (songs as Song[]);
+  const [selectedCategory, setSelectedCategory] = useState('All Categories');
+  const allHymns = (hymns as Hymn[]);
 
-  // Get unique channels
-  const channels = useMemo(() => {
-    const allChannels = new Set(allSongs.map(s => s.channel));
-    return ['All Channels', ...Array.from(allChannels).sort()];
+  // Get unique categories
+  const categories = useMemo(() => {
+    const allCategories = new Set(allHymns.map(h => h.category));
+    return ['All Categories', ...Array.from(allCategories).sort()];
   }, []);
 
-  // Filter songs based on search query and channel
+  // Filter hymns based on search query and category
   const results = useMemo(() => {
-    return allSongs.filter(song => {
+    return allHymns.filter(hymn => {
       const matchesSearch =
         !query.trim() ||
-        song.title.toLowerCase().includes(query.toLowerCase()) ||
-        song.channel.toLowerCase().includes(query.toLowerCase());
+        hymn.title.toLowerCase().includes(query.toLowerCase()) ||
+        hymn.author.toLowerCase().includes(query.toLowerCase()) ||
+        hymn.category.toLowerCase().includes(query.toLowerCase());
       
-      const matchesChannel = selectedChannel === 'All Channels' || song.channel === selectedChannel;
+      const matchesCategory = selectedCategory === 'All Categories' || hymn.category === selectedCategory;
       
-      return matchesSearch && matchesChannel;
+      return matchesSearch && matchesCategory;
     });
-  }, [query, selectedChannel]);
+  }, [query, selectedCategory]);
 
-  const handleSongSelect = (song: Song) => {
-    onSelect(song);
+  const handleHymnSelect = (hymn: Hymn) => {
+    onSelect(hymn);
     setQuery('');
   };
 
@@ -59,7 +60,7 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
         <div className="p-3 md:p-4 bg-gray-800 border-b border-gray-700 flex items-center justify-between flex-shrink-0">
           <div className="flex items-center gap-2 min-w-0">
             <Search className="w-4 md:w-5 h-4 md:h-5 text-gray-400 flex-shrink-0" />
-            <h3 className="text-white font-semibold text-sm md:text-base truncate">Find Next Song</h3>
+            <h3 className="text-white font-semibold text-sm md:text-base truncate">Find Next Hymn</h3>
           </div>
           <button
             onClick={onClose}
@@ -76,7 +77,7 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
           <div>
             <input
               type="text"
-              placeholder="Search by title or channel..."
+              placeholder="Search by title or author..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               className="w-full bg-gray-700 text-white text-sm md:text-base rounded px-3 md:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500"
@@ -84,21 +85,21 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
             />
           </div>
 
-          {/* Channel Filter and Count - Stack on mobile, grid on desktop */}
+          {/* Category Filter and Count - Stack on mobile, grid on desktop */}
           <div className="flex flex-col md:grid md:grid-cols-2 gap-2 md:gap-3">
             <select
-              value={selectedChannel}
-              onChange={(e) => setSelectedChannel(e.target.value)}
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
               className="bg-gray-700 text-white text-sm md:text-base rounded px-3 md:px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-500 w-full"
             >
-              {channels.map(channel => (
-                <option key={channel} value={channel}>
-                  {channel}
+              {categories.map(category => (
+                <option key={category} value={category}>
+                  {category}
                 </option>
               ))}
             </select>
             <div className="text-xs md:text-sm text-gray-300 md:text-right">
-              Showing <span className="font-semibold text-purple-400">{results.length}</span> of <span className="font-semibold text-purple-400">{allSongs.length}</span> songs
+              Showing <span className="font-semibold text-purple-400">{results.length}</span> of <span className="font-semibold text-purple-400">{allHymns.length}</span> hymns
             </div>
           </div>
         </div>
@@ -107,16 +108,16 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
         <div className="flex-1 overflow-y-auto">
           {results.length > 0 ? (
             <div className="space-y-1 md:space-y-2 p-3 md:p-4">
-              {results.map((song) => (
+              {results.map((hymn) => (
                 <button
-                  key={song.serial_number}
-                  onClick={() => handleSongSelect(song)}
+                  key={hymn.serial_number}
+                  onClick={() => handleHymnSelect(hymn)}
                   className="w-full flex gap-2 md:gap-3 p-2 md:p-3 bg-gray-800 hover:bg-purple-600 active:bg-purple-700 rounded transition-colors text-left"
                 >
                   <div className="w-10 md:w-12 h-10 md:h-12 bg-gray-700 rounded flex-shrink-0 overflow-hidden">
                     <Image
-                      src={getYouTubeThumbnail(song.url)}
-                      alt={song.title}
+                      src={getYouTubeThumbnail(hymn.url)}
+                      alt={hymn.title}
                       width={48}
                       height={48}
                       className="w-full h-full object-cover"
@@ -124,15 +125,15 @@ export default function SongSearch({ onSelect, onClose }: SongSearchProps) {
                     />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-white font-semibold text-xs md:text-sm truncate">{song.title}</p>
-                    <p className="text-gray-400 text-xs truncate">{song.channel}</p>
+                    <p className="text-white font-semibold text-xs md:text-sm truncate">{hymn.title}</p>
+                    <p className="text-gray-400 text-xs truncate">{hymn.author} • {hymn.category}</p>
                   </div>
                 </button>
               ))}
             </div>
-          ) : query.trim() || selectedChannel !== 'All Channels' ? (
+          ) : query.trim() || selectedCategory !== 'All Categories' ? (
             <div className="flex items-center justify-center h-full text-gray-400 text-sm md:text-base">
-              <p>No songs found</p>
+              <p>No hymns found</p>
             </div>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400 text-sm md:text-base">

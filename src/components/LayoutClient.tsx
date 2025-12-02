@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { ArrowUp } from 'lucide-react';
 import { PlayerProvider } from '@/context/PlayerContext';
 import VideoPlayer from '@/components/VideoPlayer';
+import HymnPlayer from '@/components/HymnPlayer';
 
 export default function LayoutClient({
   children,
@@ -36,8 +37,9 @@ export default function LayoutClient({
           {children}
         </div>
         
-        {/* Player - modal overlay that appears on demand */}
+        {/* Players - modal overlay that appears on demand */}
         <VideoPlayer />
+        <HymnPlayer />
       </div>
 
       {/* Back to Top Button - only render on client after mount - positioned above minimized player */}
