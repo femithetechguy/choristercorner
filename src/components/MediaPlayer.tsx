@@ -68,9 +68,9 @@ export default function MediaPlayer({ media, onClose, SearchComponent }: MediaPl
         onClick={onClose}
       />
 
-      {/* Modal - touches nav bar, reduced height */}
-      <div className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center p-0 md:p-4 pt-12 md:pt-4 pointer-events-none">
-        <div className="bg-gray-900 rounded-b-lg md:rounded-lg shadow-2xl border-2 border-purple-500 w-full max-w-6xl max-h-[calc(100vh-3rem)] md:max-h-[80vh] flex flex-col pointer-events-auto">
+      {/* Modal - centered vertically and horizontally */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4 pointer-events-none overflow-hidden">
+        <div className="bg-gray-900 rounded-lg shadow-2xl border-2 border-purple-500 w-[calc(100vw-1rem)] md:w-full max-w-6xl max-h-[90vh] flex flex-col pointer-events-auto overflow-hidden">
           {/* Header */}
           <div className="flex items-center justify-between p-3 md:p-4 bg-gradient-to-r from-gray-800 to-gray-900 border-b-2 border-purple-500 flex-shrink-0">
             <div className="flex-1 min-w-0">
@@ -98,19 +98,45 @@ export default function MediaPlayer({ media, onClose, SearchComponent }: MediaPl
           {/* Content */}
           <div className="flex-1 overflow-hidden flex min-h-0 flex-col md:flex-row">
             {/* Lyrics */}
-            <div className="w-full md:w-2/3 bg-white overflow-y-auto order-2 md:order-1 flex flex-col">
-              <div className="p-3 md:p-4 bg-gray-50 border-b border-gray-200 flex-shrink-0">
-                <h3 className="font-semibold text-base md:text-lg text-gray-900">Lyrics</h3>
-              </div>
-              <div className="flex-1 overflow-y-auto p-4 md:p-6 min-h-0">
-                <div className="whitespace-pre-wrap text-sm md:text-base text-gray-800 leading-relaxed font-medium">
-                  {lyricsText || 'No lyrics available'}
+              <div className="w-full md:w-2/3 bg-white overflow-y-auto order-2 md:order-1 flex flex-col">
+                <div className="p-3 md:p-4 bg-gray-50 border-b border-gray-200 flex-shrink-0">
+                  <h3 className="font-semibold text-base md:text-lg text-gray-900 flex items-center gap-2">
+                    <span className="text-purple-600">🎵</span> Lyrics
+                  </h3>
+                </div>
+                <div className="flex-1 overflow-y-auto p-4 md:p-8 min-h-0">
+                  <div className="bg-white rounded-lg shadow p-4 md:p-8 space-y-4 md:space-y-6 overflow-y-auto">
+                    {Array.isArray(media.lyrics) && media.lyrics.length > 0 ? (
+                      media.lyrics.map((verse, idx) => {
+                        // Detect verse tag (e.g., "Verse 1:")
+                        const match = verse.match(/^(Verse \d+:)(.*)$/s);
+                        if (match) {
+                          return (
+                            <div key={idx}>
+                              <p className="text-sm md:text-base font-bold text-purple-600 mb-2 md:mb-3 bg-purple-50 px-2 md:px-3 py-1 md:py-2 rounded inline-block">
+                                {match[1]}
+                              </p>
+                              <p className="text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium text-gray-800">
+                                {match[2].trim()}
+                              </p>
+                            </div>
+                          );
+                        }
+                        return (
+                          <p key={idx} className="text-sm md:text-base leading-relaxed whitespace-pre-wrap font-medium text-gray-800">
+                            {verse}
+                          </p>
+                        );
+                      })
+                    ) : (
+                      <div className="text-gray-500 text-lg">No lyrics available</div>
+                    )}
+                  </div>
+                </div>
+                <div className="p-3 md:p-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
+                  <p className="text-xs text-gray-600">Click search to find next {'channel' in media ? 'song' : 'hymn'}</p>
                 </div>
               </div>
-              <div className="p-3 md:p-4 bg-gray-50 border-t border-gray-200 flex-shrink-0">
-                <p className="text-xs text-gray-600">Click search to find next {'channel' in media ? 'song' : 'hymn'}</p>
-              </div>
-            </div>
 
             {/* Video Player */}
             <div className="w-full md:w-1/3 bg-black order-1 md:order-2 md:flex-1">
@@ -118,9 +144,8 @@ export default function MediaPlayer({ media, onClose, SearchComponent }: MediaPl
                 ref={iframeRef}
                 width="100%"
                 height="100%"
-                src={`https://www.youtube.com/embed/${videoId}`}
+                src={`https://www.youtube.com/embed/${videoId}?fs=0&modestbranding=1&rel=0&iv_load_policy=3`}
                 title={media.title}
-                allowFullScreen
                 allow="autoplay; clipboard-write; encrypted-media; picture-in-picture"
                 className="w-full h-48 md:h-full"
               />

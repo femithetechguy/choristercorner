@@ -37,17 +37,19 @@ export default function LyricsPage() {
   const item = useMemo(() => {
     if (!songId) return undefined;
     
-    // If it's a serial-based slug with explicit type, search that type first
+    // If it's a serial-based slug with explicit type, search that type ONLY
     if (parsedSlug?.type === 'serial' && parsedSlug?.itemType === 'hymn') {
-      const foundHymn = (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
-      if (foundHymn) return foundHymn;
+      return (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
     }
     
-    // Default: search songs first, then hymns
+    if (parsedSlug?.type === 'serial' && parsedSlug?.itemType === 'song') {
+      return (songs as Song[]).find((s: Song) => s.serial_number === songId);
+    }
+    
+    // Title-based slug: search songs first, then hymns
     const foundSong = (songs as Song[]).find((s: Song) => s.serial_number === songId);
     if (foundSong) return foundSong;
-    const foundHymn = (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
-    return foundHymn;
+    return (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
   }, [songId, parsedSlug]) as Song | Hymn | undefined;
 
   // Determine if it's a song or hymn
