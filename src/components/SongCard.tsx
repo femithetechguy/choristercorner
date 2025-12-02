@@ -37,6 +37,12 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
   const [copyFeedback, setCopyFeedback] = useState(false);
   const thumbnailUrl = getYouTubeThumbnail(song.url);
 
+  const handlePlay = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    play(song);
+  };
+
   const handleCopyLink = async () => {
     const slug = createSlug(song.title, song.serial_number, 'song');
     const lyricsUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/lyrics/${slug}`;
@@ -76,7 +82,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
           </div>
           <div className="flex gap-2 mt-3">
             <button 
-              onClick={() => play(song)}
+              onClick={handlePlay}
               className="p-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
               title="Play"
             >
@@ -135,14 +141,6 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
             <Play className="w-12 h-12 text-purple-600" />
           </div>
         )}
-        <div className="absolute inset-0 bg-black/40 hover:bg-black/20 transition flex items-center justify-center">
-          <button 
-            onClick={() => play(song)}
-            className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition"
-          >
-            <Play className="w-6 h-6 text-white fill-white" />
-          </button>
-        </div>
       </div>
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-2">
@@ -155,7 +153,7 @@ export default function SongCard({ song, variant = 'grid' }: SongCardProps) {
         <p className="text-xs text-gray-500 mt-1">{song.duration}</p>
         <div className="flex gap-2 mt-4 justify-center">
           <button 
-            onClick={() => play(song)}
+            onClick={handlePlay}
             className="p-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
             title="Play"
           >

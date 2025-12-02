@@ -136,14 +136,6 @@ export default function HymnCard({ hymn, variant = 'grid' }: HymnCardProps) {
             <Play className="w-12 h-12 text-blue-600" />
           </div>
         )}
-        <div className="absolute inset-0 bg-black/40 hover:bg-black/20 transition flex items-center justify-center">
-          <button 
-            onClick={() => play(hymn as any)}
-            className="bg-purple-600 p-3 rounded-full hover:bg-purple-700 transition"
-          >
-            <Play className="w-6 h-6 text-white fill-white" />
-          </button>
-        </div>
       </div>
       <div className="p-4 flex flex-col flex-1">
         <div className="flex items-start justify-between gap-2 mb-2">

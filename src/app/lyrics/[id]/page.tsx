@@ -7,7 +7,7 @@ import { usePlayer } from '@/context/PlayerContext';
 import { Song, Hymn } from '@/types';
 import songs from '@/data/songs.json';
 import hymns from '@/data/hymns.json';
-import { extractSerialFromSlug } from '@/utils/slug';
+import { extractSerialFromSlug, parseSlug } from '@/utils/slug';
 import { parseLyricsWithTags } from '@/utils/lyrics';
 
 // Helper function to get YouTube thumbnail
@@ -26,19 +26,36 @@ export default function LyricsPage() {
   const { play } = usePlayer();
   const [isFavorite, setIsFavorite] = useState(false);
   
-  // Parse slug to get serial number
+  // Parse slug to get serial number and type
   const slug = params.id as string;
+  const parsedSlug = useMemo(() => parseSlug(slug), [slug]);
+  
   const songId = useMemo(() => {
     return extractSerialFromSlug(slug, songs as Song[], hymns as Hymn[]);
   }, [slug]);
   
   const item = useMemo(() => {
     if (!songId) return undefined;
+    
+    // If it's a serial-based slug with explicit type, search that type ONLY
+    if (parsedSlug?.type === 'serial' && parsedSlug?.itemType === 'hymn') {
+      return (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
+    }
+    
+    if (parsedSlug?.type === 'serial' && parsedSlug?.itemType === 'song') {
+      return (songs as Song[]).find((s: Song) => s.serial_number === songId);
+    }
+    
+    // Title-based slug: search songs first, then hymns
     const foundSong = (songs as Song[]).find((s: Song) => s.serial_number === songId);
     if (foundSong) return foundSong;
-    const foundHymn = (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
-    return foundHymn;
-  }, [songId]) as Song | Hymn | undefined;
+    return (hymns as Hymn[]).find((h: Hymn) => h.serial_number === songId);
+  }, [songId, parsedSlug]) as Song | Hymn | undefined;
+
+  // Determine if it's a song or hymn
+  const isHymn = item && 'author' in item;
+  const itemType = isHymn ? 'Hymn' : 'Song';
+  const creator = item && (isHymn ? (item as Hymn).author : (item as Song).channel);
 
   // Set Open Graph meta tags for social sharing
   useEffect(() => {
@@ -141,14 +158,14 @@ export default function LyricsPage() {
           <div className="flex items-start justify-between gap-3 sm:gap-4">
             <div className="flex-1 min-w-0">
               <span className="inline-block text-xs font-semibold text-purple-600 uppercase bg-purple-100 px-2 py-1 rounded-full mb-2 sm:mb-3 text-xs">
-                Song #{item.serial_number}
+                {itemType} #{item.serial_number}
               </span>
               <h1 className="text-xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-3 line-clamp-2">
                 {item.title}
               </h1>
               <div className="flex flex-col gap-1 sm:gap-2 sm:flex-row sm:items-center text-xs sm:text-sm text-gray-600">
                 <span className="flex items-center gap-1">
-                  <span>By {item.channel}</span>
+                  <span>By {creator}</span>
                 </span>
                 <span className="hidden sm:inline">•</span>
                 <span>{item.duration}</span>
