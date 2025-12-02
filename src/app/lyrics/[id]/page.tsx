@@ -104,7 +104,42 @@ export default function LyricsPage() {
 
     // Additional meta tags
     updateNameTag('description', description);
-  }, [item]);
+
+    // Add JSON-LD structured data
+    let schemaScript = document.querySelector('script[type="application/ld+json"]');
+    if (!schemaScript) {
+      schemaScript = document.createElement('script');
+      schemaScript.setAttribute('type', 'application/ld+json');
+      document.head.appendChild(schemaScript);
+    }
+
+    const schemaData = {
+      '@context': 'https://schema.org',
+      '@type': isHymn ? 'Hymn' : 'MusicRecording',
+      name: item.title,
+      url: currentUrl,
+      description: description,
+      image: thumbnail,
+      ...(isHymn && {
+        author: {
+          '@type': 'Person',
+          name: (item as any).author,
+        },
+        inLanguage: 'en',
+      }),
+      ...(!isHymn && {
+        byArtist: {
+          '@type': 'Organization',
+          name: (item as Song).channel,
+        },
+        duration: item.duration,
+      }),
+      ...(thumbnail && {
+        thumbnailUrl: thumbnail,
+      }),
+    };
+
+    schemaScript.textContent = JSON.stringify(schemaData);
 
   if (!item) {
     return (

@@ -1,5 +1,22 @@
+import { Metadata } from 'next';
 import { Clock, Wrench, BookOpen, Users, Music, Target, Eye, Check } from 'lucide-react';
 import appConfig from '@/data/app.json';
+
+export const metadata: Metadata = {
+  title: 'About ChoristerCorner | Mission, Vision & Resources',
+  description:
+    'Learn about ChoristerCorner - a platform dedicated to helping choristers, worship leaders, and musicians discover and master Christian hymns and worship songs. Explore our mission and tools.',
+  keywords: ['about us', 'ChoristerCorner', 'choir resources', 'worship leader platform', 'music platform'],
+  openGraph: {
+    title: 'About ChoristerCorner',
+    description: 'Learn about our mission to support worship leaders and choristers worldwide.',
+    type: 'website',
+    url: 'https://choristercorner.com/about',
+  },
+  alternates: {
+    canonical: 'https://choristercorner.com/about',
+  },
+};
 
 const iconMap: { [key: string]: any } = {
   Clock,

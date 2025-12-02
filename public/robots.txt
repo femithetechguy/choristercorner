@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /private
+Disallow: /.env
+Disallow: /.env.local
+
+Sitemap: https://choristercorner.com/sitemap.xml
+
+# Google-specific
+User-agent: Googlebot
+Allow: /
+
+# Bing
+User-agent: Bingbot
+Allow: /
+
+# Others
+User-agent: Slurp
+Allow: /
+
+# Crawl delay (in seconds)
+Crawl-delay: 1

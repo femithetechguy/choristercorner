@@ -1,6 +1,23 @@
+import { Metadata } from 'next';
 import { Sparkles } from 'lucide-react';
 import appConfig from '@/data/app.json';
 import extrasData from '@/data/extras.json';
+
+export const metadata: Metadata = {
+  title: 'Extras & Resources - ChoristerCorner | Worship & Music Tools',
+  description:
+    'Discover additional music resources, worship tools, and external links to enhance your worship practice. Including hymn resources, multitracks, and worship materials.',
+  keywords: ['music resources', 'worship tools', 'worship resources', 'music links', 'choir resources'],
+  openGraph: {
+    title: 'Extras & Resources - ChoristerCorner',
+    description: 'Explore additional worship and music resources.',
+    type: 'website',
+    url: 'https://choristercorner.com/extras',
+  },
+  alternates: {
+    canonical: 'https://choristercorner.com/extras',
+  },
+};
 
 const iconMap: { [key: string]: string } = {
   Music: '♪',
