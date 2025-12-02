@@ -140,6 +140,7 @@ export default function LyricsPage() {
     };
 
     schemaScript.textContent = JSON.stringify(schemaData);
+  }, [item, isHymn]);
 
   if (!item) {
     return (
