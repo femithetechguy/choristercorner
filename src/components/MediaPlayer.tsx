@@ -108,8 +108,8 @@ export default function MediaPlayer({ media, onClose, SearchComponent }: MediaPl
                   <div className="bg-white rounded-lg shadow p-4 md:p-8 space-y-4 md:space-y-6 overflow-y-auto">
                     {Array.isArray(media.lyrics) && media.lyrics.length > 0 ? (
                       media.lyrics.map((verse, idx) => {
-                        // Detect verse tag (e.g., "Verse 1:")
-                        const match = verse.match(/^(Verse \d+:)(.*)$/s);
+                        // Detect section tag (e.g., "Verse 1:", "Chorus:", "Pre-chorus:", "Bridge:", etc.)
+                        const match = verse.match(/^([A-Za-z0-9\s\-]+:)(.*)$/s);
                         if (match) {
                           return (
                             <div key={idx}>
