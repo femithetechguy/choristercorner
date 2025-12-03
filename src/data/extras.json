@@ -34,6 +34,13 @@
             "description": "Platform for multitrack backing tracks, stems, charts, and rehearsal tools for worship and live performance.",
             "category": "Multitracks",
             "tags": ["multitrack", "stems", "backing tracks", "charts", "worship", "live"]
+        },
+        {
+            "name": "Export YouTube Playlist",
+            "url": "https://export-youtube-playlist.vercel.app/",
+            "description": "A tool to export YouTube playlists to various formats for backup and organization.",
+            "category": "Tools",
+            "tags": ["youtube", "playlist", "export", "backup", "tool"]
         }
     ]
 }
