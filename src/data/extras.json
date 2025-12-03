@@ -1,39 +1,53 @@
 {
-    "external_tools": [
-        {
-            "name": "Chosic Playlist Generator",
-            "url": "https://www.chosic.com/playlist-generator/",
-            "description": "A tool for generating music playlists based on various parameters and preferences.",
-            "category": "Music",
-            "tags": ["playlist", "music", "generator", "tool"]
-        },
-        {
-            "name": "GCC Hymns Library",
-            "url": "https://gccsatx.com/hymns/",
-            "description": "A searchable library of hymns from GCC San Antonio.",
-            "category": "Hymns",
-            "tags": ["hymns", "library", "search", "music"]
-        },
-        {
-            "name": "AZLyrics",
-            "url": "https://www.azlyrics.com/lyrics/",
-            "description": "Search for song lyrics from a vast database of artists and tracks.",
-            "category": "Lyrics",
-            "tags": ["lyrics", "search", "music", "database"]
-        },
-        {
-            "name": "CCLI SongSelect",
-            "url": "https://songselect.ccli.com/",
-            "description": "Licensed song resources, lyrics, chords, and lead sheets for worship teams and churches.",
-            "category": "Worship Resources",
-            "tags": ["lyrics", "chords", "worship", "licenses", "songselect", "CCLI"]
-        },
-        {
-            "name": "MultiTracks Discovery",
-            "url": "https://www.multitracks.com/discovery/",
-            "description": "Platform for multitrack backing tracks, stems, charts, and rehearsal tools for worship and live performance.",
-            "category": "Multitracks",
-            "tags": ["multitrack", "stems", "backing tracks", "charts", "worship", "live"]
-        }
-    ]
+  "external_tools": [
+    {
+      "name": "Chosic Playlist Generator",
+      "url": "https://www.chosic.com/playlist-generator/",
+      "description": "A tool for generating music playlists based on various parameters and preferences.",
+      "category": "Music",
+      "tags": ["playlist", "music", "generator", "tool"]
+    },
+    {
+      "name": "GCC Hymns Library",
+      "url": "https://gccsatx.com/hymns/",
+      "description": "A searchable library of hymns from GCC San Antonio.",
+      "category": "Hymns",
+      "tags": ["hymns", "library", "search", "music"]
+    },
+    {
+      "name": "AZLyrics",
+      "url": "https://www.azlyrics.com/lyrics/",
+      "description": "Search for song lyrics from a vast database of artists and tracks.",
+      "category": "Lyrics",
+      "tags": ["lyrics", "search", "music", "database"]
+    },
+    {
+      "name": "CCLI SongSelect",
+      "url": "https://songselect.ccli.com/",
+      "description": "Licensed song resources, lyrics, chords, and lead sheets for worship teams and churches.",
+      "category": "Worship Resources",
+      "tags": ["lyrics", "chords", "worship", "licenses", "songselect", "CCLI"]
+    },
+    {
+      "name": "MultiTracks Discovery",
+      "url": "https://www.multitracks.com/discovery/",
+      "description": "Platform for multitrack backing tracks, stems, charts, and rehearsal tools for worship and live performance.",
+      "category": "Multitracks",
+      "tags": [
+        "multitrack",
+        "stems",
+        "backing tracks",
+        "charts",
+        "worship",
+        "live"
+      ]
+    },
+    {
+      "name": "Export YouTube Playlist",
+      "url": "https://export-youtube-playlist.vercel.app/",
+      "description": "A tool to export YouTube playlists to various formats for backup and organization.",
+      "category": "Tools",
+      "tags": ["youtube", "playlist", "export", "backup", "tool"]
+    }
+  ]
 }
